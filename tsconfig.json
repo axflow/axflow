@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "declaration": true,
+    "target": "es2020",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "inlineSources": false,
+    "noUnusedLocals": true,
+    "baseUrl": ".",
+    "paths": {},
+  },
+  "include": ["src"],
+  "exclude": [
+    "node_modules"
+  ]
+}
