@@ -5,25 +5,11 @@ Upload documents to a vector database and query them using semantic search augme
 ## Setup
 
 ```
-npm i
+> npm i
+> cp .env.example .env
 ```
 
-The following environment variables are required before running any of the commands below.
-
-```bash
-# Pinecone secret API key
-PINECONE_API_KEY=
-# The environment for your API key. Might look like "us-west1-gcp-free"
-PINECONE_ENVIRONMENT=
-# Can name your index however you'd like
-PINECONE_INDEX=
-# The vector dimensions. E.g., 1536 for OpenAI's text-embedding-ada-002 embedding model
-PINECONE_INDEX_DIMENSION=
-# The namespace for your API key. Often, "default"
-PINECONE_NAMESPACE=
-# OpenAI secret API key
-OPENAI_API_KEY=
-```
+Then, edit .env with your own configuration.
 
 ## Commands
 
