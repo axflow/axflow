@@ -11,6 +11,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+      - name: create .env file from example .env file
+        run: mv .env.example .env
       - run: npm ci
       - run: npm run lint
       - run: npm run build
