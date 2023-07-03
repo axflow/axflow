@@ -1,8 +1,7 @@
 {
-  "name": "semanticmd",
+  "name": "semanticsearch",
   "version": "0.0.1",
   "description": "Semantic document search using LLMs",
-  "main": "lib/index.js",
   "scripts": {
     "prebuild": "rm -rf ./dist",
     "build": "tsc",
@@ -12,7 +11,7 @@
     "query": "ts-node ./src/cmd/query.ts",
     "test": "jest --testMatch \"**/test/**/*.test.ts\""
   },
-  "author": "",
+  "author": "Axilla (https://axilla.io)",
   "license": "MIT",
   "dependencies": {
     "@pinecone-database/pinecone": "^0.1.6",
