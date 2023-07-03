@@ -1,15 +1,20 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
-import { run } from '../query';
+import { query } from '../query';
 
 const argv = yargs(hideBin(process.argv))
   .option('query', {
-    alias: 'q',
     type: 'string',
     description: 'Query to execute using long term memory and a model',
     demandOption: true,
   })
+  .option('model', {
+    type: 'string',
+    description: 'The OpenAI model to use for answering the query',
+    default: 'text-ada-001',
+    demandOption: false,
+  })
   .parseSync();
 
-run({ query: argv.query });
+query({ query: argv.query, model: argv.model });

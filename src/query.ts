@@ -3,12 +3,14 @@ import { createCompletion, createEmbedding } from './openai';
 
 type QueryOptions = {
   query: string;
+  model: string;
 };
 
-export async function run(options: QueryOptions) {
-  const query = options.query;
-
+export async function query(options: QueryOptions) {
   await pinecone.init();
+
+  const query = options.query;
+  const model = options.model;
 
   const embedding = await createEmbedding({ input: query });
 
@@ -33,7 +35,7 @@ export async function run(options: QueryOptions) {
     `\nAnswer:`,
   ].join('');
 
-  const results = await createCompletion({ prompt: prompt });
+  const results = await createCompletion({ model, prompt });
 
   console.log(results[0].text?.trim());
 }

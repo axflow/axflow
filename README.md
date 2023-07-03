@@ -60,3 +60,11 @@ This performs the following actions:
 1. Get the embeddings for your query
 2. Lookup documents in pinecone that are semantically similar to your query
 3. Send a prompt to an OpenAI model containing your original query together with the documents retrieved from pinecone
+
+The model defaults to `text-ada-001`, though can be overridden using the `--model` argument. For example:
+
+```bash
+npm run query -- --query="How do I do X where X is something in my documents?" --model=text-curie-001
+```
+
+*Note: Only OpenAI models are supported right now*
