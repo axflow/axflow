@@ -1,4 +1,4 @@
-# SemanticSearch
+# SemanticSearch ![Github CI](https://github.com/axilla-io/semanticsearch/workflows/Github%20CI/badge.svg)
 
 Upload documents to a vector database and query them using semantic search augmented with an LLM.
 
