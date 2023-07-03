@@ -15,6 +15,13 @@ const argv = yargs(hideBin(process.argv))
     default: 'text-ada-001',
     demandOption: false,
   })
+  .option('llmOnly', {
+    type: 'boolean',
+    description:
+      'If true, this will query the LLM without additional context from the vector database',
+    default: false,
+    demandOption: false,
+  })
   .parseSync();
 
-query({ query: argv.query, model: argv.model });
+query({ query: argv.query, model: argv.model, llmOnly: argv.llmOnly });

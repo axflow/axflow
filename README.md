@@ -1,6 +1,6 @@
 # SemanticSearch ![Github CI](https://github.com/axilla-io/semanticsearch/workflows/Github%20CI/badge.svg)
 
-Upload documents to a vector database and query them using semantic search augmented with an LLM.
+Upload documents to a vector database and query them using semantic search and LLMs.
 
 ## Setup
 
@@ -11,7 +11,7 @@ Upload documents to a vector database and query them using semantic search augme
 
 Then, edit .env with your own configuration.
 
-## Commands
+## Usage
 
 ### Create Pinecone index
 
@@ -54,3 +54,11 @@ npm run query -- --query="How do I do X where X is something in my documents?" -
 ```
 
 *Note: Only OpenAI models are supported right now*
+
+You can query the LLM directly using the `--llm-only` flag.
+
+```bash
+npm run query -- --query="How do I do X where X is something in my documents?" --llm-only
+```
+
+This allows you to see how the model performs with and without additional context from pinecone.
