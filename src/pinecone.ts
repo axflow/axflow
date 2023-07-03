@@ -86,8 +86,8 @@ export class Pinecone {
     this.client = new PineconeClient();
   }
 
-  async init() {
-    await this.client.init({
+  init() {
+    return this.client.init({
       apiKey: this.apiKey,
       environment: this.environment,
     });
