@@ -2,8 +2,14 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
 import { query } from '../query';
+import { getVectorStore } from './utils';
 
 const argv = yargs(hideBin(process.argv))
+  .option('store', {
+    type: 'string',
+    description: 'The vector store',
+    demandOption: true,
+  })
   .option('query', {
     type: 'string',
     description: 'Query to execute using long term memory and a model',
@@ -24,4 +30,8 @@ const argv = yargs(hideBin(process.argv))
   })
   .parseSync();
 
-query({ query: argv.query, model: argv.model, llmOnly: argv.llmOnly });
+query(getVectorStore(argv.store), {
+  query: argv.query,
+  model: argv.model,
+  llmOnly: argv.llmOnly,
+});

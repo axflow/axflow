@@ -1,5 +1,6 @@
-import pinecone from './pinecone';
 import { createCompletion, createEmbedding } from './openai';
+
+import type { VectorStore } from './types';
 
 type QueryOptions = {
   query: string;
@@ -7,9 +8,7 @@ type QueryOptions = {
   llmOnly: boolean;
 };
 
-export async function query(options: QueryOptions) {
-  await pinecone.init();
-
+export async function query(vectorStore: VectorStore, options: QueryOptions) {
   const query = options.query;
   const model = options.model;
   const llmOnly = options.llmOnly;
@@ -19,10 +18,16 @@ export async function query(options: QueryOptions) {
   if (llmOnly) {
     console.log(`Querying ${model} without additional context`);
   } else {
-    const { matches, context } = await getContext(query);
+    const { results, context } = await getContext(vectorStore, query);
 
     console.log(`Querying ${model} with additional context`);
-    console.log(matches.map((c) => ({ id: c.id, score: c.score, file: c.metadata.file })));
+    console.log(
+      results.map((r) => ({
+        id: r.id,
+        text: `<${r.document.text.length} characters>`,
+        metadata: r.document.metadata,
+      }))
+    );
 
     prompt.push('\n\nContext:\n');
     prompt.push(context);
@@ -39,21 +44,15 @@ export async function query(options: QueryOptions) {
   console.log(results[0].text?.trim());
 }
 
-async function getContext(query: string) {
+async function getContext(vectorStore: VectorStore, query: string) {
   const embedding = await createEmbedding({ input: query });
 
-  const { matches: maybeMatches } = await pinecone.query({
+  const results = await vectorStore.query({
     topK: 3,
-    vector: embedding.data[0].embedding,
-    includeMetadata: true,
+    embedding: embedding.data[0].embedding,
   });
 
-  const matches = (maybeMatches || []).map((match) => {
-    const metadata = match.metadata as { file: string; text: string };
-    return { id: match.id, score: match.score, metadata: metadata };
-  });
+  const context = results.map((result) => result.document.text).join('\n\n---\n\n');
 
-  const context = matches.map((match) => match.metadata.text).join('\n\n---\n\n');
-
-  return { matches, context };
+  return { results, context };
 }
