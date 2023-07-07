@@ -48,16 +48,20 @@ _Note: Right now, you can only upsert markdown files with index:upsert_
 For ingesting data from wikipedia directly:
 
 ```
-npm run index:upsert-wikipedia -- --term="San Francisco"
+npm run vector_store:upload-wikipedia -- --store=pinecone --term="San Francisco"
 ```
 
 ### Query records
 
 ```bash
+# example 1 (phoenix)
 npm run query -- --store=pinecone --query="How do I do X where X is something in my documents?"
+
+# example 2 (wikipedia)
+npm run query -- --store=pinecone --query="When was the San Francisco Police Department founded?"
 ```
 
-The `store` argument is required and must be one of the supported stores.
+The `store` argument is required and must be one of the supported stores: `['pinecone', 'chroma']`
 
 This performs the following actions:
 

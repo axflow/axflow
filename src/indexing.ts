@@ -59,12 +59,12 @@ export async function index(vectorStore: VectorStore, options: IndexingOptions) 
 }
 
 export async function indexWikipedia(vectorStore: VectorStore, term: string) {
-  console.log('Upserting wikipedia, got term', term);
+  console.log(`Fetching wikipedia entry for term "${term}"`);
   const directDoc = await fetchDocForTerm(term);
   if (!directDoc) {
     throw new Error(`No document found for ${term}`);
   }
-  console.log(directDoc);
+  console.log('Document found:\n', directDoc);
   const documents = await chunk({ type: 'wikipediaExtract', content: directDoc });
   const { data: embeddings } = await createEmbedding({ input: documents });
 
