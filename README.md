@@ -40,7 +40,7 @@ npm run vector_store:upload -- --store=pinecone --repo-path=/path/to/repo --glob
 For example, to search the Phoenix repository's guides, it would look like:
 
 ```
-npm run index:upsert -- --repo-path=/path/to/phoenix --glob-path="guides/**/*.md"
+npm run vector_store:upload -- --store=pinecone --repo-path=/path/to/phoenix --glob-path="guides/**/*.md"
 ```
 
 _Note: Right now, you can only upsert markdown files with index:upsert_
