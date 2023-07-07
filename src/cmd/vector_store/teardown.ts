@@ -1,9 +1,9 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
-import { ChromaClient } from 'chromadb';
-import { PineconeClient } from '@pinecone-database/pinecone';
 import { getEnv, getEnvOrThrow } from '../../config';
+import { teardown as teardownChroma } from '../../vector_stores/chroma';
+import { teardown as teardownPinecone } from '../../vector_stores/pinecone';
 
 const argv = yargs(hideBin(process.argv))
   .option('store', {
@@ -18,35 +18,17 @@ teardown(argv.store);
 async function teardown(store: string) {
   switch (store) {
     case 'chroma':
-      return await teardownChroma();
+      return await teardownChroma({
+        path: getEnv('CHROMA_PATH'),
+        collection: getEnvOrThrow('CHROMA_COLLECTION'),
+      });
     case 'pinecone':
-      return await teardownPinecone();
+      return await teardownPinecone({
+        apiKey: getEnvOrThrow('PINECONE_API_KEY'),
+        environment: getEnvOrThrow('PINECONE_ENVIRONMENT'),
+        index: getEnvOrThrow('PINECONE_INDEX'),
+      });
     default:
       throw new Error(`Unrecognized store "${store}"`);
   }
-}
-
-async function teardownChroma() {
-  const client = new ChromaClient({
-    path: getEnv('CHROMA_PATH'),
-  });
-
-  await client.deleteCollection({
-    name: getEnvOrThrow('CHROMA_COLLECTION'),
-  });
-}
-
-async function teardownPinecone() {
-  const pinecone = new PineconeClient();
-
-  await pinecone.init({
-    apiKey: getEnvOrThrow('PINECONE_API_KEY'),
-    environment: getEnvOrThrow('PINECONE_ENVIRONMENT'),
-  });
-
-  const index = getEnvOrThrow('PINECONE_INDEX');
-
-  await pinecone.deleteIndex({
-    indexName: index,
-  });
 }

@@ -2,6 +2,26 @@ import { ChromaClient, type Collection } from 'chromadb';
 
 import type { VectorStore, VectorizedDocument, VectorQuery, VectorQueryResult } from '../types';
 
+export async function prepare(options: { collection: string; path?: string }) {
+  const client = new ChromaClient({
+    path: options.path,
+  });
+
+  await client.createCollection({
+    name: options.collection,
+  });
+}
+
+export async function teardown(options: { collection: string; path?: string }) {
+  const client = new ChromaClient({
+    path: options.path,
+  });
+
+  await client.deleteCollection({
+    name: options.collection,
+  });
+}
+
 export class Chroma implements VectorStore {
   private client: ChromaClient;
   private collection: Collection | null = null;

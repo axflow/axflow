@@ -8,8 +8,10 @@ export function getEnv(key: string) {
 
 export function getEnvOrThrow(key: string) {
   const value = getEnv(key);
+
   if (!value) {
-    throw new Error(`${key} environment variable not set`);
+    throw new Error(`Expected "${key}" to be set in the process environment`);
   }
+
   return value;
 }

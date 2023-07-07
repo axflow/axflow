@@ -1,8 +1,8 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
-import { ChromaClient } from 'chromadb';
-import { PineconeClient, utils as pineconeUtils } from '@pinecone-database/pinecone';
+import { prepare as prepareChroma } from '../../vector_stores/chroma';
+import { prepare as preparePinecone } from '../../vector_stores/pinecone';
 import { getEnv, getEnvOrThrow } from '../../config';
 
 const argv = yargs(hideBin(process.argv))
@@ -18,36 +18,18 @@ prepare(argv.store);
 async function prepare(store: string) {
   switch (store) {
     case 'chroma':
-      return await prepareChroma();
+      return await prepareChroma({
+        path: getEnv('CHROMA_PATH'),
+        collection: getEnvOrThrow('CHROMA_COLLECTION'),
+      });
     case 'pinecone':
-      return await preparePinecone();
+      return await preparePinecone({
+        apiKey: getEnvOrThrow('PINECONE_API_KEY'),
+        environment: getEnvOrThrow('PINECONE_ENVIRONMENT'),
+        index: getEnvOrThrow('PINECONE_INDEX'),
+        dimension: Number(getEnvOrThrow('PINECONE_INDEX_DIMENSION')),
+      });
     default:
       throw new Error(`Unrecognized store "${store}"`);
   }
-}
-
-async function prepareChroma() {
-  const client = new ChromaClient({
-    path: getEnv('CHROMA_PATH'),
-  });
-
-  await client.createCollection({
-    name: getEnvOrThrow('CHROMA_COLLECTION'),
-  });
-}
-
-async function preparePinecone() {
-  const { createIndexIfNotExists } = pineconeUtils;
-
-  const pinecone = new PineconeClient();
-
-  await pinecone.init({
-    apiKey: getEnvOrThrow('PINECONE_API_KEY'),
-    environment: getEnvOrThrow('PINECONE_ENVIRONMENT'),
-  });
-
-  const index = getEnvOrThrow('PINECONE_INDEX');
-  const dimension = Number(getEnvOrThrow('PINECONE_INDEX_DIMENSION'));
-
-  return createIndexIfNotExists(pinecone, index, dimension);
 }

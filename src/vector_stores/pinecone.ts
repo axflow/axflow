@@ -4,6 +4,40 @@ const { chunkedUpsert } = pineconeUtils;
 
 import type { VectorStore, VectorizedDocument, VectorQuery, VectorQueryResult } from '../types';
 
+export async function prepare(options: {
+  apiKey: string;
+  environment: string;
+  index: string;
+  dimension: number;
+}) {
+  const { createIndexIfNotExists } = pineconeUtils;
+
+  const pinecone = new PineconeClient();
+
+  await pinecone.init({
+    apiKey: options.apiKey,
+    environment: options.environment,
+  });
+
+  const index = options.index;
+  const dimension = options.dimension;
+
+  await createIndexIfNotExists(pinecone, index, dimension);
+}
+
+export async function teardown(options: { apiKey: string; environment: string; index: string }) {
+  const pinecone = new PineconeClient();
+
+  await pinecone.init({
+    apiKey: options.apiKey,
+    environment: options.environment,
+  });
+
+  await pinecone.deleteIndex({
+    indexName: options.index,
+  });
+}
+
 export class Pinecone implements VectorStore {
   private index: string;
   private namespace: string;
