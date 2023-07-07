@@ -6,6 +6,7 @@ import { createEmbedding } from './openai';
 import { generateId, progressNoop, zip } from './utils';
 import chunk from './chunking';
 import type { VectorStore } from './types';
+import { fetchDocForTerm } from './wikipedia';
 
 type IndexingOptions = {
   repoPath: string;
@@ -55,6 +56,12 @@ export async function index(vectorStore: VectorStore, options: IndexingOptions) 
   }
 
   progress.stop();
+}
+
+export async function upsertWikipedia(term: string) {
+  console.log('Upserting wikipedia, got term', term);
+  const directDoc = await fetchDocForTerm(term);
+  console.log(directDoc);
 }
 
 export function getRelativeFilePath(documentPath: string, repoPath: string) {

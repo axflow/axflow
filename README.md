@@ -43,7 +43,13 @@ For example, to search the Phoenix repository's guides, it would look like:
 npm run index:upsert -- --repo-path=/path/to/phoenix --glob-path="guides/**/*.md"
 ```
 
-*Note: Only markdown files are supported right now*
+_Note: Right now, you can only upsert markdown files with index:upsert_
+
+For ingesting data from wikipedia directly:
+
+```
+npm run index:upsert-wikipedia -- --term="San Francisco"
+```
 
 ### Query records
 
@@ -65,7 +71,7 @@ The model defaults to `text-ada-001`, though can be overridden using the `--mode
 npm run query -- --store=pinecone --query="How do I do X where X is something in my documents?" --model=text-curie-001
 ```
 
-*Note: Only OpenAI models are supported right now*
+_Note: Only OpenAI models are supported right now_
 
 You can query the LLM directly using the `--llm-only` flag.
 
