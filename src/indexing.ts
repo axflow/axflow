@@ -79,6 +79,8 @@ export async function indexWikipedia(vectorStore: VectorStore, term: string) {
 
   if (!success) {
     throw new Error(`Failed up write ${term}'s wikipedia entry to vector store`);
+  } else {
+    console.log(`Added ${success.length} vectors to ${vectorStore.name}.`);
   }
 }
 
