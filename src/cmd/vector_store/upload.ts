@@ -1,9 +1,15 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import * as cliProgress from 'cli-progress';
-import { upsert } from '../../indexing';
+import { index } from '../../indexing';
+import { getVectorStore } from '../utils';
 
 const argv = yargs(hideBin(process.argv))
+  .option('store', {
+    type: 'string',
+    description: 'The vector store',
+    demandOption: true,
+  })
   .option('repoPath', {
     type: 'string',
     description: 'Path to the repository',
@@ -17,8 +23,8 @@ const argv = yargs(hideBin(process.argv))
   })
   .parseSync();
 
-upsert({
+index(getVectorStore(argv.store), {
   repoPath: argv.repoPath,
   globPath: argv.globPath,
-  progressBar: new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic),
+  progress: new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic),
 });

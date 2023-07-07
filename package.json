@@ -6,8 +6,8 @@
     "prebuild": "rm -rf ./dist",
     "build": "tsc",
     "lint": "prettier --check 'src/**/*.ts' 'test/**/*.ts'",
-    "index:create": "ts-node ./src/cmd/indexing/create.ts",
-    "index:upsert": "ts-node ./src/cmd/indexing/upsert.ts",
+    "vector_store:prepare": "ts-node ./src/cmd/vector_store/prepare.ts",
+    "vector_store:upload": "ts-node ./src/cmd/vector_store/upload.ts",
     "query": "ts-node ./src/cmd/query.ts",
     "test": "jest --testMatch \"**/test/**/*.test.ts\""
   },
@@ -17,6 +17,7 @@
     "@pinecone-database/pinecone": "^0.1.6",
     "@types/cli-progress": "^3.11.0",
     "bs58": "^5.0.0",
+    "chromadb": "^1.5.3",
     "cli-progress": "^3.12.0",
     "dotenv": "^16.3.1",
     "glob": "^10.3.1",

@@ -16,3 +16,9 @@ function getRandomBytes(numBytes: number) {
 export function generateId() {
   return b58Encode(getRandomBytes(16));
 }
+
+export const progressNoop = {
+  start(_total: number, _current: number) {},
+  update(_current: number) {},
+  stop() {},
+};

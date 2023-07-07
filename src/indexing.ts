@@ -3,36 +3,31 @@ import * as Path from 'node:path';
 import { glob } from 'glob';
 
 import { createEmbedding } from './openai';
-import pinecone from './pinecone';
-import { generateId, zip } from './utils';
+import { generateId, progressNoop, zip } from './utils';
 import chunk from './chunking';
+import type { VectorStore } from './types';
 
-export async function create() {
-  await pinecone.init();
-  await pinecone.createIndexIfNotExists();
-}
-
-type UpsertOptions = {
+type IndexingOptions = {
   repoPath: string;
   globPath: string;
-  progressBar: {
+  progress?: {
     start(total: number, current: number): void;
     update(current: number): void;
     stop(): void;
   };
 };
 
-export async function upsert(options: UpsertOptions) {
-  const { repoPath: relativeRepoPath, globPath: relativeGlobPath, progressBar } = options;
+export async function index(vectorStore: VectorStore, options: IndexingOptions) {
+  const { repoPath: relativeRepoPath, globPath: relativeGlobPath } = options;
+
+  const progress = options.progress || progressNoop;
 
   const repoPath = Path.resolve(Path.join(__dirname, '..'), relativeRepoPath);
   const globPath = Path.join(repoPath, relativeGlobPath);
   const filePaths = await glob(globPath);
 
-  await pinecone.init();
-
   let counter = 0;
-  progressBar.start(filePaths.length, counter);
+  progress.start(filePaths.length, counter);
 
   for await (const filePath of filePaths) {
     const documents = await chunk(filePath);
@@ -41,25 +36,25 @@ export async function upsert(options: UpsertOptions) {
       input: documents,
     });
 
-    const vectors = zip(documents, embeddings).map(([document, embedding]) => ({
+    const vectorizedDocuments = zip(documents, embeddings).map(([document, embedding]) => ({
       id: generateId(),
-      values: embedding.embedding,
+      text: document,
+      embedding: embedding.embedding,
       metadata: {
         file: getRelativeFilePath(filePath, repoPath),
-        text: document,
       },
     }));
 
-    const success = await pinecone.chunkedUpsert(vectors);
+    const success = await vectorStore.add(vectorizedDocuments);
 
     if (!success) {
-      throw new Error(`Failed up write ${filePath} to pinecone db`);
+      throw new Error(`Failed up write ${filePath} to vector store`);
     }
 
-    progressBar.update(++counter);
+    progress.update(++counter);
   }
 
-  progressBar.stop();
+  progress.stop();
 }
 
 export function getRelativeFilePath(documentPath: string, repoPath: string) {

@@ -1,10 +1,10 @@
 import { Configuration, OpenAIApi } from 'openai';
 import type { CreateCompletionRequest, CreateEmbeddingRequest } from 'openai';
-import { getEnv } from './config';
+import { getEnvOrThrow } from './config';
 
 const client = new OpenAIApi(
   new Configuration({
-    apiKey: getEnv('OPENAI_API_KEY'),
+    apiKey: getEnvOrThrow('OPENAI_API_KEY'),
   })
 );
 

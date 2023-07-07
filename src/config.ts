@@ -3,7 +3,11 @@ import { config } from 'dotenv';
 config();
 
 export function getEnv(key: string) {
-  const value = process.env[key];
+  return process.env[key];
+}
+
+export function getEnvOrThrow(key: string) {
+  const value = getEnv(key);
   if (!value) {
     throw new Error(`${key} environment variable not set`);
   }
