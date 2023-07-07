@@ -40,18 +40,28 @@ npm run vector_store:upload -- --store=pinecone --repo-path=/path/to/repo --glob
 For example, to search the Phoenix repository's guides, it would look like:
 
 ```
-npm run index:upsert -- --repo-path=/path/to/phoenix --glob-path="guides/**/*.md"
+npm run vector_store:upload -- --store=pinecone --repo-path=/path/to/phoenix --glob-path="guides/**/*.md"
 ```
 
-*Note: Only markdown files are supported right now*
+_Note: Right now, you can only upsert markdown files with index:upsert_
+
+For ingesting data from wikipedia directly:
+
+```
+npm run vector_store:upload-wikipedia -- --store=pinecone --term="San Francisco"
+```
 
 ### Query records
 
 ```bash
+# example 1 (phoenix)
 npm run query -- --store=pinecone --query="How do I do X where X is something in my documents?"
+
+# example 2 (wikipedia)
+npm run query -- --store=pinecone --query="When was the San Francisco Police Department founded?"
 ```
 
-The `store` argument is required and must be one of the supported stores.
+The `store` argument is required and must be one of the supported stores: `['pinecone', 'chroma']`
 
 This performs the following actions:
 
@@ -65,7 +75,7 @@ The model defaults to `text-ada-001`, though can be overridden using the `--mode
 npm run query -- --store=pinecone --query="How do I do X where X is something in my documents?" --model=text-curie-001
 ```
 
-*Note: Only OpenAI models are supported right now*
+_Note: Only OpenAI models are supported right now_
 
 You can query the LLM directly using the `--llm-only` flag.
 

@@ -43,6 +43,7 @@ export class Pinecone implements VectorStore {
   private namespace: string;
   private client: PineconeClient;
   private initialized: Promise<void>;
+  name: string = 'pinecone';
 
   constructor(options: {
     index: string;

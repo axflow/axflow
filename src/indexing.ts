@@ -6,6 +6,7 @@ import { createEmbedding } from './openai';
 import { generateId, progressNoop, zip } from './utils';
 import chunk from './chunking';
 import type { VectorStore } from './types';
+import { fetchDocForTerm } from './wikipedia';
 
 type IndexingOptions = {
   repoPath: string;
@@ -30,7 +31,7 @@ export async function index(vectorStore: VectorStore, options: IndexingOptions) 
   progress.start(filePaths.length, counter);
 
   for await (const filePath of filePaths) {
-    const documents = await chunk(filePath);
+    const documents = await chunk({ type: 'file', filePath });
 
     const { data: embeddings } = await createEmbedding({
       input: documents,
@@ -55,6 +56,30 @@ export async function index(vectorStore: VectorStore, options: IndexingOptions) 
   }
 
   progress.stop();
+}
+
+export async function indexWikipedia(vectorStore: VectorStore, term: string) {
+  console.log(`Fetching wikipedia entry for term "${term}"`);
+  const directDoc = await fetchDocForTerm(term);
+  if (!directDoc) {
+    throw new Error(`No document found for ${term}`);
+  }
+  console.log(`Document found, ingesting into ${vectorStore.name} vector store`);
+  const documents = await chunk({ type: 'wikipediaExtract', content: directDoc });
+  const { data: embeddings } = await createEmbedding({ input: documents });
+
+  const vectorizedDocuments = zip(documents, embeddings).map(([document, embedding]) => ({
+    id: generateId(),
+    text: document,
+    embedding: embedding.embedding,
+    metadata: { term },
+  }));
+
+  const success = await vectorStore.add(vectorizedDocuments);
+
+  if (!success) {
+    throw new Error(`Failed up write ${term}'s wikipedia entry to vector store`);
+  }
 }
 
 export function getRelativeFilePath(documentPath: string, repoPath: string) {

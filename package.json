@@ -8,6 +8,7 @@
     "lint": "prettier --check 'src/**/*.ts' 'test/**/*.ts'",
     "vector_store:prepare": "ts-node ./src/cmd/vector_store/prepare.ts",
     "vector_store:upload": "ts-node ./src/cmd/vector_store/upload.ts",
+    "vector_store:upload-wikipedia": "ts-node ./src/cmd/vector_store/upload-wikipedia.ts",
     "vector_store:teardown": "ts-node ./src/cmd/vector_store/teardown.ts",
     "query": "ts-node ./src/cmd/query.ts",
     "test": "jest --testMatch \"**/test/**/*.test.ts\""
