@@ -1,5 +1,4 @@
-import { encode as b58Encode } from 'bs58';
-import { getRandomValues } from 'node:crypto';
+import { v4 as uuidv4 } from 'uuid';
 
 export function zip<T1, T2>(l1: Array<T1>, l2: Array<T2>): Array<[T1, T2]> {
   if (l1.length !== l2.length) {
@@ -9,12 +8,8 @@ export function zip<T1, T2>(l1: Array<T1>, l2: Array<T2>): Array<[T1, T2]> {
   return l1.map((item, i) => [item, l2[i]]);
 }
 
-function getRandomBytes(numBytes: number) {
-  return getRandomValues(new Uint8Array(numBytes));
-}
-
 export function generateId() {
-  return b58Encode(getRandomBytes(16));
+  return uuidv4();
 }
 
 export const progressNoop = {
