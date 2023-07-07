@@ -1,3 +1,5 @@
+// Use the wikipedia API directly (libraries were disappointing)
+// We use the prop: 'extracts' which has nice sections for chunking
 export const fetchDocForTerm = async (term: string): Promise<string | null> => {
   const result = await fetch(
     'https://en.wikipedia.org/w/api.php?' +
