@@ -20,6 +20,7 @@ export interface VectorQueryResult {
 }
 
 export interface VectorStore {
+  name: string;
   add(documents: VectorizedDocument[], options?: object): Promise<string[]>;
   query(query: VectorQuery): Promise<VectorQueryResult[]>;
 }

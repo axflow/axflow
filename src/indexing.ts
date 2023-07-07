@@ -64,7 +64,7 @@ export async function indexWikipedia(vectorStore: VectorStore, term: string) {
   if (!directDoc) {
     throw new Error(`No document found for ${term}`);
   }
-  console.log('Document found:\n', directDoc);
+  console.log(`Document found, ingesting into ${vectorStore.name} vector store`);
   const documents = await chunk({ type: 'wikipediaExtract', content: directDoc });
   const { data: embeddings } = await createEmbedding({ input: documents });
 

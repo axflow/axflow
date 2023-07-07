@@ -26,6 +26,7 @@ export class Chroma implements VectorStore {
   private client: ChromaClient;
   private collection: Collection | null = null;
   private initialized: Promise<void>;
+  name: string = 'chroma';
 
   constructor(options: { collection: string | Collection; path?: string; client?: ChromaClient }) {
     this.client =
