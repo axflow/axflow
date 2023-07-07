@@ -6,19 +6,18 @@ type QueryOptions = {
   query: string;
   model: string;
   llmOnly: boolean;
+  topK: number;
 };
 
 export async function query(vectorStore: VectorStore, options: QueryOptions) {
-  const query = options.query;
-  const model = options.model;
-  const llmOnly = options.llmOnly;
+  const { query, model, llmOnly, topK } = options;
 
   const prompt = ['Answer the question based on the markdown context below.'];
 
   if (llmOnly) {
     console.log(`Querying ${model} without additional context`);
   } else {
-    const { results, context } = await getContext(vectorStore, query);
+    const { results, context } = await getContext(vectorStore, query, topK);
 
     console.log(`Querying ${model} with additional context`);
     console.log(
@@ -44,11 +43,11 @@ export async function query(vectorStore: VectorStore, options: QueryOptions) {
   console.log(results[0].text?.trim());
 }
 
-async function getContext(vectorStore: VectorStore, query: string) {
+async function getContext(vectorStore: VectorStore, query: string, topK: number) {
   const embedding = await createEmbedding({ input: query });
 
   const results = await vectorStore.query({
-    topK: 3,
+    topK,
     embedding: embedding.data[0].embedding,
   });
 

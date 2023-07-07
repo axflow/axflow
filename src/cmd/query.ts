@@ -28,10 +28,18 @@ const argv = yargs(hideBin(process.argv))
     default: false,
     demandOption: false,
   })
+  .option('topK', {
+    type: 'number',
+    description:
+      'The number of documents that will be fetched from the vector store and added to the context',
+    default: 3,
+    demandOption: false,
+  })
   .parseSync();
 
 query(getVectorStore(argv.store), {
   query: argv.query,
   model: argv.model,
   llmOnly: argv.llmOnly,
+  topK: argv.topK,
 });
