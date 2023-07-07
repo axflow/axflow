@@ -61,6 +61,9 @@ export async function index(vectorStore: VectorStore, options: IndexingOptions) 
 export async function upsertWikipedia(term: string) {
   console.log('Upserting wikipedia, got term', term);
   const directDoc = await fetchDocForTerm(term);
+  if (!directDoc) {
+    throw new Error(`No document found for ${term}`);
+  }
   console.log(directDoc);
 }
 

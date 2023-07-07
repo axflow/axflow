@@ -16,7 +16,7 @@ export const fetchDocForTerm = async (term: string): Promise<string | null> => {
   );
   const jsonResult = await result.json();
   const pages = jsonResult.query?.pages;
-  if (!pages) {
+  if (!pages || pages['-1']) {
     return null;
   }
   const firstKey = Object.keys(pages)[0];
