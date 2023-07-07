@@ -21,6 +21,14 @@ npm run vector_store:prepare -- --store=pinecone
 
 Prepare your vector store for use. The `store` argument is required and must be one of the supported stores.
 
+### Teardown the vector store
+
+```bash
+npm run vector_store:teardown -- --store=pinecone
+```
+
+Tears the vector store down, i.e., deletes indexes. The `store` argument is required and must be one of the supported stores.
+
 ### Upload records
 
 ```bash
