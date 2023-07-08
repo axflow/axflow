@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'node:crypto';
 
 export function zip<T1, T2>(l1: Array<T1>, l2: Array<T2>): Array<[T1, T2]> {
   if (l1.length !== l2.length) {
@@ -9,7 +9,7 @@ export function zip<T1, T2>(l1: Array<T1>, l2: Array<T2>): Array<[T1, T2]> {
 }
 
 export function generateId() {
-  return uuidv4();
+  return randomUUID();
 }
 
 export const progressNoop = {
