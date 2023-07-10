@@ -1,6 +1,6 @@
 import { MarkdownTextSplitter } from 'langchain/text_splitter';
 
-export default async function chunkMarkdown(markdown: string) {
+export async function chunk(markdown: string) {
   const splitter = new MarkdownTextSplitter({
     chunkSize: 1000,
     chunkOverlap: 0,

@@ -1,8 +1,8 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import * as cliProgress from 'cli-progress';
 import { index } from '../../indexing';
 import { getVectorStore } from '../utils';
+import { getReader, SUPPORTED_READERS } from '../../readers';
 
 const argv = yargs(hideBin(process.argv))
   .option('store', {
@@ -10,21 +10,21 @@ const argv = yargs(hideBin(process.argv))
     description: 'The vector store',
     demandOption: true,
   })
-  .option('repoPath', {
-    type: 'string',
-    description: 'Path to the repository',
+  .option('reader', {
+    choices: SUPPORTED_READERS,
+    description: 'The data reader to use',
     demandOption: true,
   })
-  .option('globPath', {
+  .option('readerOptions', {
     type: 'string',
-    description:
-      'Glob path relative to repoPath reponsible for finding the specific files to index',
-    demandOption: true,
+    description: 'JSON-serialized options for the chosen reader',
+    demandOption: false,
+    default: '{}',
   })
   .parseSync();
 
-index(getVectorStore(argv.store), {
-  repoPath: argv.repoPath,
-  globPath: argv.globPath,
-  progress: new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic),
-});
+const store = getVectorStore(argv.store);
+const reader = getReader(argv.reader);
+const iterator = reader(JSON.parse(argv.readerOptions));
+
+index(store, iterator);
