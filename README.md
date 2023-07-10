@@ -11,12 +11,25 @@ Upload documents to a vector database and query them using semantic search and L
 
 Then, edit .env with your own configuration.
 
+### Setting up pgvector
+
+If you plan on using postgres + pgvector. You need to have a postgres URL, with the pgvector extension enabled. If you want to do this locally, first install pgvector with one of these methods:
+
+1.  use homebrew if you installed postgres with homebrew: `brew install pgvector`
+2.  follow the [installation instructions in the pgvector README](https://github.com/pgvector/pgvector)
+
+Then, make sure to run `CREATE EXTENSION vector;` once in the database you're using.
+Finally, configure .env with the postgres DSN string
+
+_Note that pgvector is limited to 2k dimensions max today._
+
 ## Usage
 
 ### Prepare the vector store
 
 ```bash
 npm run vector_store:prepare -- --store=pinecone
+npm run vector_store:prepare -- --store=postgres
 ```
 
 Prepare your vector store for use. The `store` argument is required and must be one of the supported stores.
