@@ -74,8 +74,18 @@ export class PgVector implements VectorStore {
       `SELECT * FROM ${this.tableName} ORDER BY embedding <-> $1 LIMIT ${query.topK}`,
       [toSql(query.embedding)]
     );
-    console.log('Response:', response);
-    return [];
+    return response.map((row) => {
+      return {
+        id: row.id,
+        document: {
+          id: row.id,
+          text: row.text,
+          metadata: row.metadata,
+        },
+        // PG doesn't give us similarity
+        similarity: null,
+      };
+    });
   }
 
   getDsn() {
@@ -86,29 +96,3 @@ export class PgVector implements VectorStore {
     return this.tableName;
   }
 }
-//
-//
-//     const matches = response.matches || [];
-//
-//     return matches.map((match) => {
-//       const metadata = match.metadata as Record<string, any>;
-//       const text = metadata._text;
-//
-//       delete metadata._text;
-//
-//       return {
-//         id: match.id,
-//         document: {
-//           id: match.id,
-//           text: text,
-//           metadata: metadata,
-//         },
-//         similarity: match.score || null,
-//       };
-//     });
-//   }
-//
-//   private getIndex() {
-//     return this.client.Index(this.index);
-//   }
-// }
