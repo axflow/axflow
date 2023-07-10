@@ -12,10 +12,11 @@
     "noUnusedLocals": true,
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
-    "paths": {},
+    "esModuleInterop": true,
+    "paths": {
+      "pgvector/pg": ["node_modules/pgvector/types/pg"]
+    }
   },
   "include": ["src"],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

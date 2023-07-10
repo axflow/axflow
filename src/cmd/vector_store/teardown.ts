@@ -4,6 +4,7 @@ import { hideBin } from 'yargs/helpers';
 import { getEnv, getEnvOrThrow } from '../../config';
 import { teardown as teardownChroma } from '../../vector_stores/chroma';
 import { teardown as teardownPinecone } from '../../vector_stores/pinecone';
+import { teardown as teardownPg } from '../../vector_stores/pgvector';
 
 const argv = yargs(hideBin(process.argv))
   .option('store', {
@@ -27,6 +28,10 @@ async function teardown(store: string) {
         apiKey: getEnvOrThrow('PINECONE_API_KEY'),
         environment: getEnvOrThrow('PINECONE_ENVIRONMENT'),
         index: getEnvOrThrow('PINECONE_INDEX'),
+      });
+    case 'pg':
+      return await teardownPg({
+        tableName: getEnvOrThrow('PG_TABLE_NAME'),
       });
     default:
       throw new Error(`Unrecognized store "${store}"`);
