@@ -34,6 +34,7 @@ async function prepare(store: string) {
       return await preparePg({
         tableName: getEnvOrThrow('PG_TABLE_NAME'),
         dimension: Number(getEnvOrThrow('PG_VECTOR_DIMENSION')),
+        dsn: getEnvOrThrow('PG_DSN'),
       });
     default:
       throw new Error(`Unrecognized store "${store}"`);
