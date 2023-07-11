@@ -32,6 +32,7 @@ async function teardown(store: string) {
     case 'pg':
       return await teardownPg({
         tableName: getEnvOrThrow('PG_TABLE_NAME'),
+        dsn: getEnvOrThrow('PG_DSN'),
       });
     default:
       throw new Error(`Unrecognized store "${store}"`);
