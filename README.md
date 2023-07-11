@@ -20,6 +20,16 @@ If you plan on using postgres + pgvector. You need to have a postgres URL, with 
 
 _Note that pgvector is limited to 2k dimensions max today._
 
+### Setting up chroma
+
+You'll need to follow their instructions if you want to run it locally:
+
+```bash
+git clone https://github.com/chroma-core/chroma.git
+cd chroma
+docker-compose up -d --build
+```
+
 ## Usage
 
 ### Prepare the vector store

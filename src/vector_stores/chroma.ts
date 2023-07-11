@@ -88,6 +88,7 @@ export class Chroma implements VectorStore {
     const response = await collection.query({
       nResults: query.topK,
       queryEmbeddings: query.embedding,
+      where: query.filterTerm ? { term: { $eq: query.filterTerm } } : undefined,
     });
 
     const ids = response.ids[0];
