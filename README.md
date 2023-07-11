@@ -78,8 +78,15 @@ _Note: Only OpenAI models are supported right now_
 
 You can query the LLM directly using the `--llm-only` flag.
 
+This allows you to see how the model performs with and without additional context from the vector store.
+
 ```bash
 npm run query -- --store=pinecone --query="How do I do X where X is something in my documents?" --llm-only
 ```
 
-This allows you to see how the model performs with and without additional context from the vector store.
+You can filter metadata when querying. Currently, we only support exact match, so to match documents uploaded with the term 'San Francisco' for example:
+
+```
+npm run query -- --store=pgvector --query="How do I do X where X is something in my documents?" --filterTerm='San Francisco' --topK=3
+
+```

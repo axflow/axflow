@@ -1,5 +1,5 @@
 import pgpromise from 'pg-promise';
-import { IInitOptions } from 'pg-promise';
+import { IInitOptions, ParameterizedQuery } from 'pg-promise';
 import { registerType, toSql } from 'pgvector/pg';
 import type { VectorStore, VectorizedDocument, VectorQuery, VectorQueryResult } from '../types';
 
@@ -63,15 +63,21 @@ export class PgVector implements VectorStore {
   }
 
   async query(query: VectorQuery): Promise<VectorQueryResult[]> {
-    // Operators:
+    // Operators (https://github.com/pgvector/pgvector/#distances):
     // '<->': L2 distance
-    // '<#>' negative inner product
-    // '<=>' cosine similarity
-    // Full docs: https://github.com/pgvector/pgvector/#distances
-    const response = await this.db.any(
-      `SELECT * FROM ${this.tableName} ORDER BY embedding <=> $1 LIMIT ${query.topK}`,
-      [toSql(query.embedding)]
-    );
+    // '<#>': negative inner product
+    // '<=>': cosine similarity
+    const findVectors = query.filterTerm
+      ? new ParameterizedQuery({
+          text: `SELECT * FROM ${this.tableName} WHERE metadata->>'term' = $1 ORDER BY embedding <=> $2 LIMIT $3`,
+          values: [query.filterTerm, toSql(query.embedding), query.topK],
+        })
+      : new ParameterizedQuery({
+          text: `SELECT * FROM ${this.tableName} ORDER BY embedding <=> $1 LIMIT $2`,
+          values: [toSql(query.embedding), query.topK],
+        });
+
+    const response = await this.db.any(findVectors);
     return response.map((row) => {
       return {
         id: row.id,

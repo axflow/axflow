@@ -36,6 +36,12 @@ const argv = yargs(hideBin(process.argv))
     default: 3,
     demandOption: false,
   })
+  .option('filterTerm', {
+    type: 'string',
+    description: 'Filter vectors with the given "term" key in metadata',
+    default: '',
+    demandOption: false,
+  })
   .parseSync();
 
 query(getVectorStore(argv.store), {
@@ -43,4 +49,5 @@ query(getVectorStore(argv.store), {
   model: argv.model,
   llmOnly: argv.llmOnly,
   topK: argv.topK,
+  filterTerm: argv.filterTerm,
 });
