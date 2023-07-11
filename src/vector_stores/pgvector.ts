@@ -61,11 +61,13 @@ export class PgVector implements VectorStore {
   }
 
   async query(query: VectorQuery): Promise<VectorQueryResult[]> {
-    // Note that '<->' is a specific distance algorithm: L2 distance.
-    // See also: '<#>' for negative inner product, and '<=>' for cosine similarity.
-    // Docs: https://github.com/pgvector/pgvector/#distances
+    // Operators:
+    // '<->': L2 distance
+    // '<#>' negative inner product
+    // '<=>' cosine similarity
+    // Full docs: https://github.com/pgvector/pgvector/#distances
     const response = await this.db.any(
-      `SELECT * FROM ${this.tableName} ORDER BY embedding <-> $1 LIMIT ${query.topK}`,
+      `SELECT * FROM ${this.tableName} ORDER BY embedding <=> $1 LIMIT ${query.topK}`,
       [toSql(query.embedding)]
     );
     return response.map((row) => {
