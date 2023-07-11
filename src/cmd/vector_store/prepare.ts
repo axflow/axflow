@@ -4,11 +4,12 @@ import { hideBin } from 'yargs/helpers';
 import { prepare as prepareChroma } from '../../vector_stores/chroma';
 import { prepare as preparePinecone } from '../../vector_stores/pinecone';
 import { prepare as preparePg } from '../../vector_stores/pgvector';
+import { SUPPORTED_VECTOR_STORES, type SupportedVectorStores } from '../../vector_stores';
 import { getEnv, getEnvOrThrow } from '../../config';
 
 const argv = yargs(hideBin(process.argv))
   .option('store', {
-    type: 'string',
+    choices: SUPPORTED_VECTOR_STORES,
     description: 'The vector store',
     demandOption: true,
   })
@@ -16,7 +17,7 @@ const argv = yargs(hideBin(process.argv))
 
 prepare(argv.store);
 
-async function prepare(store: string) {
+async function prepare(store: SupportedVectorStores) {
   switch (store) {
     case 'chroma':
       return await prepareChroma({
@@ -30,7 +31,7 @@ async function prepare(store: string) {
         index: getEnvOrThrow('PINECONE_INDEX'),
         dimension: Number(getEnvOrThrow('PINECONE_INDEX_DIMENSION')),
       });
-    case 'pg':
+    case 'pgvector':
       return await preparePg({
         tableName: getEnvOrThrow('PG_TABLE_NAME'),
         dimension: Number(getEnvOrThrow('PG_VECTOR_DIMENSION')),

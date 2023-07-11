@@ -3,10 +3,11 @@ import { hideBin } from 'yargs/helpers';
 
 import { query } from '../query';
 import { getVectorStore } from './utils';
+import { SUPPORTED_VECTOR_STORES } from '../vector_stores';
 
 const argv = yargs(hideBin(process.argv))
   .option('store', {
-    type: 'string',
+    choices: SUPPORTED_VECTOR_STORES,
     description: 'The vector store',
     demandOption: true,
   })

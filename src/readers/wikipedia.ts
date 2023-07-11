@@ -2,6 +2,8 @@ import { chunk as chunkText } from '../chunking/text';
 import { generateId } from '../utils';
 import type { Document } from '../types';
 
+export const NAME = 'wikipedia' as const;
+
 export async function* read(options: { term: string }) {
   const term = options.term;
 
