@@ -8,6 +8,8 @@ import { chunk as chunkText } from '../chunking/text';
 import { generateId, getPathRelativeToDirectory } from '../utils';
 import type { Document } from '../types';
 
+export const NAME = 'fs' as const;
+
 export async function* read(options: { path: string; glob?: string }) {
   const path = Path.resolve(process.cwd(), options.path);
 

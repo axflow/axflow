@@ -34,10 +34,12 @@ export async function teardown(options: { tableName: string; dsn: string }) {
   await db.none(`DROP TABLE IF EXISTS ${name};`);
 }
 
+export const NAME = 'pgvector' as const;
+
 export class PgVector implements VectorStore {
   private db: pgpromise.IDatabase<{}>;
   private tableName: string;
-  name: string = 'pgvector';
+  name = NAME;
 
   constructor(options: { dsn: string; tableName: string }) {
     this.db = getDB(options.dsn);

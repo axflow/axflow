@@ -26,7 +26,6 @@ _Note that pgvector is limited to 2k dimensions max today._
 
 ```bash
 npm run vector_store:prepare -- --store=pinecone
-npm run vector_store:prepare -- --store=pg
 ```
 
 Prepare your vector store for use. The `store` argument is required and must be one of the supported stores.
@@ -35,7 +34,6 @@ Prepare your vector store for use. The `store` argument is required and must be 
 
 ```bash
 npm run vector_store:teardown -- --store=pinecone
-npm run vector_store:teardown -- --store=pg
 ```
 
 for pinecone: this tears the vector store down, i.e., deletes indexes. The `store` argument is required and must be one of the supported stores.
@@ -62,7 +60,7 @@ npm run vector_store:upload -- --store=pinecone --reader=fs --reader-options='{"
 npm run query -- --store=pinecone --query="When was the San Francisco Police Department founded?"
 ```
 
-The `store` argument is required and must be one of the supported stores: `['pinecone', 'chroma', 'pg']`
+The `store` argument is required and must be one of the supported stores.
 
 This performs the following actions:
 

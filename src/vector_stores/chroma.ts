@@ -22,11 +22,13 @@ export async function teardown(options: { collection: string; path?: string }) {
   });
 }
 
+export const NAME = 'chroma' as const;
+
 export class Chroma implements VectorStore {
   private client: ChromaClient;
   private collection: Collection | null = null;
   private initialized: Promise<void>;
-  name: string = 'chroma';
+  name = NAME;
 
   constructor(options: { collection: string | Collection; path?: string; client?: ChromaClient }) {
     this.client =

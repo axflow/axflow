@@ -38,12 +38,14 @@ export async function teardown(options: { apiKey: string; environment: string; i
   });
 }
 
+export const NAME = 'pinecone' as const;
+
 export class Pinecone implements VectorStore {
   private index: string;
   private namespace: string;
   private client: PineconeClient;
   private initialized: Promise<void>;
-  name: string = 'pinecone';
+  name = NAME;
 
   constructor(options: {
     index: string;
