@@ -45,32 +45,20 @@ for pg: this drops the table passed as `$PG_TABLE_NAME` env var.
 ### Upload records
 
 ```bash
-npm run vector_store:upload -- --store=pinecone --repo-path=/path/to/repo --glob-path="subfolder/**/*.ext"
+npm run vector_store:upload -- --store=pinecone --reader=wikipedia --reader-options='{"term": "San Francisco"}'
 ```
 
-`repo-path` is the path to the folder containing the documents you want to upload to the vector store. `glob-path` is a glob path pattern to search for the specific documents within `repo-path`. The `store` argument is required and must be one of the supported stores.
+The `vector_store:upload` command will read and upload documents to a given vector store. `--store` and `--reader` are required and must be one of the supported stores/readers.
 
-For example, to search the Phoenix repository's guides, it would look like:
+For example, to upload the [Phoenix repository's](https://github.com/phoenixframework/phoenix) guides from a folder on your machine:
 
-```
-npm run vector_store:upload -- --store=pinecone --repo-path=/path/to/phoenix --glob-path="guides/**/*.md"
-```
-
-_Note: Right now, you can only upsert markdown files with index:upsert_
-
-For ingesting data from wikipedia directly:
-
-```
-npm run vector_store:upload-wikipedia -- --store=pinecone --term="San Francisco"
+```bash
+npm run vector_store:upload -- --store=pinecone --reader=fs --reader-options='{"path": "../path/to/phoenix", "glob": "guides/**/*.md"}'
 ```
 
 ### Query records
 
 ```bash
-# example 1 (phoenix)
-npm run query -- --store=pinecone --query="How do I do X where X is something in my documents?"
-
-# example 2 (wikipedia)
 npm run query -- --store=pinecone --query="When was the San Francisco Police Department founded?"
 ```
 
