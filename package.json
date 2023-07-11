@@ -16,9 +16,7 @@
   "license": "MIT",
   "dependencies": {
     "@pinecone-database/pinecone": "^0.1.6",
-    "@types/cli-progress": "^3.11.0",
     "chromadb": "^1.5.3",
-    "cli-progress": "^3.12.0",
     "dotenv": "^16.3.1",
     "glob": "^10.3.1",
     "langchain": "^0.0.101",
