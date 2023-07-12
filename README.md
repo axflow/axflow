@@ -20,6 +20,16 @@ If you plan on using postgres + pgvector. You need to have a postgres URL, with 
 
 _Note that pgvector is limited to 2k dimensions max today._
 
+### Setting up chroma
+
+You'll need to follow their instructions if you want to run it locally:
+
+```bash
+git clone https://github.com/chroma-core/chroma.git
+cd chroma
+docker-compose up -d --build
+```
+
 ## Usage
 
 ### Prepare the vector store
@@ -78,8 +88,15 @@ _Note: Only OpenAI models are supported right now_
 
 You can query the LLM directly using the `--llm-only` flag.
 
+This allows you to see how the model performs with and without additional context from the vector store.
+
 ```bash
 npm run query -- --store=pinecone --query="How do I do X where X is something in my documents?" --llm-only
 ```
 
-This allows you to see how the model performs with and without additional context from the vector store.
+You can filter metadata when querying. Currently, we only support exact match, so to match documents uploaded with the term 'San Francisco' for example:
+
+```
+npm run query -- --store=pgvector --query="How do I do X where X is something in my documents?" --filterTerm='San Francisco' --topK=3
+
+```

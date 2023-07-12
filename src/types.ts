@@ -11,6 +11,7 @@ export interface VectorizedDocument extends Document {
 export interface VectorQuery {
   topK: number;
   embedding: number[];
+  filterTerm: string;
 }
 
 export interface VectorQueryResult {

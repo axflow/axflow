@@ -109,6 +109,7 @@ export class Pinecone implements VectorStore {
         vector: query.embedding,
         namespace: this.namespace,
         includeMetadata: true,
+        filter: query.filterTerm ? { term: { $eq: query.filterTerm } } : undefined,
       },
     });
 
