@@ -53,16 +53,28 @@ for pg: this drops the table passed as `$PG_TABLE_NAME` env var.
 ### Upload records
 
 ```bash
-npm run vector_store:upload -- --store=pinecone --reader=wikipedia --reader-options='{"term": "San Francisco"}'
+npm run vector_store:upload -- --store=pinecone --source=wikipedia --source-options='{"term": "San Francisco"}'
 ```
 
-The `vector_store:upload` command will read and upload documents to a given vector store. `--store` and `--reader` are required and must be one of the supported stores/readers.
+The `vector_store:upload` command will read and upload documents to a given vector store. `--store` and `--source` are required and must be one of the supported stores/sources.
 
 For example, to upload the [Phoenix repository's](https://github.com/phoenixframework/phoenix) guides from a folder on your machine:
 
 ```bash
-npm run vector_store:upload -- --store=pinecone --reader=fs --reader-options='{"path": "../path/to/phoenix", "glob": "guides/**/*.md"}'
+npm run vector_store:upload -- --store=pinecone --source=file_system --source-options='{"path": "../path/to/phoenix", "glob": "guides/**/*.md"}'
 ```
+
+You can also customize the splitting and embedding operations.
+
+```bash
+npm run vector_store:upload -- \
+  --store=pinecone \
+  --source=file_system --source-options='{"path": "../path/to/phoenix", "glob": "guides/**/*.md"}' \
+  --splitter=markdown --splitter-options='{"chunkSize": 1000, "chunkOverlap": 100}' \
+  --embedder=openai --embedder-options='{"model": "code-search-ada-code-001"}'
+```
+
+The splitter defaults to a basic text splitter and the embedder defaults to OpenAI's `text-embedding-ada-002`.
 
 ### Query records
 

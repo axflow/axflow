@@ -1,7 +1,7 @@
 import pgpromise from 'pg-promise';
 import { IInitOptions, ParameterizedQuery } from 'pg-promise';
 import { registerType, toSql } from 'pgvector/pg';
-import type { VectorStore, VectorizedDocument, VectorQuery, VectorQueryResult } from '../types';
+import type { VectorStore, DocumentWithEmbeddings, VectorQuery, VectorQueryResult } from '../types';
 
 function getDB(dsn: string) {
   const initOptions: IInitOptions = {
@@ -23,7 +23,7 @@ export async function prepare(options: { tableName: string; dimension: number; d
 
   await db.none('CREATE EXTENSION IF NOT EXISTS vector;');
   await db.none(
-    `CREATE TABLE IF NOT EXISTS ${options.tableName} (id bigserial PRIMARY KEY, embedding vector($1), text TEXT, metadata JSONB)`,
+    `CREATE TABLE IF NOT EXISTS ${options.tableName} (id bigserial PRIMARY KEY, embedding vector($1), text TEXT, url TEXT, metadata JSONB)`,
     [options.dimension]
   );
 }
@@ -46,17 +46,17 @@ export class PgVector implements VectorStore {
     this.tableName = options.tableName;
   }
 
-  async add(documents: VectorizedDocument[]): Promise<string[]> {
-    const ids = [];
+  async add(
+    iterable: DocumentWithEmbeddings[] | AsyncIterable<DocumentWithEmbeddings[]>
+  ): Promise<string[]> {
+    if (Array.isArray(iterable)) {
+      return this._add(iterable);
+    }
 
-    for (const document of documents) {
-      ids.push(document.id);
+    let ids: string[] = [];
 
-      // TODO make this a put_multi
-      await this.db.none(
-        `INSERT INTO ${this.tableName} (embedding, text, metadata) VALUES ($1, $2, $3)`,
-        [toSql(document.embedding), document.text, document.metadata]
-      );
+    for await (const documents of iterable) {
+      ids = ids.concat(await this._add(documents));
     }
 
     return ids;
@@ -83,12 +83,30 @@ export class PgVector implements VectorStore {
         id: row.id,
         document: {
           id: row.id,
+          url: row.url,
           text: row.text,
           metadata: row.metadata,
+          embeddings: [],
         },
         // PG doesn't give us similarity
         similarity: null,
       };
     });
+  }
+
+  private async _add(documents: DocumentWithEmbeddings[]) {
+    const ids = [];
+
+    for (const document of documents) {
+      ids.push(document.id);
+
+      // TODO make this a put_multi
+      await this.db.none(
+        `INSERT INTO ${this.tableName} (embedding, text, url, metadata) VALUES ($1, $2, $3)`,
+        [toSql(document.embeddings), document.text, document.url, document.metadata]
+      );
+    }
+
+    return ids;
   }
 }

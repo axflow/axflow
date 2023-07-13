@@ -1,13 +1,18 @@
-import { read as fsRead } from '../readers/fs';
-import { read as wikipediaRead } from '../readers/wikipedia';
+import { FileSystem } from '../sources/file-system';
+import { Wikipedia } from '../sources/wikipedia';
+import { MarkdownSplitter } from '../splitters/markdown';
+import { TextSplitter } from '../splitters/text';
+import { OpenAIEmbedder } from '../embedders/openai';
 import { Pinecone } from '../vector_stores/pinecone';
 import { Chroma } from '../vector_stores/chroma';
 import { PgVector } from '../vector_stores/pgvector';
 import { getEnv, getEnvOrThrow } from '../config';
 import { VectorStore } from '../types';
 
-import type { SupportedReaders } from '../readers';
+import type { SupportedDataSources } from '../sources';
 import type { SupportedVectorStores } from '../vector_stores';
+import type { SupportedDataSplitters } from '../splitters';
+import type { SupportedDataEmbedders } from '../embedders';
 
 export function getVectorStore(store: SupportedVectorStores): VectorStore {
   switch (store) {
@@ -29,17 +34,40 @@ export function getVectorStore(store: SupportedVectorStores): VectorStore {
         tableName: getEnvOrThrow('PG_TABLE_NAME'),
       });
     default:
-      throw new Error(`Unrecognized store "${store}"`);
+      throw new Error(`Unrecognized vector store "${store}"`);
   }
 }
 
-export function getReader(type: SupportedReaders) {
+export function getDataSource(type: SupportedDataSources, options: any) {
   switch (type) {
-    case 'fs':
-      return fsRead;
+    case 'file_system':
+      return new FileSystem(options);
     case 'wikipedia':
-      return wikipediaRead;
+      return new Wikipedia(options);
     default:
-      throw new Error(`Unsupported reader "${type}"`);
+      throw new Error(`Unsupported data source "${type}"`);
+  }
+}
+
+export function getDataSplitter(type: SupportedDataSplitters, options: any) {
+  switch (type) {
+    case 'markdown':
+      return new MarkdownSplitter(options);
+    case 'text':
+      return new TextSplitter(options);
+    default:
+      throw new Error(`Unsupported data splitter "${type}"`);
+  }
+}
+
+export function getDataEmbedder(type: SupportedDataEmbedders, options: any) {
+  switch (type) {
+    case 'openai':
+      return new OpenAIEmbedder({
+        apiKey: getEnv('OPENAI_API_KEY'),
+        ...options,
+      });
+    default:
+      throw new Error(`Unsupported data embedder "${type}"`);
   }
 }

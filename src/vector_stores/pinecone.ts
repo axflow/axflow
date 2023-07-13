@@ -2,7 +2,7 @@ import { PineconeClient, utils as pineconeUtils } from '@pinecone-database/pinec
 
 const { chunkedUpsert } = pineconeUtils;
 
-import type { VectorStore, VectorizedDocument, VectorQuery, VectorQueryResult } from '../types';
+import type { VectorStore, DocumentWithEmbeddings, VectorQuery, VectorQueryResult } from '../types';
 
 export async function prepare(options: {
   apiKey: string;
@@ -74,27 +74,21 @@ export class Pinecone implements VectorStore {
     }
   }
 
-  async add(documents: VectorizedDocument[], options?: { chunkSize?: number }): Promise<string[]> {
+  async add(
+    iterable: DocumentWithEmbeddings[] | AsyncIterable<DocumentWithEmbeddings[]>,
+    options?: { chunkSize?: number }
+  ): Promise<string[]> {
     await this.initialized;
 
-    const ids = [];
-    const vectors = [];
-
-    for (const document of documents) {
-      ids.push(document.id);
-
-      vectors.push({
-        id: document.id,
-        values: document.embedding,
-        metadata: {
-          ...document.metadata,
-          _text: document.text,
-        },
-      });
+    if (Array.isArray(iterable)) {
+      return this._add(iterable, options);
     }
 
-    const index = this.getIndex();
-    await chunkedUpsert(index, vectors, this.namespace, options?.chunkSize);
+    let ids: string[] = [];
+
+    for await (const documents of iterable) {
+      ids = ids.concat(await this._add(documents, options));
+    }
 
     return ids;
   }
@@ -117,20 +111,49 @@ export class Pinecone implements VectorStore {
 
     return matches.map((match) => {
       const metadata = match.metadata as Record<string, any>;
+
+      const url = metadata._url;
       const text = metadata._text;
 
+      delete metadata._url;
       delete metadata._text;
 
       return {
         id: match.id,
         document: {
           id: match.id,
+          url: url,
           text: text,
           metadata: metadata,
+          embeddings: [],
         },
         similarity: match.score || null,
       };
     });
+  }
+
+  private async _add(documents: DocumentWithEmbeddings[], options?: { chunkSize?: number }) {
+    const ids = [];
+    const vectors = [];
+
+    for (const document of documents) {
+      ids.push(document.id);
+
+      vectors.push({
+        id: document.id,
+        values: document.embeddings,
+        metadata: {
+          ...document.metadata,
+          _text: document.text,
+          _url: document.url,
+        },
+      });
+    }
+
+    const index = this.getIndex();
+    await chunkedUpsert(index, vectors, this.namespace, options?.chunkSize);
+
+    return ids;
   }
 
   private getIndex() {

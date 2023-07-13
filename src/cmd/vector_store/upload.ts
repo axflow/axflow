@@ -1,8 +1,10 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { index } from '../../indexing';
-import { getReader, getVectorStore } from '../utils';
-import { SUPPORTED_READERS } from '../../readers';
+import { getDataEmbedder, getDataSource, getDataSplitter, getVectorStore } from '../utils';
+import { documents } from '../../documents';
+import { SUPPORTED_DATA_SOURCES } from '../../sources';
+import { SUPPORTED_DATA_SPLITTERS } from '../../splitters';
+import { SUPPORTED_DATA_EMBEDDERS } from '../../embedders';
 import { SUPPORTED_VECTOR_STORES } from '../../vector_stores';
 
 const argv = yargs(hideBin(process.argv))
@@ -11,21 +13,47 @@ const argv = yargs(hideBin(process.argv))
     description: 'The vector store',
     demandOption: true,
   })
-  .option('reader', {
-    choices: SUPPORTED_READERS,
-    description: 'The data reader to use',
+  .option('source', {
+    choices: SUPPORTED_DATA_SOURCES,
+    description: 'The data source to use',
     demandOption: true,
   })
-  .option('readerOptions', {
+  .option('sourceOptions', {
     type: 'string',
-    description: 'JSON-serialized options for the chosen reader',
+    description: 'JSON-serialized options for the chosen data source',
+    demandOption: false,
+    default: '{}',
+  })
+  .option('splitter', {
+    choices: SUPPORTED_DATA_SPLITTERS,
+    description: 'The data splitter to use',
+    default: 'text' as const,
+  })
+  .option('splitterOptions', {
+    type: 'string',
+    description: 'JSON-serialized options for the chosen data splitter',
+    demandOption: false,
+    default: '{}',
+  })
+  .option('embedder', {
+    choices: SUPPORTED_DATA_EMBEDDERS,
+    description: 'The data embedder to use',
+    default: 'openai' as const,
+  })
+  .option('embedderOptions', {
+    type: 'string',
+    description: 'JSON-serialized options for the chosen data embedder',
     demandOption: false,
     default: '{}',
   })
   .parseSync();
 
 const store = getVectorStore(argv.store);
-const reader = getReader(argv.reader);
-const iterator = reader(JSON.parse(argv.readerOptions));
 
-index(store, iterator);
+store.add(
+  documents({
+    source: getDataSource(argv.source, JSON.parse(argv.sourceOptions)),
+    splitter: getDataSplitter(argv.splitter, JSON.parse(argv.splitterOptions)),
+    embedder: getDataEmbedder(argv.embedder, JSON.parse(argv.embedderOptions)),
+  })
+);
