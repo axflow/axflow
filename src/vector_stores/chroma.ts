@@ -1,6 +1,6 @@
 import { ChromaClient, type Collection } from 'chromadb';
 
-import type { VectorStore, VectorizedDocument, VectorQuery, VectorQueryResult } from '../types';
+import type { VectorStore, DocumentWithEmbeddings, VectorQuery, VectorQueryResult } from '../types';
 
 export async function prepare(options: { collection: string; path?: string }) {
   const client = new ChromaClient({
@@ -55,28 +55,20 @@ export class Chroma implements VectorStore {
     }
   }
 
-  async add(documents: VectorizedDocument[]): Promise<string[]> {
+  async add(
+    iterable: DocumentWithEmbeddings[] | AsyncIterable<DocumentWithEmbeddings[]>
+  ): Promise<string[]> {
     await this.initialized;
 
-    const ids = [];
-    const embeddings = [];
-    const metadatas = [];
-    const contents = [];
-
-    for (const document of documents) {
-      ids.push(document.id);
-      embeddings.push(document.embedding);
-      metadatas.push(document.metadata || {});
-      contents.push(document.text);
+    if (Array.isArray(iterable)) {
+      return this._add(iterable);
     }
 
-    const collection = this.getCollection();
-    await collection.add({
-      ids,
-      embeddings,
-      metadatas,
-      documents: contents,
-    });
+    let ids: string[] = [];
+
+    for await (const documents of iterable) {
+      ids = ids.concat(await this._add(documents));
+    }
 
     return ids;
   }
@@ -105,10 +97,14 @@ export class Chroma implements VectorStore {
       const distance = distances[i];
       const similarity = distance ? 1.0 - Math.exp(-distance) : null;
 
+      const url = metadata._url as string;
+      delete metadata._url;
+
       results.push({
         id: id,
         document: {
           id: id,
+          url: url,
           text: document,
           metadata: metadata,
         },
@@ -117,6 +113,30 @@ export class Chroma implements VectorStore {
     }
 
     return results;
+  }
+
+  private async _add(documents: DocumentWithEmbeddings[]) {
+    const ids = [];
+    const embeddings = [];
+    const metadatas = [];
+    const contents = [];
+
+    for (const document of documents) {
+      ids.push(document.id);
+      embeddings.push(document.embeddings);
+      metadatas.push({ ...document.metadata, _url: document.url });
+      contents.push(document.text);
+    }
+
+    const collection = this.getCollection();
+    await collection.add({
+      ids,
+      embeddings,
+      metadatas,
+      documents: contents,
+    });
+
+    return ids;
   }
 
   private getCollection() {
