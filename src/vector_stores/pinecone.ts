@@ -125,7 +125,6 @@ export class Pinecone implements VectorStore {
           url: url,
           text: text,
           metadata: metadata,
-          embeddings: [],
         },
         similarity: match.score || null,
       };

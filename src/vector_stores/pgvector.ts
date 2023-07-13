@@ -86,7 +86,6 @@ export class PgVector implements VectorStore {
           url: row.url,
           text: row.text,
           metadata: row.metadata,
-          embeddings: [],
         },
         // PG doesn't give us similarity
         similarity: null,
@@ -102,7 +101,7 @@ export class PgVector implements VectorStore {
 
       // TODO make this a put_multi
       await this.db.none(
-        `INSERT INTO ${this.tableName} (embedding, text, url, metadata) VALUES ($1, $2, $3)`,
+        `INSERT INTO ${this.tableName} (embedding, text, url, metadata) VALUES ($1, $2, $3, $4)`,
         [toSql(document.embeddings), document.text, document.url, document.metadata]
       );
     }

@@ -16,19 +16,19 @@ export class Wikipedia implements DataSource {
   async *iterable(): AsyncIterable<SourceNode> {
     const term = this.options.term;
 
-    const directDoc = await this.fetchDocForTerm(term);
+    const doc = await this.fetchDocForTerm(term);
 
-    if (!directDoc) {
+    if (!doc) {
       throw new Error(`No Wikipedia page found for term "${term}"`);
     }
 
     yield {
-      url: 'https://wikipedia.org/foo/bar',
-      text: directDoc,
+      url: `https://en.wikipedia.org/?curid=${doc.id}`,
+      text: doc.text,
     };
   }
 
-  private async fetchDocForTerm(term: string): Promise<string | null> {
+  private async fetchDocForTerm(term: string) {
     const result = await fetch(
       'https://en.wikipedia.org/w/api.php?' +
         new URLSearchParams({
@@ -51,7 +51,12 @@ export class Wikipedia implements DataSource {
     if (!pages || pages['-1']) {
       return null;
     }
+
     const firstKey = Object.keys(pages)[0];
-    return pages[firstKey].extract;
+
+    return {
+      id: firstKey,
+      text: pages[firstKey].extract,
+    };
   }
 }
