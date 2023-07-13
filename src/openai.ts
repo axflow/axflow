@@ -1,5 +1,5 @@
 import { Configuration, OpenAIApi } from 'openai';
-import type { CreateCompletionRequest, CreateEmbeddingRequest } from 'openai';
+import type { CreateCompletionRequest } from 'openai';
 import { getEnvOrThrow } from './config';
 
 const client = new OpenAIApi(
@@ -8,9 +8,11 @@ const client = new OpenAIApi(
   })
 );
 
-export async function createEmbedding(
-  options: Partial<CreateEmbeddingRequest> & { input: string | string[] }
-) {
+export async function createEmbedding(options: {
+  input: string | string[];
+  model?: string;
+  user?: string;
+}) {
   const response = await client.createEmbedding({
     model: 'text-embedding-ada-002',
     ...options,

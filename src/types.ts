@@ -37,11 +37,11 @@ export interface DataSplitterFunction {
 export type DataSplitter = DataSplitterObject | DataSplitterFunction;
 
 export interface DataEmbedderObject {
-  embed(documents: Document[]): Promise<number[][]>;
+  embed(data: string | string[]): Promise<number[][]>;
 }
 
 export interface DataEmbedderFunction {
-  (documents: Document[]): Promise<number[][]>;
+  (data: string | string[]): Promise<number[][]>;
 }
 
 export type DataEmbedder = DataEmbedderObject | DataEmbedderFunction;

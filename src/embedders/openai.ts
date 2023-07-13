@@ -1,5 +1,5 @@
 import { createEmbedding } from '../openai';
-import { DataEmbedderObject, Document } from '../types';
+import { DataEmbedderObject } from '../types';
 
 export const NAME = 'openai' as const;
 
@@ -14,9 +14,9 @@ export class OpenAIEmbedder implements DataEmbedderObject {
     this.model = options?.model || 'text-embedding-ada-002';
   }
 
-  async embed(chunks: Document[]) {
+  async embed(chunks: string | string[]) {
     const response = await createEmbedding({
-      input: chunks.map((chunk) => chunk.text),
+      input: chunks,
       model: this.model,
     });
 

@@ -1,11 +1,22 @@
-import { getPathRelativeToDirectory } from '../src/utils';
+import { zip } from '../src/utils';
 
 describe('utils', () => {
-  it('can calculate relative file paths', async () => {
-    const document1 = '/Users/username/Desktop/phoenix/guides/telemetry.md';
-    const document2 = '/Users/username/Desktop/phoenix/guides/deployment/fly.md';
-    const dir = '/Users/username/Desktop/phoenix';
-    expect(getPathRelativeToDirectory(document1, dir)).toEqual('phoenix/guides/telemetry.md');
-    expect(getPathRelativeToDirectory(document2, dir)).toEqual('phoenix/guides/deployment/fly.md');
+  describe('zip', () => {
+    it('can zip two lists', async () => {
+      const l1 = [1, 3, 5];
+      const l2 = ['2', '4', '6'];
+      expect(zip(l1, l2)).toEqual([
+        [1, '2'],
+        [3, '4'],
+        [5, '6'],
+      ]);
+    });
+
+    it('fails if there is a length mismatch', () => {
+      const l1 = [1, 3, 5];
+      const l2 = ['2', '4'];
+
+      expect(() => zip(l1, l2)).toThrowError('Cannot zip two lists of unequal length');
+    });
   });
 });

@@ -29,7 +29,7 @@ export async function* documents(options: {
 
   for await (const node of source.iterable()) {
     const documents = await splitter.split(node);
-    const embeddings = await embedder.embed(documents);
+    const embeddings = await embedder.embed(documents.map((doc) => doc.text));
 
     const documentsWithEmbeddings = zip(documents, embeddings).map(([document, embeddings]) => ({
       ...document,
