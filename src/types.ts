@@ -2,19 +2,19 @@
 // Data //
 //////////
 
-export type SourceNode = {
+export type Document = {
   url: string;
   text: string;
 };
 
-export type Document = {
+export type Chunk = {
   id: string;
   url: string;
   text: string;
   metadata: Record<string, any>;
 };
 
-export type DocumentWithEmbeddings = Document & {
+export type ChunkWithEmbeddings = Chunk & {
   embeddings: number[];
 };
 
@@ -23,15 +23,15 @@ export type DocumentWithEmbeddings = Document & {
 /////////////////////
 
 export interface DataSource {
-  iterable(): AsyncIterable<SourceNode>;
+  iterable(): AsyncIterable<Document>;
 }
 
 export interface DataSplitterObject {
-  split(node: SourceNode): Promise<Document[]>;
+  split(node: Document): Promise<Chunk[]>;
 }
 
 export interface DataSplitterFunction {
-  (node: SourceNode): Promise<Document[]>;
+  (node: Document): Promise<Chunk[]>;
 }
 
 export type DataSplitter = DataSplitterObject | DataSplitterFunction;
@@ -53,7 +53,7 @@ export type DataEmbedder = DataEmbedderObject | DataEmbedderFunction;
 export interface VectorStore {
   name: string;
   add(
-    documents: DocumentWithEmbeddings[] | AsyncIterable<DocumentWithEmbeddings[]>,
+    chunks: ChunkWithEmbeddings[] | AsyncIterable<ChunkWithEmbeddings[]>,
     options?: object
   ): Promise<string[]>;
   query(query: VectorQuery): Promise<VectorQueryResult[]>;
@@ -68,5 +68,5 @@ export interface VectorQuery {
 export interface VectorQueryResult {
   id: string;
   similarity: number | null;
-  document: Document;
+  chunk: Chunk;
 }

@@ -26,8 +26,8 @@ export async function query(vectorStore: VectorStore, options: QueryOptions) {
     console.log(
       results.map((r) => ({
         id: r.id,
-        text: `<${r.document.text.length} characters>`,
-        metadata: r.document.metadata,
+        text: `<${r.chunk.text.length} characters>`,
+        metadata: r.chunk.metadata,
       }))
     );
 
@@ -60,7 +60,7 @@ async function getContext(
     filterTerm,
   });
 
-  const context = results.map((result) => result.document.text).join('\n\n---\n\n');
+  const context = results.map((result) => result.chunk.text).join('\n\n---\n\n');
 
   return { results, context };
 }

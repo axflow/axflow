@@ -1,6 +1,6 @@
 import { ChromaClient, type Collection } from 'chromadb';
 
-import type { VectorStore, DocumentWithEmbeddings, VectorQuery, VectorQueryResult } from '../types';
+import type { VectorStore, ChunkWithEmbeddings, VectorQuery, VectorQueryResult } from '../types';
 
 export async function prepare(options: { collection: string; path?: string }) {
   const client = new ChromaClient({
@@ -56,7 +56,7 @@ export class Chroma implements VectorStore {
   }
 
   async add(
-    iterable: DocumentWithEmbeddings[] | AsyncIterable<DocumentWithEmbeddings[]>
+    iterable: ChunkWithEmbeddings[] | AsyncIterable<ChunkWithEmbeddings[]>
   ): Promise<string[]> {
     await this.initialized;
 
@@ -66,8 +66,8 @@ export class Chroma implements VectorStore {
 
     let ids: string[] = [];
 
-    for await (const documents of iterable) {
-      ids = ids.concat(await this._add(documents));
+    for await (const chunks of iterable) {
+      ids = ids.concat(await this._add(chunks));
     }
 
     return ids;
@@ -84,7 +84,7 @@ export class Chroma implements VectorStore {
     });
 
     const ids = response.ids[0];
-    const documents = response.documents[0];
+    const chunks = response.documents[0];
     const metadatas = response.metadatas[0];
     const distances = response.distances ? response.distances[0] : [];
 
@@ -92,7 +92,7 @@ export class Chroma implements VectorStore {
 
     for (let i = 0; i < ids.length; i++) {
       const id = ids[i];
-      const document = documents[i] || '';
+      const chunk = chunks[i] || '';
       const metadata = metadatas[i] || {};
       const distance = distances[i];
       const similarity = distance ? 1.0 - Math.exp(-distance) : null;
@@ -102,10 +102,10 @@ export class Chroma implements VectorStore {
 
       results.push({
         id: id,
-        document: {
+        chunk: {
           id: id,
           url: url,
-          text: document,
+          text: chunk,
           metadata: metadata,
         },
         similarity: similarity,
@@ -115,13 +115,13 @@ export class Chroma implements VectorStore {
     return results;
   }
 
-  private async _add(documents: DocumentWithEmbeddings[]) {
+  private async _add(chunks: ChunkWithEmbeddings[]) {
     const ids = [];
     const embeddings = [];
     const metadatas = [];
     const contents = [];
 
-    for (const document of documents) {
+    for (const document of chunks) {
       ids.push(document.id);
       embeddings.push(document.embeddings);
       metadatas.push({ ...document.metadata, _url: document.url });

@@ -1,5 +1,5 @@
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { DataSplitterObject, Document, SourceNode } from '../types';
+import { DataSplitterObject, Chunk, Document } from '../types';
 import { generateId } from '../utils';
 
 export const NAME = 'text' as const;
@@ -22,16 +22,16 @@ export class TextSplitter implements DataSplitterObject {
     });
   }
 
-  async split(node: SourceNode): Promise<Document[]> {
-    const chunks = await this.splitter.splitText(node.text);
+  async split(node: Document): Promise<Chunk[]> {
+    const textChunks = await this.splitter.splitText(node.text);
 
-    const documents: Document[] = chunks.map((chunk) => ({
+    const chunks: Chunk[] = textChunks.map((chunk) => ({
       id: generateId(),
       url: node.url,
       text: chunk,
       metadata: {},
     }));
 
-    return documents;
+    return chunks;
   }
 }

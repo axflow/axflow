@@ -14,9 +14,9 @@ export class OpenAIEmbedder implements DataEmbedderObject {
     this.model = options?.model || 'text-embedding-ada-002';
   }
 
-  async embed(chunks: string | string[]) {
+  async embed(input: string | string[]) {
     const response = await createEmbedding({
-      input: chunks,
+      input: input,
       model: this.model,
     });
 
