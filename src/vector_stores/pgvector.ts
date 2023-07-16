@@ -1,7 +1,7 @@
 import pgpromise from 'pg-promise';
 import { IInitOptions, ParameterizedQuery } from 'pg-promise';
 import { registerType, toSql } from 'pgvector/pg';
-import type { VectorStore, DocumentWithEmbeddings, VectorQuery, VectorQueryResult } from '../types';
+import type { VectorStore, ChunkWithEmbeddings, VectorQuery, VectorQueryResult } from '../types';
 
 function getDB(dsn: string) {
   const initOptions: IInitOptions = {
@@ -47,7 +47,7 @@ export class PgVector implements VectorStore {
   }
 
   async add(
-    iterable: DocumentWithEmbeddings[] | AsyncIterable<DocumentWithEmbeddings[]>
+    iterable: ChunkWithEmbeddings[] | AsyncIterable<ChunkWithEmbeddings[]>
   ): Promise<string[]> {
     if (Array.isArray(iterable)) {
       return this._add(iterable);
@@ -55,8 +55,8 @@ export class PgVector implements VectorStore {
 
     let ids: string[] = [];
 
-    for await (const documents of iterable) {
-      ids = ids.concat(await this._add(documents));
+    for await (const chunks of iterable) {
+      ids = ids.concat(await this._add(chunks));
     }
 
     return ids;
@@ -81,7 +81,7 @@ export class PgVector implements VectorStore {
     return response.map((row) => {
       return {
         id: row.id,
-        document: {
+        chunk: {
           id: row.id,
           url: row.url,
           text: row.text,
@@ -93,16 +93,16 @@ export class PgVector implements VectorStore {
     });
   }
 
-  private async _add(documents: DocumentWithEmbeddings[]) {
+  private async _add(chunks: ChunkWithEmbeddings[]) {
     const ids = [];
 
-    for (const document of documents) {
-      ids.push(document.id);
+    for (const chunk of chunks) {
+      ids.push(chunk.id);
 
       // TODO make this a put_multi
       await this.db.none(
         `INSERT INTO ${this.tableName} (embedding, text, url, metadata) VALUES ($1, $2, $3, $4)`,
-        [toSql(document.embeddings), document.text, document.url, document.metadata]
+        [toSql(chunk.embeddings), chunk.text, chunk.url, chunk.metadata]
       );
     }
 

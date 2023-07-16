@@ -1,5 +1,5 @@
 import { MarkdownTextSplitter } from 'langchain/text_splitter';
-import { DataSplitterObject, SourceNode, Document } from '../types';
+import { DataSplitterObject, Document, Chunk } from '../types';
 import { generateId } from '../utils';
 
 export const NAME = 'markdown' as const;
@@ -21,16 +21,16 @@ export class MarkdownSplitter implements DataSplitterObject {
     });
   }
 
-  async split(node: SourceNode): Promise<Document[]> {
-    const chunks = await this.splitter.splitText(node.text);
+  async split(document: Document): Promise<Chunk[]> {
+    const textChunks = await this.splitter.splitText(document.text);
 
-    const documents: Document[] = chunks.map((chunk) => ({
+    const chunks: Chunk[] = textChunks.map((chunk) => ({
       id: generateId(),
-      url: node.url,
+      url: document.url,
       text: chunk,
       metadata: {},
     }));
 
-    return documents;
+    return chunks;
   }
 }

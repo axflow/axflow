@@ -6,15 +6,15 @@ import {
   DataSource,
   DataSplitter,
   DataSplitterObject,
-  DocumentWithEmbeddings,
+  ChunkWithEmbeddings,
 } from './types';
 import { zip } from './utils';
 
-export async function* documents(options: {
+export async function* chunks(options: {
   source: DataSource;
   splitter?: DataSplitter;
   embedder?: DataEmbedder;
-}): AsyncIterable<DocumentWithEmbeddings[]> {
+}): AsyncIterable<ChunkWithEmbeddings[]> {
   const source = options.source;
 
   const splitter: DataSplitterObject =
@@ -27,15 +27,15 @@ export async function* documents(options: {
       ? { embed: options.embedder }
       : options.embedder || new OpenAIEmbedder();
 
-  for await (const node of source.iterable()) {
-    const documents = await splitter.split(node);
-    const embeddings = await embedder.embed(documents.map((doc) => doc.text));
+  for await (const document of source.iterable()) {
+    const chunks = await splitter.split(document);
+    const embeddings = await embedder.embed(chunks.map((doc) => doc.text));
 
-    const documentsWithEmbeddings = zip(documents, embeddings).map(([document, embeddings]) => ({
-      ...document,
+    const chunksWithEmbeddings = zip(chunks, embeddings).map(([chunk, embeddings]) => ({
+      ...chunk,
       embeddings,
     }));
 
-    yield documentsWithEmbeddings;
+    yield chunksWithEmbeddings;
   }
 }

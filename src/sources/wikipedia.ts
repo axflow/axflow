@@ -1,4 +1,4 @@
-import { SourceNode, DataSource } from '../types';
+import { Document, DataSource } from '../types';
 
 export const NAME = 'wikipedia' as const;
 
@@ -13,7 +13,7 @@ export class Wikipedia implements DataSource {
     this.options = options;
   }
 
-  async *iterable(): AsyncIterable<SourceNode> {
+  async *iterable(): AsyncIterable<Document> {
     const term = this.options.term;
 
     const doc = await this.fetchDocForTerm(term);

@@ -1,7 +1,7 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { getDataEmbedder, getDataSource, getDataSplitter, getVectorStore } from '../utils';
-import { documents } from '../../documents';
+import { chunks } from '../../chunks';
 import { SUPPORTED_DATA_SOURCES } from '../../sources';
 import { SUPPORTED_DATA_SPLITTERS } from '../../splitters';
 import { SUPPORTED_DATA_EMBEDDERS } from '../../embedders';
@@ -51,7 +51,7 @@ const argv = yargs(hideBin(process.argv))
 const store = getVectorStore(argv.store);
 
 store.add(
-  documents({
+  chunks({
     source: getDataSource(argv.source, JSON.parse(argv.sourceOptions)),
     splitter: getDataSplitter(argv.splitter, JSON.parse(argv.splitterOptions)),
     embedder: getDataEmbedder(argv.embedder, JSON.parse(argv.embedderOptions)),

@@ -2,7 +2,7 @@ import { PineconeClient, utils as pineconeUtils } from '@pinecone-database/pinec
 
 const { chunkedUpsert } = pineconeUtils;
 
-import type { VectorStore, DocumentWithEmbeddings, VectorQuery, VectorQueryResult } from '../types';
+import type { VectorStore, ChunkWithEmbeddings, VectorQuery, VectorQueryResult } from '../types';
 
 export async function prepare(options: {
   apiKey: string;
@@ -75,7 +75,7 @@ export class Pinecone implements VectorStore {
   }
 
   async add(
-    iterable: DocumentWithEmbeddings[] | AsyncIterable<DocumentWithEmbeddings[]>,
+    iterable: ChunkWithEmbeddings[] | AsyncIterable<ChunkWithEmbeddings[]>,
     options?: { chunkSize?: number }
   ): Promise<string[]> {
     await this.initialized;
@@ -86,8 +86,8 @@ export class Pinecone implements VectorStore {
 
     let ids: string[] = [];
 
-    for await (const documents of iterable) {
-      ids = ids.concat(await this._add(documents, options));
+    for await (const chunks of iterable) {
+      ids = ids.concat(await this._add(chunks, options));
     }
 
     return ids;
@@ -120,7 +120,7 @@ export class Pinecone implements VectorStore {
 
       return {
         id: match.id,
-        document: {
+        chunk: {
           id: match.id,
           url: url,
           text: text,
@@ -131,20 +131,20 @@ export class Pinecone implements VectorStore {
     });
   }
 
-  private async _add(documents: DocumentWithEmbeddings[], options?: { chunkSize?: number }) {
+  private async _add(chunks: ChunkWithEmbeddings[], options?: { chunkSize?: number }) {
     const ids = [];
     const vectors = [];
 
-    for (const document of documents) {
-      ids.push(document.id);
+    for (const chunk of chunks) {
+      ids.push(chunk.id);
 
       vectors.push({
-        id: document.id,
-        values: document.embeddings,
+        id: chunk.id,
+        values: chunk.embeddings,
         metadata: {
-          ...document.metadata,
-          _text: document.text,
-          _url: document.url,
+          ...chunk.metadata,
+          _text: chunk.text,
+          _url: chunk.url,
         },
       });
     }
