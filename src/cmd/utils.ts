@@ -2,7 +2,7 @@ import { FileSystem } from '../sources/file-system';
 import { Wikipedia } from '../sources/wikipedia';
 import { MarkdownSplitter } from '../splitters/markdown';
 import { TextSplitter } from '../splitters/text';
-import { OpenAIEmbedder } from '../embedders/openai';
+import { OpenAIEmbedder } from '../embedders/open-ai-embedder';
 import { Pinecone } from '../vector_stores/pinecone';
 import { Chroma } from '../vector_stores/chroma';
 import { PgVector } from '../vector_stores/pgvector';

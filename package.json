@@ -20,7 +20,7 @@
     "dotenv": "^16.3.1",
     "glob": "^10.3.1",
     "langchain": "^0.0.101",
-    "openai": "^3.3.0",
+    "openai": "^4.0.0-beta.5",
     "pg-promise": "^11.5.0",
     "pgvector": "^0.1.4",
     "yargs": "^17.7.2"

@@ -1,19 +1,24 @@
-import { createCompletion, createEmbedding } from './openai';
-
 import type { VectorStore } from './types';
-import { formatTemplate } from './utils';
+
+import { OpenAICompletion } from './models/open-ai-completion';
+import { Prompt } from './prompts/prompt';
+import { PromptWithContext } from './prompts/prompt-with-context';
+import { RAG } from './queries/rag';
+import { Retriever } from './retrieval';
+import { OpenAIEmbedder } from './embedders/open-ai-embedder';
+import { Completion } from './queries/completion';
 
 const TEMPLATE_WITH_CONTEXT = `Answer the question based on the context below.
 
 Context:
 {context}
 
-Question: {question}
+Question: {query}
 Answer:`;
 
 const TEMPLATE_WITHOUT_CONTEXT = `Answer the question based on the context below.
 
-Question: {question}
+Question: {query}
 Answer:`;
 
 type QueryOptions = {
@@ -26,52 +31,42 @@ type QueryOptions = {
   filterTerm: string;
 };
 
-export async function query(vectorStore: VectorStore, options: QueryOptions) {
-  const { query, model, llmOnly, topK, filterTerm } = options;
-
-  let prompt: string;
-
-  if (llmOnly) {
-    console.log(`Querying ${model} without additional context`);
-    prompt = formatTemplate(TEMPLATE_WITHOUT_CONTEXT, { question: query });
-  } else {
-    const { results, context } = await getContext(vectorStore, query, topK, filterTerm);
-
-    console.log(`Querying ${model} with additional context`);
-    console.log(
-      results.map((r) => ({
-        id: r.id,
-        text: `<${r.chunk.text.length} characters>`,
-        metadata: r.chunk.metadata,
-      }))
-    );
-
-    prompt = formatTemplate(TEMPLATE_WITH_CONTEXT, { context: context, question: query });
-  }
-
-  const results = await createCompletion({ model, prompt: prompt });
-
-  console.log();
-  console.log(`--- ${model} completion:`);
-  console.log();
-  console.log(results[0].text?.trim());
+export async function query(store: VectorStore, options: QueryOptions) {
+  return options.llmOnly ? completion(options) : rag(store, options);
 }
 
-async function getContext(
-  vectorStore: VectorStore,
-  query: string,
-  topK: number,
-  filterTerm: string
-) {
-  const embedding = await createEmbedding({ input: query });
+async function completion(options: QueryOptions) {
+  const { model, query } = options;
 
-  const results = await vectorStore.query({
-    topK,
-    embedding: embedding.data[0].embedding,
-    filterTerm,
+  const rag = new Completion({
+    model: new OpenAICompletion({ model: model, max_tokens: 256 }),
+    prompt: new Prompt({ template: TEMPLATE_WITHOUT_CONTEXT }),
   });
 
-  const context = results.map((result) => result.chunk.text).join('\n\n---\n\n');
+  const result = rag.stream(query);
 
-  return { results, context };
+  for await (const chunk of result) {
+    process.stdout.write(chunk);
+  }
+
+  process.stdout.write('\n');
+}
+
+async function rag(store: VectorStore, options: QueryOptions) {
+  const { model, topK, filterTerm, query } = options;
+
+  const rag = new RAG({
+    model: new OpenAICompletion({ model: model, max_tokens: 256 }),
+    prompt: new PromptWithContext({ template: TEMPLATE_WITH_CONTEXT }),
+    retriever: new Retriever({ store: store, topK: topK, filterTerm: filterTerm }),
+    embedder: new OpenAIEmbedder(),
+  });
+
+  const result = rag.stream(query);
+
+  for await (const chunk of result) {
+    process.stdout.write(chunk);
+  }
+
+  process.stdout.write('\n');
 }

@@ -1,4 +1,4 @@
-import { OpenAIEmbedder } from './embedders/openai';
+import { OpenAIEmbedder } from './embedders/open-ai-embedder';
 import { TextSplitter } from './splitters/text';
 import {
   DataEmbedder,
