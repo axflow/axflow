@@ -1,6 +1,20 @@
 import { createCompletion, createEmbedding } from './openai';
 
 import type { VectorStore } from './types';
+import { formatTemplate } from './utils';
+
+const TEMPLATE_WITH_CONTEXT = `Answer the question based on the context below.
+
+Context:
+{context}
+
+Question: {question}
+Answer:`;
+
+const TEMPLATE_WITHOUT_CONTEXT = `Answer the question based on the context below.
+
+Question: {question}
+Answer:`;
 
 type QueryOptions = {
   query: string;
@@ -15,10 +29,11 @@ type QueryOptions = {
 export async function query(vectorStore: VectorStore, options: QueryOptions) {
   const { query, model, llmOnly, topK, filterTerm } = options;
 
-  const prompt = ['Answer the question based on the markdown context below.'];
+  let prompt: string;
 
   if (llmOnly) {
     console.log(`Querying ${model} without additional context`);
+    prompt = formatTemplate(TEMPLATE_WITHOUT_CONTEXT, { question: query });
   } else {
     const { results, context } = await getContext(vectorStore, query, topK, filterTerm);
 
@@ -31,14 +46,10 @@ export async function query(vectorStore: VectorStore, options: QueryOptions) {
       }))
     );
 
-    prompt.push('\n\nContext:\n');
-    prompt.push(context);
+    prompt = formatTemplate(TEMPLATE_WITH_CONTEXT, { context: context, question: query });
   }
 
-  prompt.push(`\n\nQuestion: ${query}`);
-  prompt.push('\nAnswer:');
-
-  const results = await createCompletion({ model, prompt: prompt.join('') });
+  const results = await createCompletion({ model, prompt: prompt });
 
   console.log();
   console.log(`--- ${model} completion:`);
