@@ -62,11 +62,41 @@ export interface VectorStore {
 export interface VectorQuery {
   topK: number;
   embedding: number[];
-  filterTerm: string;
+  filterTerm?: string;
 }
 
 export interface VectorQueryResult {
   id: string;
   similarity: number | null;
   chunk: Chunk;
+}
+
+////////////
+// Prompts //
+////////////
+export interface Prompt {
+  render(values: Record<string, any>): Promise<string>;
+}
+
+////////////
+// Models //
+////////////
+export interface Model {
+  run(prompt: string): Promise<string>;
+  stream(prompt: string): AsyncIterable<string>;
+}
+
+///////////////
+// Retriever //
+///////////////
+export interface Retriever {
+  retrieve(embedding: number[]): Promise<VectorQueryResult[]>;
+}
+
+///////////
+// MISC. //
+///////////
+
+export interface Stringer {
+  toString(): string;
 }
