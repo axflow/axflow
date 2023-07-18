@@ -3,6 +3,11 @@
 ///////////////
 export * from './embedders';
 
+///////////////
+// Ingestion //
+///////////////
+export * from './ingestion';
+
 ////////////
 // Models //
 ////////////

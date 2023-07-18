@@ -6,6 +6,7 @@ export const NAME = 'openai' as const;
 
 export type OpenAIEmbedderOptions = {
   model?: string;
+  apiKey?: string;
 };
 
 export class OpenAIEmbedder implements IDataEmbedder {
@@ -15,7 +16,7 @@ export class OpenAIEmbedder implements IDataEmbedder {
   constructor(options?: OpenAIEmbedderOptions) {
     this.model = options?.model || 'text-embedding-ada-002';
     this.client = new OpenAI({
-      apiKey: getEnvOrThrow('OPENAI_API_KEY'),
+      apiKey: options?.apiKey || getEnvOrThrow('OPENAI_API_KEY'),
     });
   }
 

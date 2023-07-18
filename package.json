@@ -1,7 +1,24 @@
 {
-  "name": "semanticsearch",
-  "version": "0.0.1",
-  "description": "Semantic document search using LLMs",
+  "name": "axgen",
+  "version": "0.0.1-beta.1",
+  "description": "A framework for Retrieval Augmented Generation (RAG)",
+  "keywords": [
+    "retrieval agumented generation",
+    "rag",
+    "llm",
+    "framework",
+    "generation",
+    "generative ai",
+    "vector database",
+    "pinecone",
+    "chroma",
+    "pgvector",
+    "gpt",
+    "gpt-4",
+    "openai",
+    "ingestion",
+    "models"
+  ],
   "scripts": {
     "prebuild": "rm -rf ./dist",
     "build": "tsc",

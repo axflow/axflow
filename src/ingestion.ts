@@ -1,9 +1,11 @@
 import type { IDataEmbedder, IDataSource, IDataSplitter, IVectorStore } from './types';
 import { zip } from './utils';
 
-type LoggerType = { info: (message: string) => void };
+export interface LoggerType {
+  info: (message: string) => void;
+}
 
-const logger = {
+const defaultLogger = {
   info: (message: string) => console.log(message),
 };
 
@@ -23,7 +25,7 @@ export class Ingestion {
   }) {
     this.store = options.store;
     this.source = options.source;
-    this.logger = options.logger || logger;
+    this.logger = options.logger || defaultLogger;
     this.splitter = options.splitter;
     this.embedder = options.embedder;
   }

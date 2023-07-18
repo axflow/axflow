@@ -30,9 +30,9 @@ export class OpenAICompletion implements IModel {
   private client: OpenAI;
   private options: OpenAICompletionOptions;
 
-  constructor(options: OpenAICompletionOptions) {
+  constructor(options: OpenAICompletionOptions & { apiKey?: string }) {
     this.client = new OpenAI({
-      apiKey: getEnvOrThrow('OPENAI_API_KEY'),
+      apiKey: options.apiKey || getEnvOrThrow('OPENAI_API_KEY'),
     });
     this.options = Object.assign({}, DEFAULTS, options);
   }

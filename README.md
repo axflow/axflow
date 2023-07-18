@@ -1,122 +1,101 @@
-# SemanticSearch ![Github CI](https://github.com/axilla-io/semanticsearch/workflows/Github%20CI/badge.svg)
+# Axgen ![Github CI](https://github.com/axilla-io/axgen/workflows/Github%20CI/badge.svg)
 
-Upload documents to a vector database and query them using semantic search and LLMs.
-
-## Setup
-
-```
-> npm i
-> cp .env.example .env
-```
-
-Then, edit .env with your own configuration.
-
-### Setting up pgvector
-
-If you plan on using postgres + pgvector. You need to have a postgres URL, with the pgvector extension ready to be enabled. If you want to do this locally, first install pgvector with one of these methods:
-
-1.  use homebrew if you installed postgres with homebrew: `brew install pgvector`
-2.  follow the [installation instructions in the pgvector README](https://github.com/pgvector/pgvector)
-
-_Note that pgvector is limited to 2k dimensions max today._
-
-### Setting up chroma
-
-You'll need to follow their instructions if you want to run it locally:
+A framework for Retrieval Augmented Generation (RAG).
 
 ```bash
-git clone https://github.com/chroma-core/chroma.git
-cd chroma
-docker-compose up -d --build
+npm i axgen
 ```
 
-## Usage
+## Basic Usage
 
-### Prepare the vector store
+### Prepare the vector database
 
-```bash
-npm run vector_store:prepare -- --store=pinecone
+Create an index in Pinecone that will store your document embeddings.
+
+```ts
+import { Pinecone } from '.';
+
+Pinecone.prepare({
+  index: "mdindex",
+  environment: 'us-west1-gcp-free',
+  dimension: 1536,
+  apiKey: process.env.PINECONE_API_KEY,
+});
 ```
 
-Prepare your vector store for use. The `store` argument is required and must be one of the supported stores.
+### Ingesting data
 
-### Teardown the vector store
+Here is an example of ingesting local markdown files into the Pinecone vector database.
 
-```bash
-npm run vector_store:teardown -- --store=pinecone
+```ts
+import { Ingestion, Pinecone, FileSystem, MarkdownSplitter, OpenAIEmbedder } from 'axgen';
+
+const pinecone = new Pinecone({
+  index: "mdindex",
+  namespace: 'default',
+  environment: 'us-west1-gcp-free',
+  apiKey: process.env.PINECONE_API_KEY,
+});
+
+const ingestion = new Ingestion({
+  store: pinecone,
+  source: new FileSystem({ path: '../path/to/directory', glob: '**/*.md' }),
+  splitter: new MarkdownSplitter({chunkSize: 1000}),
+  embedder: new OpenAIEmbedder({ apiKey: process.env.OPENAI_API_KEY }),
+});
+
+await ingestion.run();
 ```
 
-for pinecone: this tears the vector store down, i.e., deletes indexes. The `store` argument is required and must be one of the supported stores.
+### Querying data
 
-for pg: this drops the table passed as `$PG_TABLE_NAME` env var.
+In this example, we use retrieval augemented generation to answer a question about company sales. The information needed to answer the question is assumed to be ingested into a pinecone index. This example will pull relevant documents out of the vector database and forward that to an LLM. The response is streamed back.
 
-### Upload records
+```ts
+import { RAG, OpenAIEmbedder, Pinecone, Retriever, PromptWithContext, OpenAICompletion } from 'axgen';
 
-```bash
-npm run vector_store:upload -- --store=pinecone --source=wikipedia --source-options='{"term": "San Francisco"}'
+const { OPENAI_API_KEY, PINECONE_API_KEY } = process.env;
+
+const pinecone = new Pinecone({
+  index: 'mdindex',
+  namespace: 'default',
+  environment: 'us-west1-gcp-free',
+  apiKey: PINECONE_API_KEY,
+});
+
+const template = `Context information is below.
+---------------------
+{context}
+---------------------
+Given the context information and not prior knowledge, answer the question: {query}
+`;
+
+const rag = new RAG({
+  model: new OpenAICompletion({
+    model: 'text-davinci-003',
+    max_tokens: 256,
+    apiKey: OPENAI_API_KEY,
+  }),
+  prompt: new PromptWithContext({ template }),
+  embedder: new OpenAIEmbedder({ apiKey: OPENAI_API_KEY }),
+  retriever: new Retriever({ store: pinecone, topK: 3 }),
+});
+
+const result = rag.stream(
+  'What were our biggest sales in Q4 of this year and who were the customers?'
+);
+
+for await (const chunk of result) {
+  process.stdout.write(chunk);
+}
+
+process.stdout.write('\n');
 ```
 
-The `vector_store:upload` command will read and upload documents to a given vector store. `--store` and `--source` are required and must be one of the supported stores/sources.
+## Development
 
-For example, to upload the [Phoenix repository's](https://github.com/phoenixframework/phoenix) guides from a folder on your machine:
+See the [development docs](docs/development.md).
 
-```bash
-npm run vector_store:upload -- --store=pinecone --source=file_system --source-options='{"path": "../path/to/phoenix", "glob": "guides/**/*.md"}'
-```
+## License
 
-You can also customize the splitting and embedding operations.
-
-```bash
-npm run vector_store:upload -- \
-  --store=pinecone \
-  --source=file_system --source-options='{"path": "../path/to/phoenix", "glob": "guides/**/*.md"}' \
-  --splitter=markdown --splitter-options='{"chunkSize": 1000, "chunkOverlap": 100}' \
-  --embedder=openai --embedder-options='{"model": "code-search-ada-code-001"}'
-```
-
-The splitter defaults to a basic text splitter and the embedder defaults to OpenAI's `text-embedding-ada-002`.
-
-### Delete records
-
-You can delete records by id.
-
-```
-npm run vector_store:delete -- --store pinecone --ids id-1 id-2 id-3
-```
-
-### Query records
-
-```bash
-npm run query -- --store=pinecone --query="When was the San Francisco Police Department founded?"
-```
-
-The `store` argument is required and must be one of the supported stores.
-
-This performs the following actions:
-
-1. Get the embeddings for your query
-2. Lookup documents in the vector store that are semantically similar to your query
-3. Send a prompt to an OpenAI model containing your original query together with the documents retrieved from the vector store
-
-The model defaults to `text-ada-001`, though can be overridden using the `--model` argument. For example:
-
-```bash
-npm run query -- --store=pinecone --query="How do I do X where X is something in my documents?" --model=text-curie-001
-```
-
-_Note: Only OpenAI models are supported right now_
-
-You can query the LLM directly using the `--llm-only` flag.
-
-This allows you to see how the model performs with and without additional context from the vector store.
-
-```bash
-npm run query -- --store=pinecone --query="How do I do X where X is something in my documents?" --llm-only
-```
-
-You can filter metadata when querying. Currently, we only support exact match, so to match documents uploaded with the term 'San Francisco' for example:
-
-```
-npm run query -- --store=pgvector --query="How do I do X where X is something in my documents?" --filterTerm='San Francisco' --topK=3
-```
-
+[MIT](LICENSE.md)
