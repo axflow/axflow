@@ -7,6 +7,7 @@ import type {
   IVectorQueryResult,
   ChunkWithEmbeddings,
 } from '../types';
+import { wrap } from '../utils';
 
 function getDB(dsn: string) {
   const initOptions: IInitOptions = {
@@ -31,7 +32,7 @@ export class PgVector implements IVectorStore {
 
     await db.none('CREATE EXTENSION IF NOT EXISTS vector;');
     await db.none(
-      `CREATE TABLE IF NOT EXISTS ${options.tableName} (id bigserial PRIMARY KEY, embedding vector($1), text TEXT, url TEXT, metadata JSONB)`,
+      `CREATE TABLE IF NOT EXISTS ${options.tableName} (id text PRIMARY KEY, embedding vector($1), text TEXT, url TEXT, metadata JSONB)`,
       [options.dimension]
     );
   }
@@ -58,12 +59,16 @@ export class PgVector implements IVectorStore {
 
       // TODO make this a put_multi
       await this.db.none(
-        `INSERT INTO ${this.tableName} (embedding, text, url, metadata) VALUES ($1, $2, $3, $4)`,
-        [toSql(chunk.embeddings), chunk.text, chunk.url, chunk.metadata]
+        `INSERT INTO ${this.tableName} (id, embedding, text, url, metadata) VALUES ($1, $2, $3, $4, $5)`,
+        [chunk.id, toSql(chunk.embeddings), chunk.text, chunk.url, chunk.metadata]
       );
     }
 
     return ids;
+  }
+
+  async delete(ids: string | string[]) {
+    await this.db.result(`DELETE FROM ${this.tableName} WHERE id IN $1`, wrap(ids));
   }
 
   async query(embedding: number[], options: IVectorQueryOptions): Promise<IVectorQueryResult[]> {

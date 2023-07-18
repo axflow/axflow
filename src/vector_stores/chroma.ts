@@ -74,6 +74,12 @@ export class Chroma implements IVectorStore {
     return ids;
   }
 
+  async delete(ids: string | string[]) {
+    await this.initialized;
+    const collection = this.getCollection();
+    await collection.delete({ ids: ids });
+  }
+
   async query(embedding: number[], options: IVectorQueryOptions): Promise<IVectorQueryResult[]> {
     await this.initialized;
 

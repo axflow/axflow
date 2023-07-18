@@ -40,6 +40,7 @@ export interface IDataEmbedder {
 
 export interface IVectorStore {
   add(chunks: ChunkWithEmbeddings[], options?: object): Promise<string[]>;
+  delete(ids: string | string[]): Promise<void>;
   query(embedding: number[], options: IVectorQueryOptions): Promise<IVectorQueryResult[]>;
 }
 

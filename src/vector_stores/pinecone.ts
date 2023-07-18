@@ -8,6 +8,7 @@ import type {
   IVectorQueryOptions,
   ChunkWithEmbeddings,
 } from '../types';
+import { wrap } from '../utils';
 
 export const NAME = 'pinecone' as const;
 
@@ -91,6 +92,15 @@ export class Pinecone implements IVectorStore {
     await chunkedUpsert(index, vectors, this.namespace, options?.chunkSize);
 
     return ids;
+  }
+
+  async delete(ids: string | string[]) {
+    await this.initialized;
+    const index = this.getIndex();
+    await index.delete1({
+      ids: wrap(ids),
+      namespace: this.namespace,
+    });
   }
 
   async query(embedding: number[], options: IVectorQueryOptions): Promise<IVectorQueryResult[]> {
