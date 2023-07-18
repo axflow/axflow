@@ -1,16 +1,10 @@
 import type { IRetriever, IVectorStore } from './types';
 
-type RetrievalOptions = {
-  store: IVectorStore;
-  topK: number;
-  filterTerm?: string;
-};
-
 export class Retriever implements IRetriever {
   private store: IVectorStore;
-  private options: Omit<RetrievalOptions, 'store'>;
+  private options: { topK: number; filterTerm?: string };
 
-  constructor(options: RetrievalOptions) {
+  constructor(options: { store: IVectorStore; topK: number; filterTerm?: string }) {
     this.store = options.store;
     this.options = { topK: options.topK, filterTerm: options.filterTerm };
   }
