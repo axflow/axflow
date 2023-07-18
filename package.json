@@ -1,6 +1,6 @@
 {
   "name": "axgen",
-  "version": "0.0.1-beta.1",
+  "version": "0.0.1-beta.2",
   "description": "A framework for Retrieval Augmented Generation (RAG)",
   "main": "./dist/index.js",
   "keywords": [
