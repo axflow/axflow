@@ -5,7 +5,6 @@ import { TextSplitter } from '../splitters/text';
 import { OpenAIEmbedder } from '../embedders/open-ai-embedder';
 import { Pinecone } from '../vector_stores/pinecone';
 import { Chroma } from '../vector_stores/chroma';
-import { PgVector } from '../vector_stores/pgvector';
 import { getEnv, getEnvOrThrow } from '../config';
 import { IVectorStore } from '../types';
 
@@ -27,11 +26,6 @@ export function getVectorStore(store: SupportedVectorStores): IVectorStore {
         namespace: getEnvOrThrow('PINECONE_NAMESPACE'),
         apiKey: getEnvOrThrow('PINECONE_API_KEY'),
         environment: getEnvOrThrow('PINECONE_ENVIRONMENT'),
-      });
-    case 'pgvector':
-      return new PgVector({
-        dsn: getEnvOrThrow('PG_DSN'),
-        tableName: getEnvOrThrow('PG_TABLE_NAME'),
       });
     default:
       throw new Error(`Unrecognized vector store "${store}"`);

@@ -3,7 +3,6 @@ import { hideBin } from 'yargs/helpers';
 
 import { Chroma } from '../../vector_stores/chroma';
 import { Pinecone } from '../../vector_stores/pinecone';
-import { PgVector } from '../../vector_stores/pgvector';
 import { SUPPORTED_VECTOR_STORES, type SupportedVectorStores } from '../../vector_stores';
 import { getEnv, getEnvOrThrow } from '../../config';
 
@@ -30,12 +29,6 @@ async function prepare(store: SupportedVectorStores) {
         environment: getEnvOrThrow('PINECONE_ENVIRONMENT'),
         index: getEnvOrThrow('PINECONE_INDEX'),
         dimension: Number(getEnvOrThrow('PINECONE_INDEX_DIMENSION')),
-      });
-    case 'pgvector':
-      return await PgVector.prepare({
-        tableName: getEnvOrThrow('PG_TABLE_NAME'),
-        dimension: Number(getEnvOrThrow('PG_VECTOR_DIMENSION')),
-        dsn: getEnvOrThrow('PG_DSN'),
       });
     default:
       throw new Error(`Unrecognized store "${store}"`);
