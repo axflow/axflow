@@ -76,6 +76,14 @@ npm run vector_store:upload -- \
 
 The splitter defaults to a basic text splitter and the embedder defaults to OpenAI's `text-embedding-ada-002`.
 
+### Delete records
+
+You can delete records by id.
+
+```
+npm run vector_store:delete -- --store pinecone --ids id-1 id-2 id-3
+```
+
 ### Query records
 
 ```bash
@@ -110,5 +118,5 @@ You can filter metadata when querying. Currently, we only support exact match, s
 
 ```
 npm run query -- --store=pgvector --query="How do I do X where X is something in my documents?" --filterTerm='San Francisco' --topK=3
-
 ```
+
