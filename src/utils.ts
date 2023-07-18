@@ -17,7 +17,8 @@ const TEMPLATE_VARIABLE_RE = /\{([a-zA-Z_][a-zA-Z_0-9]*)\}/g;
 /**
  * Substitute all template variables with their provided values.
  *
- * A "template variable" is any valid JavaScript variable inside of curly braces.
+ * A template variable takes the form {identifier} where `identifier`
+ * is any valid javascript identifier.
  *
  * Examples:
  *

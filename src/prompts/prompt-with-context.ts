@@ -13,7 +13,7 @@ export class PromptWithContext implements Prompt {
   constructor(options: PromptWithContextOptions) {
     this.template = options.template;
     this.contextSeparator =
-      typeof options.contextSeparator === 'string' ? options.contextSeparator : '\n---\n';
+      typeof options.contextSeparator === 'string' ? options.contextSeparator : '\n';
   }
 
   async render(values: { context: string[]; query: string }) {
