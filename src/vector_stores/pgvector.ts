@@ -68,7 +68,7 @@ export class PgVector implements IVectorStore {
   }
 
   async delete(ids: string | string[]) {
-    await this.db.result(`DELETE FROM ${this.tableName} WHERE id IN ($1)`, wrap(ids));
+    await this.db.result(`DELETE FROM ${this.tableName} WHERE id IN ($1:list)`, [wrap(ids)]);
   }
 
   async query(embedding: number[], options: IVectorQueryOptions): Promise<IVectorQueryResult[]> {
