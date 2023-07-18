@@ -44,9 +44,7 @@
     "chromadb": "^1.5.3",
     "glob": "^10.3.1",
     "langchain": "^0.0.101",
-    "openai": "^4.0.0-beta.5",
-    "pg-promise": "^11.5.0",
-    "pgvector": "^0.1.4"
+    "openai": "^4.0.0-beta.5"
   },
   "devDependencies": {
     "@types/jest": "^29.5.2",
