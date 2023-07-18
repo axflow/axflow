@@ -2,6 +2,7 @@
   "name": "axgen",
   "version": "0.0.1-beta.1",
   "description": "A framework for Retrieval Augmented Generation (RAG)",
+  "main": "./dist/index.js",
   "keywords": [
     "retrieval agumented generation",
     "rag",
@@ -28,27 +29,28 @@
     "vector_store:delete": "ts-node ./src/cmd/vector_store/delete.ts",
     "vector_store:teardown": "ts-node ./src/cmd/vector_store/teardown.ts",
     "query": "ts-node ./src/cmd/query.ts",
-    "test": "jest --testMatch \"**/test/**/*.test.ts\""
+    "test": "jest --testMatch \"**/test/**/*.test.ts\"",
+    "prepublishOnly": "npm run build"
   },
   "author": "Axilla (https://axilla.io)",
   "license": "MIT",
   "dependencies": {
     "@pinecone-database/pinecone": "^0.1.6",
     "chromadb": "^1.5.3",
-    "dotenv": "^16.3.1",
     "glob": "^10.3.1",
     "langchain": "^0.0.101",
     "openai": "^4.0.0-beta.5",
     "pg-promise": "^11.5.0",
-    "pgvector": "^0.1.4",
-    "yargs": "^17.7.2"
+    "pgvector": "^0.1.4"
   },
   "devDependencies": {
     "@types/jest": "^29.5.2",
+    "dotenv": "^16.3.1",
     "jest": "^29.5.0",
     "prettier": "^2.8.8",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
+    "typescript": "^5.1.6",
+    "yargs": "^17.7.2"
   }
 }
