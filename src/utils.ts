@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import type { IStringer } from './types';
 
 export function zip<T1, T2>(l1: Array<T1>, l2: Array<T2>): Array<[T1, T2]> {
@@ -13,7 +15,7 @@ export function wrap<T>(obj: T | T[]): T[] {
 }
 
 export function generateId() {
-  return crypto.randomUUID();
+  return randomUUID();
 }
 
 const TEMPLATE_VARIABLE_RE = /\{([a-zA-Z_][a-zA-Z_0-9]*)\}/g;
