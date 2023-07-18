@@ -1,10 +1,10 @@
 import { Document, IDataSource } from '../types';
 
-export const NAME = 'text' as const;
+export const NAME = 'text-document' as const;
 
 export type TextDocumentOptions = {
   content: string;
-  filename: string;
+  url: string;
 };
 
 export class TextDocument implements IDataSource {
@@ -18,7 +18,7 @@ export class TextDocument implements IDataSource {
     const content = this.options.content;
 
     yield {
-      url: `file://${this.options.filename}`,
+      url: this.options.url,
       text: content,
     };
   }
