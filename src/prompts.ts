@@ -1,12 +1,28 @@
-import { formatTemplate } from '../utils';
-import type { Prompt } from '../types';
+import { formatTemplate } from './utils';
+import type { Prompt as PromptType, Stringer } from './types';
+
+export type PromptOptions = {
+  template: string;
+};
+
+export class Prompt implements PromptType {
+  private template: string;
+
+  constructor(options: PromptOptions) {
+    this.template = options.template;
+  }
+
+  async render(values: Record<string, Stringer>) {
+    return formatTemplate(this.template, values);
+  }
+}
 
 export type PromptWithContextOptions = {
   template: string;
   contextSeparator?: string;
 };
 
-export class PromptWithContext implements Prompt {
+export class PromptWithContext implements PromptType {
   private template: string;
   private contextSeparator: string;
 

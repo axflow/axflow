@@ -1,8 +1,7 @@
 import type { VectorStore } from './types';
 
 import { OpenAICompletion } from './models/open-ai-completion';
-import { Prompt } from './prompts/prompt';
-import { PromptWithContext } from './prompts/prompt-with-context';
+import { Prompt, PromptWithContext } from './prompts';
 import { RAG } from './queries/rag';
 import { Retriever } from './retrieval';
 import { OpenAIEmbedder } from './embedders/open-ai-embedder';
