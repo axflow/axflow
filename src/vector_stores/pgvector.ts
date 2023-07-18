@@ -1,7 +1,12 @@
 import pgpromise from 'pg-promise';
 import { IInitOptions, ParameterizedQuery } from 'pg-promise';
 import { registerType, toSql } from 'pgvector/pg';
-import type { VectorStore, ChunkWithEmbeddings, VectorQuery, VectorQueryResult } from '../types';
+import type {
+  VectorStore,
+  ChunkWithEmbeddings,
+  VectorQueryOptions,
+  VectorQueryResult,
+} from '../types';
 
 function getDB(dsn: string) {
   const initOptions: IInitOptions = {
@@ -45,35 +50,35 @@ export class PgVector implements VectorStore {
     this.tableName = options.tableName;
   }
 
-  async add(
-    iterable: ChunkWithEmbeddings[] | AsyncIterable<ChunkWithEmbeddings[]>
-  ): Promise<string[]> {
-    if (Array.isArray(iterable)) {
-      return this._add(iterable);
-    }
+  async add(chunks: ChunkWithEmbeddings[]): Promise<string[]> {
+    const ids = [];
 
-    let ids: string[] = [];
+    for (const chunk of chunks) {
+      ids.push(chunk.id);
 
-    for await (const chunks of iterable) {
-      ids = ids.concat(await this._add(chunks));
+      // TODO make this a put_multi
+      await this.db.none(
+        `INSERT INTO ${this.tableName} (embedding, text, url, metadata) VALUES ($1, $2, $3, $4)`,
+        [toSql(chunk.embeddings), chunk.text, chunk.url, chunk.metadata]
+      );
     }
 
     return ids;
   }
 
-  async query(query: VectorQuery): Promise<VectorQueryResult[]> {
+  async query(embedding: number[], options: VectorQueryOptions): Promise<VectorQueryResult[]> {
     // Operators (https://github.com/pgvector/pgvector/#distances):
     // '<->': L2 distance
     // '<#>': negative inner product
     // '<=>': cosine similarity
-    const findVectors = query.filterTerm
+    const findVectors = options.filterTerm
       ? new ParameterizedQuery({
           text: `SELECT * FROM ${this.tableName} WHERE metadata->>'term' = $1 ORDER BY embedding <=> $2 LIMIT $3`,
-          values: [query.filterTerm, toSql(query.embedding), query.topK],
+          values: [options.filterTerm, toSql(embedding), options.topK],
         })
       : new ParameterizedQuery({
           text: `SELECT * FROM ${this.tableName} ORDER BY embedding <=> $1 LIMIT $2`,
-          values: [toSql(query.embedding), query.topK],
+          values: [toSql(embedding), options.topK],
         });
 
     const response = await this.db.any(findVectors);
@@ -90,21 +95,5 @@ export class PgVector implements VectorStore {
         similarity: null,
       };
     });
-  }
-
-  private async _add(chunks: ChunkWithEmbeddings[]) {
-    const ids = [];
-
-    for (const chunk of chunks) {
-      ids.push(chunk.id);
-
-      // TODO make this a put_multi
-      await this.db.none(
-        `INSERT INTO ${this.tableName} (embedding, text, url, metadata) VALUES ($1, $2, $3, $4)`,
-        [toSql(chunk.embeddings), chunk.text, chunk.url, chunk.metadata]
-      );
-    }
-
-    return ids;
   }
 }

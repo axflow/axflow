@@ -52,12 +52,11 @@ export type DataEmbedder = DataEmbedderObject | DataEmbedderFunction;
 
 export interface VectorStore {
   add(chunks: ChunkWithEmbeddings[], options?: object): Promise<string[]>;
-  query(query: VectorQuery): Promise<VectorQueryResult[]>;
+  query(embedding: number[], options: VectorQueryOptions): Promise<VectorQueryResult[]>;
 }
 
-export interface VectorQuery {
+export interface VectorQueryOptions {
   topK: number;
-  embedding: number[];
   filterTerm?: string;
 }
 

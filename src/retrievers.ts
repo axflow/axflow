@@ -16,9 +16,6 @@ export class Retriever implements IRetriever {
   }
 
   retrieve(embedding: number[]) {
-    return this.store.query({
-      ...this.options,
-      embedding: embedding,
-    });
+    return this.store.query(embedding, this.options);
   }
 }

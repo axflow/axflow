@@ -2,7 +2,12 @@ import { PineconeClient, utils as pineconeUtils } from '@pinecone-database/pinec
 
 const { chunkedUpsert } = pineconeUtils;
 
-import type { VectorStore, ChunkWithEmbeddings, VectorQuery, VectorQueryResult } from '../types';
+import type {
+  VectorStore,
+  ChunkWithEmbeddings,
+  VectorQueryResult,
+  VectorQueryOptions,
+} from '../types';
 
 export const NAME = 'pinecone' as const;
 
@@ -46,63 +51,59 @@ export class Pinecone implements VectorStore {
   private client: PineconeClient;
   private initialized: Promise<void>;
 
-  constructor(options: {
-    index: string;
-    namespace: string;
-    client?: PineconeClient;
-    apiKey?: string;
-    environment?: string;
-  }) {
+  constructor(options: { index: string; namespace: string; apiKey: string; environment: string }) {
     this.index = options.index;
     this.namespace = options.namespace;
 
-    if (options.client) {
-      this.client = options.client;
-      this.initialized = Promise.resolve();
-    } else {
-      const { apiKey, environment } = options;
+    const { apiKey, environment } = options;
 
-      if (!apiKey || !environment) {
-        throw new Error(
-          'apiKey and environment options are required when the client option is not provided'
-        );
-      }
-
-      this.client = new PineconeClient();
-      this.initialized = this.client.init({ apiKey, environment });
+    if (!apiKey || !environment) {
+      throw new Error(
+        'apiKey and environment options are required when the client option is not provided'
+      );
     }
+
+    this.client = new PineconeClient();
+    this.initialized = this.client.init({ apiKey, environment });
   }
 
-  async add(
-    iterable: ChunkWithEmbeddings[] | AsyncIterable<ChunkWithEmbeddings[]>,
-    options?: { chunkSize?: number }
-  ): Promise<string[]> {
+  async add(chunks: ChunkWithEmbeddings[], options?: { chunkSize?: number }): Promise<string[]> {
     await this.initialized;
 
-    if (Array.isArray(iterable)) {
-      return this._add(iterable, options);
+    const ids = [];
+    const vectors = [];
+
+    for (const chunk of chunks) {
+      ids.push(chunk.id);
+
+      vectors.push({
+        id: chunk.id,
+        values: chunk.embeddings,
+        metadata: {
+          ...chunk.metadata,
+          _text: chunk.text,
+          _url: chunk.url,
+        },
+      });
     }
 
-    let ids: string[] = [];
-
-    for await (const chunks of iterable) {
-      ids = ids.concat(await this._add(chunks, options));
-    }
+    const index = this.getIndex();
+    await chunkedUpsert(index, vectors, this.namespace, options?.chunkSize);
 
     return ids;
   }
 
-  async query(query: VectorQuery): Promise<VectorQueryResult[]> {
+  async query(embedding: number[], options: VectorQueryOptions): Promise<VectorQueryResult[]> {
     await this.initialized;
 
     const index = this.getIndex();
     const response = await index.query({
       queryRequest: {
-        topK: query.topK,
-        vector: query.embedding,
+        topK: options.topK,
+        vector: embedding,
         namespace: this.namespace,
         includeMetadata: true,
-        filter: query.filterTerm ? { term: { $eq: query.filterTerm } } : undefined,
+        filter: options.filterTerm ? { term: { $eq: options.filterTerm } } : undefined,
       },
     });
 
@@ -128,30 +129,6 @@ export class Pinecone implements VectorStore {
         similarity: match.score || null,
       };
     });
-  }
-
-  private async _add(chunks: ChunkWithEmbeddings[], options?: { chunkSize?: number }) {
-    const ids = [];
-    const vectors = [];
-
-    for (const chunk of chunks) {
-      ids.push(chunk.id);
-
-      vectors.push({
-        id: chunk.id,
-        values: chunk.embeddings,
-        metadata: {
-          ...chunk.metadata,
-          _text: chunk.text,
-          _url: chunk.url,
-        },
-      });
-    }
-
-    const index = this.getIndex();
-    await chunkedUpsert(index, vectors, this.namespace, options?.chunkSize);
-
-    return ids;
   }
 
   private getIndex() {

@@ -1,6 +1,11 @@
 import { ChromaClient, type Collection } from 'chromadb';
 
-import type { VectorStore, ChunkWithEmbeddings, VectorQuery, VectorQueryResult } from '../types';
+import type {
+  VectorStore,
+  ChunkWithEmbeddings,
+  VectorQueryOptions,
+  VectorQueryResult,
+} from '../types';
 
 export const NAME = 'chroma' as const;
 
@@ -29,57 +34,54 @@ export class Chroma implements VectorStore {
   private collection: Collection | null = null;
   private initialized: Promise<void>;
 
-  constructor(options: { collection: string | Collection; path?: string; client?: ChromaClient }) {
-    this.client =
-      options.client ||
-      new ChromaClient({
-        path: options.path,
+  constructor(options: { collection: string; path?: string }) {
+    this.client = new ChromaClient({
+      path: options.path,
+    });
+
+    this.initialized = this.client
+      .getCollection({
+        name: options.collection,
+      })
+      .then((collection) => {
+        this.collection = collection;
       });
-
-    const collection = options.collection;
-
-    if (typeof collection === 'string') {
-      this.initialized = this.client
-        .getCollection({
-          name: collection,
-        })
-        .then((collection) => {
-          this.collection = collection;
-        });
-    } else if (collection) {
-      this.collection = collection;
-      this.initialized = Promise.resolve();
-    } else {
-      throw new Error('collection option is required');
-    }
   }
 
-  async add(
-    iterable: ChunkWithEmbeddings[] | AsyncIterable<ChunkWithEmbeddings[]>
-  ): Promise<string[]> {
+  async add(chunks: ChunkWithEmbeddings[]): Promise<string[]> {
     await this.initialized;
 
-    if (Array.isArray(iterable)) {
-      return this._add(iterable);
+    const ids = [];
+    const embeddings = [];
+    const metadatas = [];
+    const contents = [];
+
+    for (const chunk of chunks) {
+      ids.push(chunk.id);
+      embeddings.push(chunk.embeddings);
+      metadatas.push({ ...chunk.metadata, _url: chunk.url });
+      contents.push(chunk.text);
     }
 
-    let ids: string[] = [];
-
-    for await (const chunks of iterable) {
-      ids = ids.concat(await this._add(chunks));
-    }
+    const collection = this.getCollection();
+    await collection.add({
+      ids,
+      embeddings,
+      metadatas,
+      documents: contents,
+    });
 
     return ids;
   }
 
-  async query(query: VectorQuery): Promise<VectorQueryResult[]> {
+  async query(embedding: number[], options: VectorQueryOptions): Promise<VectorQueryResult[]> {
     await this.initialized;
 
     const collection = this.getCollection();
     const response = await collection.query({
-      nResults: query.topK,
-      queryEmbeddings: query.embedding,
-      where: query.filterTerm ? { term: { $eq: query.filterTerm } } : undefined,
+      nResults: options.topK,
+      queryEmbeddings: embedding,
+      where: options.filterTerm ? { term: { $eq: options.filterTerm } } : undefined,
     });
 
     const ids = response.ids[0];
@@ -112,30 +114,6 @@ export class Chroma implements VectorStore {
     }
 
     return results;
-  }
-
-  private async _add(chunks: ChunkWithEmbeddings[]) {
-    const ids = [];
-    const embeddings = [];
-    const metadatas = [];
-    const contents = [];
-
-    for (const document of chunks) {
-      ids.push(document.id);
-      embeddings.push(document.embeddings);
-      metadatas.push({ ...document.metadata, _url: document.url });
-      contents.push(document.text);
-    }
-
-    const collection = this.getCollection();
-    await collection.add({
-      ids,
-      embeddings,
-      metadatas,
-      documents: contents,
-    });
-
-    return ids;
   }
 
   private getCollection() {
