@@ -27,7 +27,7 @@ async function completion(options: QueryOptions) {
 
   const rag = new Completion({
     model: new OpenAICompletion({ model: model, max_tokens: 256 }),
-    prompt: new BasicPrompt({ template: QUESTION_WITH_CONTEXT }),
+    prompt: new BasicPrompt({ template: QUESTION_WITHOUT_CONTEXT }),
   });
 
   const result = rag.stream(query);
@@ -44,7 +44,7 @@ async function rag(store: IVectorStore, options: QueryOptions) {
 
   const rag = new RAG({
     model: new OpenAICompletion({ model: model, max_tokens: 256 }),
-    prompt: new PromptWithContext({ template: QUESTION_WITHOUT_CONTEXT }),
+    prompt: new PromptWithContext({ template: QUESTION_WITH_CONTEXT }),
     retriever: new Retriever({ store: store, topK: topK, filterTerm: filterTerm }),
     embedder: new OpenAIEmbedder(),
   });
