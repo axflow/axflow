@@ -1,15 +1,15 @@
 import { ChromaClient, type Collection } from 'chromadb';
 
 import type {
-  VectorStore,
+  IVectorStore,
+  IVectorQueryOptions,
+  IVectorQueryResult,
   ChunkWithEmbeddings,
-  VectorQueryOptions,
-  VectorQueryResult,
 } from '../types';
 
 export const NAME = 'chroma' as const;
 
-export class Chroma implements VectorStore {
+export class Chroma implements IVectorStore {
   static async prepare(options: { collection: string; path?: string }) {
     const client = new ChromaClient({
       path: options.path,
@@ -74,7 +74,7 @@ export class Chroma implements VectorStore {
     return ids;
   }
 
-  async query(embedding: number[], options: VectorQueryOptions): Promise<VectorQueryResult[]> {
+  async query(embedding: number[], options: IVectorQueryOptions): Promise<IVectorQueryResult[]> {
     await this.initialized;
 
     const collection = this.getCollection();
@@ -89,7 +89,7 @@ export class Chroma implements VectorStore {
     const metadatas = response.metadatas[0];
     const distances = response.distances ? response.distances[0] : [];
 
-    const results: VectorQueryResult[] = [];
+    const results: IVectorQueryResult[] = [];
 
     for (let i = 0; i < ids.length; i++) {
       const id = ids[i];

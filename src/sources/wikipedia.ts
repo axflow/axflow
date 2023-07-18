@@ -1,4 +1,4 @@
-import { Document, DataSource } from '../types';
+import { Document, IDataSource } from '../types';
 
 export const NAME = 'wikipedia' as const;
 
@@ -6,7 +6,7 @@ export type WikipediaOptions = {
   term: string;
 };
 
-export class Wikipedia implements DataSource {
+export class Wikipedia implements IDataSource {
   private options: WikipediaOptions;
 
   constructor(options: WikipediaOptions) {

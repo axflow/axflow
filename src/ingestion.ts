@@ -1,11 +1,4 @@
-import {
-  DataEmbedder,
-  DataEmbedderObject,
-  DataSource,
-  DataSplitter,
-  DataSplitterObject,
-  VectorStore,
-} from './types';
+import type { IDataEmbedder, IDataSource, IDataSplitter, IVectorStore } from './types';
 import { zip } from './utils';
 
 type LoggerType = { info: (message: string) => void };
@@ -15,28 +8,24 @@ const logger = {
 };
 
 export class Ingestion {
-  private store: VectorStore;
-  private source: DataSource;
-  private splitter: DataSplitterObject;
-  private embedder: DataEmbedderObject;
+  private store: IVectorStore;
+  private source: IDataSource;
+  private splitter: IDataSplitter;
+  private embedder: IDataEmbedder;
   private logger: LoggerType;
 
   constructor(options: {
-    store: VectorStore;
-    source: DataSource;
-    splitter: DataSplitter;
-    embedder: DataEmbedder;
+    store: IVectorStore;
+    source: IDataSource;
+    splitter: IDataSplitter;
+    embedder: IDataEmbedder;
     logger?: LoggerType;
   }) {
     this.store = options.store;
     this.source = options.source;
     this.logger = options.logger || logger;
-
-    this.splitter =
-      typeof options.splitter === 'function' ? { split: options.splitter } : options.splitter;
-
-    this.embedder =
-      typeof options.embedder === 'function' ? { embed: options.embedder } : options.embedder;
+    this.splitter = options.splitter;
+    this.embedder = options.embedder;
   }
 
   async run() {

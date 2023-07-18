@@ -1,5 +1,5 @@
 import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import { DataSplitterObject, Chunk, Document } from '../types';
+import { IDataSplitter, Chunk, Document } from '../types';
 import { generateId } from '../utils';
 
 export const NAME = 'text' as const;
@@ -11,7 +11,7 @@ export type TextSplitterOptions = {
   separators?: string[];
 };
 
-export class TextSplitter implements DataSplitterObject {
+export class TextSplitter implements IDataSplitter {
   private splitter: RecursiveCharacterTextSplitter;
 
   constructor(options?: TextSplitterOptions) {

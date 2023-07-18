@@ -7,14 +7,14 @@ import { Pinecone } from '../vector_stores/pinecone';
 import { Chroma } from '../vector_stores/chroma';
 import { PgVector } from '../vector_stores/pgvector';
 import { getEnv, getEnvOrThrow } from '../config';
-import { VectorStore } from '../types';
+import { IVectorStore } from '../types';
 
 import type { SupportedDataSources } from '../sources';
 import type { SupportedVectorStores } from '../vector_stores';
 import type { SupportedDataSplitters } from '../splitters';
 import type { SupportedDataEmbedders } from '../embedders';
 
-export function getVectorStore(store: SupportedVectorStores): VectorStore {
+export function getVectorStore(store: SupportedVectorStores): IVectorStore {
   switch (store) {
     case 'chroma':
       return new Chroma({

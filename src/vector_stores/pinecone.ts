@@ -3,15 +3,15 @@ import { PineconeClient, utils as pineconeUtils } from '@pinecone-database/pinec
 const { chunkedUpsert } = pineconeUtils;
 
 import type {
-  VectorStore,
+  IVectorStore,
+  IVectorQueryResult,
+  IVectorQueryOptions,
   ChunkWithEmbeddings,
-  VectorQueryResult,
-  VectorQueryOptions,
 } from '../types';
 
 export const NAME = 'pinecone' as const;
 
-export class Pinecone implements VectorStore {
+export class Pinecone implements IVectorStore {
   static async prepare(options: {
     apiKey: string;
     environment: string;
@@ -93,7 +93,7 @@ export class Pinecone implements VectorStore {
     return ids;
   }
 
-  async query(embedding: number[], options: VectorQueryOptions): Promise<VectorQueryResult[]> {
+  async query(embedding: number[], options: IVectorQueryOptions): Promise<IVectorQueryResult[]> {
     await this.initialized;
 
     const index = this.getIndex();

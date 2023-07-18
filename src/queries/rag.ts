@@ -1,17 +1,17 @@
-import type { DataEmbedderObject, IModel, IPrompt, IRetriever } from '../types';
+import type { IDataEmbedder, IModel, IPrompt, IRetriever } from '../types';
 
 export type RAGOptions = {
   model: IModel;
   prompt: IPrompt;
   retriever: IRetriever;
-  embedder: DataEmbedderObject;
+  embedder: IDataEmbedder;
 };
 
 export class RAG {
   private retriever: IRetriever;
   private model: IModel;
   private prompt: IPrompt;
-  private embedder: DataEmbedderObject;
+  private embedder: IDataEmbedder;
 
   constructor(options: RAGOptions) {
     this.model = options.model;

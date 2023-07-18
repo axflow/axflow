@@ -22,45 +22,33 @@ export type ChunkWithEmbeddings = Chunk & {
 // Data Operations //
 /////////////////////
 
-export interface DataSource {
+export interface IDataSource {
   iterable(): AsyncIterable<Document>;
 }
 
-export interface DataSplitterObject {
+export interface IDataSplitter {
   split(node: Document): Promise<Chunk[]>;
 }
 
-export interface DataSplitterFunction {
-  (node: Document): Promise<Chunk[]>;
-}
-
-export type DataSplitter = DataSplitterObject | DataSplitterFunction;
-
-export interface DataEmbedderObject {
+export interface IDataEmbedder {
   embed(data: string | string[]): Promise<number[][]>;
 }
-
-export interface DataEmbedderFunction {
-  (data: string | string[]): Promise<number[][]>;
-}
-
-export type DataEmbedder = DataEmbedderObject | DataEmbedderFunction;
 
 //////////////////
 // Vector Store //
 //////////////////
 
-export interface VectorStore {
+export interface IVectorStore {
   add(chunks: ChunkWithEmbeddings[], options?: object): Promise<string[]>;
-  query(embedding: number[], options: VectorQueryOptions): Promise<VectorQueryResult[]>;
+  query(embedding: number[], options: IVectorQueryOptions): Promise<IVectorQueryResult[]>;
 }
 
-export interface VectorQueryOptions {
+export interface IVectorQueryOptions {
   topK: number;
   filterTerm?: string;
 }
 
-export interface VectorQueryResult {
+export interface IVectorQueryResult {
   id: string;
   similarity: number | null;
   chunk: Chunk;
@@ -85,7 +73,7 @@ export interface IModel {
 // Retriever //
 ///////////////
 export interface IRetriever {
-  retrieve(embedding: number[]): Promise<VectorQueryResult[]>;
+  retrieve(embedding: number[]): Promise<IVectorQueryResult[]>;
 }
 
 ///////////

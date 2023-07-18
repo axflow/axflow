@@ -1,5 +1,5 @@
 import { MarkdownTextSplitter } from 'langchain/text_splitter';
-import { DataSplitterObject, Document, Chunk } from '../types';
+import { IDataSplitter, Document, Chunk } from '../types';
 import { generateId } from '../utils';
 
 export const NAME = 'markdown' as const;
@@ -10,7 +10,7 @@ export type MarkdownSplitterOptions = {
   keepSeparator?: boolean;
 };
 
-export class MarkdownSplitter implements DataSplitterObject {
+export class MarkdownSplitter implements IDataSplitter {
   private splitter: MarkdownTextSplitter;
 
   constructor(options?: MarkdownSplitterOptions) {

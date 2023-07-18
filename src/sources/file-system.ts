@@ -3,7 +3,7 @@ import { resolve, join } from 'node:path';
 
 import { glob } from 'glob';
 
-import { Document, DataSource } from '../types';
+import { Document, IDataSource } from '../types';
 
 export const NAME = 'file_system' as const;
 
@@ -12,7 +12,7 @@ export type FileSystemOptions = {
   glob?: string;
 };
 
-export class FileSystem implements DataSource {
+export class FileSystem implements IDataSource {
   private options: FileSystemOptions;
 
   constructor(options: FileSystemOptions) {

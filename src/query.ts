@@ -1,4 +1,4 @@
-import type { VectorStore } from './types';
+import type { IVectorStore } from './types';
 
 import { OpenAICompletion } from './models/open-ai-completion';
 import { BasicPrompt, PromptWithContext } from './prompts';
@@ -18,7 +18,7 @@ type QueryOptions = {
   filterTerm: string;
 };
 
-export async function query(store: VectorStore, options: QueryOptions) {
+export async function query(store: IVectorStore, options: QueryOptions) {
   return options.llmOnly ? completion(options) : rag(store, options);
 }
 
@@ -39,7 +39,7 @@ async function completion(options: QueryOptions) {
   process.stdout.write('\n');
 }
 
-async function rag(store: VectorStore, options: QueryOptions) {
+async function rag(store: IVectorStore, options: QueryOptions) {
   const { model, topK, filterTerm, query } = options;
 
   const rag = new RAG({

@@ -2,10 +2,10 @@ import pgpromise from 'pg-promise';
 import { IInitOptions, ParameterizedQuery } from 'pg-promise';
 import { registerType, toSql } from 'pgvector/pg';
 import type {
-  VectorStore,
+  IVectorStore,
+  IVectorQueryOptions,
+  IVectorQueryResult,
   ChunkWithEmbeddings,
-  VectorQueryOptions,
-  VectorQueryResult,
 } from '../types';
 
 function getDB(dsn: string) {
@@ -21,7 +21,7 @@ function getDB(dsn: string) {
 
 export const NAME = 'pgvector' as const;
 
-export class PgVector implements VectorStore {
+export class PgVector implements IVectorStore {
   static async prepare(options: { tableName: string; dimension: number; dsn: string }) {
     if (options.dimension > 2000) {
       throw new Error('pgvector currently only supports dimensions less than 2000');
@@ -66,7 +66,7 @@ export class PgVector implements VectorStore {
     return ids;
   }
 
-  async query(embedding: number[], options: VectorQueryOptions): Promise<VectorQueryResult[]> {
+  async query(embedding: number[], options: IVectorQueryOptions): Promise<IVectorQueryResult[]> {
     // Operators (https://github.com/pgvector/pgvector/#distances):
     // '<->': L2 distance
     // '<#>': negative inner product

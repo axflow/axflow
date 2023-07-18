@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { DataEmbedderObject } from '../types';
+import { IDataEmbedder } from '../types';
 import { getEnvOrThrow } from '../config';
 
 export const NAME = 'openai' as const;
@@ -8,7 +8,7 @@ export type OpenAIEmbedderOptions = {
   model?: string;
 };
 
-export class OpenAIEmbedder implements DataEmbedderObject {
+export class OpenAIEmbedder implements IDataEmbedder {
   private model: string;
   private client: OpenAI;
 

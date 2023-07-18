@@ -1,13 +1,13 @@
-import type { IRetriever, VectorStore } from './types';
+import type { IRetriever, IVectorStore } from './types';
 
 type RetrievalOptions = {
-  store: VectorStore;
+  store: IVectorStore;
   topK: number;
   filterTerm?: string;
 };
 
 export class Retriever implements IRetriever {
-  private store: VectorStore;
+  private store: IVectorStore;
   private options: Omit<RetrievalOptions, 'store'>;
 
   constructor(options: RetrievalOptions) {
