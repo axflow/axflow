@@ -4,7 +4,7 @@ import { generateId } from '../utils';
 
 export const NAME = 'markdown' as const;
 
-type Options = {
+export type MarkdownSplitterOptions = {
   chunkSize?: number;
   chunkOverlap?: number;
   keepSeparator?: boolean;
@@ -13,7 +13,7 @@ type Options = {
 export class MarkdownSplitter implements DataSplitterObject {
   private splitter: MarkdownTextSplitter;
 
-  constructor(options?: Options) {
+  constructor(options?: MarkdownSplitterOptions) {
     this.splitter = new MarkdownTextSplitter({
       chunkSize: 1000,
       chunkOverlap: 0,

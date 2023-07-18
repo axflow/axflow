@@ -1,9 +1,9 @@
 import type { VectorStore } from './types';
 
 import { OpenAICompletion } from './models/open-ai-completion';
-import { Prompt, PromptWithContext } from './prompts';
+import { BasicPrompt, PromptWithContext } from './prompts';
 import { RAG } from './queries/rag';
-import { Retriever } from './retrieval';
+import { Retriever } from './retrievers';
 import { OpenAIEmbedder } from './embedders/open-ai-embedder';
 import { Completion } from './queries/completion';
 import { QUESTION_WITH_CONTEXT, QUESTION_WITHOUT_CONTEXT } from './templates';
@@ -27,7 +27,7 @@ async function completion(options: QueryOptions) {
 
   const rag = new Completion({
     model: new OpenAICompletion({ model: model, max_tokens: 256 }),
-    prompt: new Prompt({ template: QUESTION_WITH_CONTEXT }),
+    prompt: new BasicPrompt({ template: QUESTION_WITH_CONTEXT }),
   });
 
   const result = rag.stream(query);

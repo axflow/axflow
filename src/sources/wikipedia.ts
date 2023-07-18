@@ -2,14 +2,14 @@ import { Document, DataSource } from '../types';
 
 export const NAME = 'wikipedia' as const;
 
-type Options = {
+export type WikipediaOptions = {
   term: string;
 };
 
 export class Wikipedia implements DataSource {
-  private options: Options;
+  private options: WikipediaOptions;
 
-  constructor(options: Options) {
+  constructor(options: WikipediaOptions) {
     this.options = options;
   }
 

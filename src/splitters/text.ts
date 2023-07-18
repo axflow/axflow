@@ -4,7 +4,7 @@ import { generateId } from '../utils';
 
 export const NAME = 'text' as const;
 
-type Options = {
+export type TextSplitterOptions = {
   chunkSize?: number;
   chunkOverlap?: number;
   keepSeparator?: boolean;
@@ -14,7 +14,7 @@ type Options = {
 export class TextSplitter implements DataSplitterObject {
   private splitter: RecursiveCharacterTextSplitter;
 
-  constructor(options?: Options) {
+  constructor(options?: TextSplitterOptions) {
     this.splitter = new RecursiveCharacterTextSplitter({
       chunkSize: 1000,
       chunkOverlap: 0,

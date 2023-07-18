@@ -1,18 +1,18 @@
 import { formatTemplate } from './utils';
-import type { Prompt as PromptType, Stringer } from './types';
+import type { IPrompt, IStringer } from './types';
 
-export type PromptOptions = {
+export type BasicPromptOptions = {
   template: string;
 };
 
-export class Prompt implements PromptType {
+export class BasicPrompt implements IPrompt {
   private template: string;
 
-  constructor(options: PromptOptions) {
+  constructor(options: BasicPromptOptions) {
     this.template = options.template;
   }
 
-  async render(values: Record<string, Stringer>) {
+  async render(values: Record<string, IStringer>) {
     return formatTemplate(this.template, values);
   }
 }
@@ -22,7 +22,7 @@ export type PromptWithContextOptions = {
   contextSeparator?: string;
 };
 
-export class PromptWithContext implements PromptType {
+export class PromptWithContext implements IPrompt {
   private template: string;
   private contextSeparator: string;
 
