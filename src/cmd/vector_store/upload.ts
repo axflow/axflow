@@ -1,7 +1,7 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { getDataEmbedder, getDataSource, getDataSplitter, getVectorStore } from '../utils';
-import { chunks } from '../../chunks';
+import { Ingestion } from '../../ingestion';
 import { SUPPORTED_DATA_SOURCES } from '../../sources';
 import { SUPPORTED_DATA_SPLITTERS } from '../../splitters';
 import { SUPPORTED_DATA_EMBEDDERS } from '../../embedders';
@@ -48,12 +48,15 @@ const argv = yargs(hideBin(process.argv))
   })
   .parseSync();
 
-const store = getVectorStore(argv.store);
+main();
 
-store.add(
-  chunks({
+async function main() {
+  const ingestion = new Ingestion({
+    store: getVectorStore(argv.store),
     source: getDataSource(argv.source, JSON.parse(argv.sourceOptions)),
     splitter: getDataSplitter(argv.splitter, JSON.parse(argv.splitterOptions)),
     embedder: getDataEmbedder(argv.embedder, JSON.parse(argv.embedderOptions)),
-  })
-);
+  });
+
+  await ingestion.run();
+}

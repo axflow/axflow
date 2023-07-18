@@ -51,10 +51,7 @@ export type DataEmbedder = DataEmbedderObject | DataEmbedderFunction;
 //////////////////
 
 export interface VectorStore {
-  add(
-    chunks: ChunkWithEmbeddings[] | AsyncIterable<ChunkWithEmbeddings[]>,
-    options?: object
-  ): Promise<string[]>;
+  add(chunks: ChunkWithEmbeddings[], options?: object): Promise<string[]>;
   query(query: VectorQuery): Promise<VectorQueryResult[]>;
 }
 
