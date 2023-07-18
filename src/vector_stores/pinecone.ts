@@ -4,48 +4,47 @@ const { chunkedUpsert } = pineconeUtils;
 
 import type { VectorStore, ChunkWithEmbeddings, VectorQuery, VectorQueryResult } from '../types';
 
-export async function prepare(options: {
-  apiKey: string;
-  environment: string;
-  index: string;
-  dimension: number;
-}) {
-  const { createIndexIfNotExists } = pineconeUtils;
-
-  const pinecone = new PineconeClient();
-
-  await pinecone.init({
-    apiKey: options.apiKey,
-    environment: options.environment,
-  });
-
-  const index = options.index;
-  const dimension = options.dimension;
-
-  await createIndexIfNotExists(pinecone, index, dimension);
-}
-
-export async function teardown(options: { apiKey: string; environment: string; index: string }) {
-  const pinecone = new PineconeClient();
-
-  await pinecone.init({
-    apiKey: options.apiKey,
-    environment: options.environment,
-  });
-
-  await pinecone.deleteIndex({
-    indexName: options.index,
-  });
-}
-
 export const NAME = 'pinecone' as const;
 
 export class Pinecone implements VectorStore {
+  static async prepare(options: {
+    apiKey: string;
+    environment: string;
+    index: string;
+    dimension: number;
+  }) {
+    const { createIndexIfNotExists } = pineconeUtils;
+
+    const pinecone = new PineconeClient();
+
+    await pinecone.init({
+      apiKey: options.apiKey,
+      environment: options.environment,
+    });
+
+    const index = options.index;
+    const dimension = options.dimension;
+
+    await createIndexIfNotExists(pinecone, index, dimension);
+  }
+
+  static async teardown(options: { apiKey: string; environment: string; index: string }) {
+    const pinecone = new PineconeClient();
+
+    await pinecone.init({
+      apiKey: options.apiKey,
+      environment: options.environment,
+    });
+
+    await pinecone.deleteIndex({
+      indexName: options.index,
+    });
+  }
+
   private index: string;
   private namespace: string;
   private client: PineconeClient;
   private initialized: Promise<void>;
-  name = NAME;
 
   constructor(options: {
     index: string;

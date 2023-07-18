@@ -14,32 +14,31 @@ function getDB(dsn: string) {
   return pgp(dsn);
 }
 
-export async function prepare(options: { tableName: string; dimension: number; dsn: string }) {
-  if (options.dimension > 2000) {
-    throw new Error('pgvector currently only supports dimensions less than 2000');
-  }
-
-  const db = getDB(options.dsn);
-
-  await db.none('CREATE EXTENSION IF NOT EXISTS vector;');
-  await db.none(
-    `CREATE TABLE IF NOT EXISTS ${options.tableName} (id bigserial PRIMARY KEY, embedding vector($1), text TEXT, url TEXT, metadata JSONB)`,
-    [options.dimension]
-  );
-}
-
-export async function teardown(options: { tableName: string; dsn: string }) {
-  const name = options.tableName;
-  const db = getDB(options.dsn);
-  await db.none(`DROP TABLE IF EXISTS ${name};`);
-}
-
 export const NAME = 'pgvector' as const;
 
 export class PgVector implements VectorStore {
+  static async prepare(options: { tableName: string; dimension: number; dsn: string }) {
+    if (options.dimension > 2000) {
+      throw new Error('pgvector currently only supports dimensions less than 2000');
+    }
+
+    const db = getDB(options.dsn);
+
+    await db.none('CREATE EXTENSION IF NOT EXISTS vector;');
+    await db.none(
+      `CREATE TABLE IF NOT EXISTS ${options.tableName} (id bigserial PRIMARY KEY, embedding vector($1), text TEXT, url TEXT, metadata JSONB)`,
+      [options.dimension]
+    );
+  }
+
+  static async teardown(options: { tableName: string; dsn: string }) {
+    const name = options.tableName;
+    const db = getDB(options.dsn);
+    await db.none(`DROP TABLE IF EXISTS ${name};`);
+  }
+
   private db: pgpromise.IDatabase<{}>;
   private tableName: string;
-  name = NAME;
 
   constructor(options: { dsn: string; tableName: string }) {
     this.db = getDB(options.dsn);

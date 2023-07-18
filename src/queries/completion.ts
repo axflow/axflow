@@ -1,13 +1,13 @@
-import type { Model, Prompt } from '../types';
+import type { IModel, IPrompt } from '../types';
 
 export type CompletionOptions = {
-  model: Model;
-  prompt: Prompt;
+  model: IModel;
+  prompt: IPrompt;
 };
 
 export class Completion {
-  private model: Model;
-  private prompt: Prompt;
+  private model: IModel;
+  private prompt: IPrompt;
 
   constructor(options: CompletionOptions) {
     this.model = options.model;

@@ -1,4 +1,4 @@
-import type { Stringer } from './types';
+import type { IStringer } from './types';
 
 export function zip<T1, T2>(l1: Array<T1>, l2: Array<T2>): Array<[T1, T2]> {
   if (l1.length !== l2.length) {
@@ -29,7 +29,7 @@ const TEMPLATE_VARIABLE_RE = /\{([a-zA-Z_][a-zA-Z_0-9]*)\}/g;
  * @param values An object whose keys correspond to the template variables and values correspond to the variable values.
  * @returns Template with all variables substituted with their values.
  */
-export function formatTemplate(template: string, values: Record<string, Stringer>) {
+export function formatTemplate(template: string, values: Record<string, IStringer>) {
   return template.replaceAll(TEMPLATE_VARIABLE_RE, (_match, variable) => {
     const value = values[variable];
     if (value === undefined) {

@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
 import { getEnvOrThrow } from '../config';
-import type { Model } from '../types';
+import type { IModel } from '../types';
 
 export interface OpenAICompletionOptions {
   model: string;
@@ -26,7 +26,7 @@ const DEFAULTS = Object.freeze({
   stop: null,
 });
 
-export class OpenAICompletion implements Model {
+export class OpenAICompletion implements IModel {
   private client: OpenAI;
   private options: OpenAICompletionOptions;
 

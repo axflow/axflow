@@ -1,16 +1,16 @@
-import type { DataEmbedderObject, Model, Prompt, Retriever } from '../types';
+import type { DataEmbedderObject, IModel, IPrompt, IRetriever } from '../types';
 
 export type RAGOptions = {
-  model: Model;
-  prompt: Prompt;
-  retriever: Retriever;
+  model: IModel;
+  prompt: IPrompt;
+  retriever: IRetriever;
   embedder: DataEmbedderObject;
 };
 
 export class RAG {
-  private retriever: Retriever;
-  private model: Model;
-  private prompt: Prompt;
+  private retriever: IRetriever;
+  private model: IModel;
+  private prompt: IPrompt;
   private embedder: DataEmbedderObject;
 
   constructor(options: RAGOptions) {

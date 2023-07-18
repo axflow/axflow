@@ -4,7 +4,7 @@ import { getEnvOrThrow } from '../config';
 
 export const NAME = 'openai' as const;
 
-type Options = {
+export type OpenAIEmbedderOptions = {
   model?: string;
 };
 
@@ -12,7 +12,7 @@ export class OpenAIEmbedder implements DataEmbedderObject {
   private model: string;
   private client: OpenAI;
 
-  constructor(options?: Options) {
+  constructor(options?: OpenAIEmbedderOptions) {
     this.model = options?.model || 'text-embedding-ada-002';
     this.client = new OpenAI({
       apiKey: getEnvOrThrow('OPENAI_API_KEY'),

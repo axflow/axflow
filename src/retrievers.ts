@@ -1,4 +1,4 @@
-import type { Retriever as RetrieverType, VectorStore } from './types';
+import type { IRetriever, VectorStore } from './types';
 
 type RetrievalOptions = {
   store: VectorStore;
@@ -6,7 +6,7 @@ type RetrievalOptions = {
   filterTerm?: string;
 };
 
-export class Retriever implements RetrieverType {
+export class Retriever implements IRetriever {
   private store: VectorStore;
   private options: Omit<RetrievalOptions, 'store'>;
 

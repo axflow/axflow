@@ -7,15 +7,15 @@ import { Document, DataSource } from '../types';
 
 export const NAME = 'file_system' as const;
 
-type Options = {
+export type FileSystemOptions = {
   path: string;
   glob?: string;
 };
 
 export class FileSystem implements DataSource {
-  private options: Options;
+  private options: FileSystemOptions;
 
-  constructor(options: Options) {
+  constructor(options: FileSystemOptions) {
     this.options = options;
   }
 

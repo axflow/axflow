@@ -51,7 +51,6 @@ export type DataEmbedder = DataEmbedderObject | DataEmbedderFunction;
 //////////////////
 
 export interface VectorStore {
-  name: string;
   add(
     chunks: ChunkWithEmbeddings[] | AsyncIterable<ChunkWithEmbeddings[]>,
     options?: object
@@ -71,17 +70,17 @@ export interface VectorQueryResult {
   chunk: Chunk;
 }
 
-////////////
+/////////////
 // Prompts //
-////////////
-export interface Prompt {
+/////////////
+export interface IPrompt {
   render(values: Record<string, any>): Promise<string>;
 }
 
 ////////////
 // Models //
 ////////////
-export interface Model {
+export interface IModel {
   run(prompt: string): Promise<string>;
   stream(prompt: string): AsyncIterable<string>;
 }
@@ -89,14 +88,13 @@ export interface Model {
 ///////////////
 // Retriever //
 ///////////////
-export interface Retriever {
+export interface IRetriever {
   retrieve(embedding: number[]): Promise<VectorQueryResult[]>;
 }
 
 ///////////
 // MISC. //
 ///////////
-
-export interface Stringer {
+export interface IStringer {
   toString(): string;
 }
