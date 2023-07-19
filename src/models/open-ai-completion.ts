@@ -1,6 +1,7 @@
 import OpenAI from 'openai';
 import { getEnvOrThrow } from '../config';
 import type { IModel } from '../types';
+import { without } from '../utils';
 
 export interface OpenAICompletionOptions {
   model: string;
@@ -34,7 +35,7 @@ export class OpenAICompletion implements IModel {
     this.client = new OpenAI({
       apiKey: options.apiKey || getEnvOrThrow('OPENAI_API_KEY'),
     });
-    this.options = Object.assign({}, DEFAULTS, options);
+    this.options = Object.assign({}, DEFAULTS, without(options, 'apiKey'));
   }
 
   async run(prompt: string) {

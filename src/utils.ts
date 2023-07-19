@@ -10,6 +10,22 @@ export function zip<T1, T2>(l1: Array<T1>, l2: Array<T2>): Array<[T1, T2]> {
   return l1.map((item, i) => [item, l2[i]]);
 }
 
+export function without<T extends object, K extends keyof T>(
+  obj: T,
+  ...keys: Array<K>
+): Omit<T, K> {
+  const result = {} as Omit<T, K>;
+
+  for (const key of Object.keys(obj)) {
+    if (!keys.includes(key as any)) {
+      // @ts-ignore
+      result[key] = obj[key];
+    }
+  }
+
+  return result;
+}
+
 export function wrap<T>(obj: T | T[]): T[] {
   return Array.isArray(obj) ? obj : [obj];
 }
