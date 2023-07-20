@@ -21,8 +21,8 @@ Axgen aims to be a foundational framework from which you can construct higher-le
 
 ## Example
 
-This example showcases some of the core concepts of axgen. It 1. ingests local markdown files into the Pinecone vector database
-and 2. uses retrieval augemented generation to answer a question about the contents of the data (company sales in this example).
+This example showcases some core concepts of Axgen by 1) ingesting markdown files into the Pinecone vector database
+and 2) using retrieval augemented generation to answer a question about the contents of the data.
 
 ```ts
 import {
