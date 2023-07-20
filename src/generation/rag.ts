@@ -1,16 +1,16 @@
 import type { IDataEmbedder, IModel, IPrompt, IRetriever } from '../types';
 
 export type RAGOptions = {
-  model: IModel;
-  prompt: IPrompt;
+  model: IModel<string, string>;
+  prompt: IPrompt<string>;
   retriever: IRetriever;
   embedder: IDataEmbedder;
 };
 
 export class RAG {
   private retriever: IRetriever;
-  private model: IModel;
-  private prompt: IPrompt;
+  private model: IModel<string, string>;
+  private prompt: IPrompt<string>;
   private embedder: IDataEmbedder;
 
   constructor(options: RAGOptions) {

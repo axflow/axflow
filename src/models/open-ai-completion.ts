@@ -27,7 +27,7 @@ const DEFAULTS = Object.freeze({
   stop: null,
 });
 
-export class OpenAICompletion implements IModel {
+export class OpenAICompletion implements IModel<string, string> {
   private client: OpenAI;
   private options: OpenAICompletionOptions;
 

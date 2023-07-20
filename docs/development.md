@@ -76,7 +76,7 @@ npm run vector_store:delete -- --store pinecone --ids id-1 id-2 id-3
 ### Query records
 
 ```bash
-npm run query -- --store=pinecone --query="When was the San Francisco Police Department founded?"
+npm run openai:completion -- --store=pinecone --query="When was the San Francisco Police Department founded?"
 ```
 
 The `store` argument is required and must be one of the supported stores.
@@ -90,7 +90,7 @@ This performs the following actions:
 The model defaults to `text-ada-001`, though can be overridden using the `--model` argument. For example:
 
 ```bash
-npm run query -- --store=pinecone --query="How do I do X where X is something in my documents?" --model=text-curie-001
+npm run openai:completion -- --store=pinecone --query="How do I do X where X is something in my documents?" --model=text-curie-001
 ```
 
 _Note: Only OpenAI models are supported right now_
@@ -100,7 +100,7 @@ You can query the LLM directly using the `--llm-only` flag.
 This allows you to see how the model performs with and without additional context from the vector store.
 
 ```bash
-npm run query -- --store=pinecone --query="How do I do X where X is something in my documents?" --llm-only
+npm run openai:completion -- --store=pinecone --query="How do I do X where X is something in my documents?" --llm-only
 ```
 
 You can filter metadata when querying. Currently, we only support exact match, so to match documents uploaded with the term 'San Francisco' for example:
@@ -109,3 +109,4 @@ You can filter metadata when querying. Currently, we only support exact match, s
 npm run query -- --store=pinecone --query="How do I do X where X is something in my documents?" --filterTerm='San Francisco' --topK=3
 ```
 
+You can also use chat completions with `npm run openai:chat-completion` using the same options as above.

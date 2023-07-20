@@ -58,16 +58,16 @@ export interface IVectorQueryResult {
 /////////////
 // Prompts //
 /////////////
-export interface IPrompt {
-  render(values: Record<string, any>): Promise<string>;
+export interface IPrompt<T> {
+  render(values: Record<string, any>): Promise<T>;
 }
 
 ////////////
 // Models //
 ////////////
-export interface IModel {
-  run(prompt: string): Promise<string>;
-  stream(prompt: string): AsyncIterable<string>;
+export interface IModel<Arg, Result, StreamResult = Result> {
+  run(arg: Arg): Promise<Result>;
+  stream(arg: Arg): AsyncIterable<StreamResult>;
 }
 
 ///////////////
