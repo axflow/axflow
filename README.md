@@ -15,7 +15,7 @@ These interfaces are important as we cannot provide out-of-the-box components fo
 provided (with more coming soon) but the interfaces enable you to extend the framework with your own implementations
 to satisfy arbitrary use cases.
 
-Axgen can be thought of as a foundational framework from which you can construct higher-level, declarative workflows.
+Axgen aims to be a foundational framework from which you can construct higher-level, declarative workflows.
 
 ## Example
 
@@ -37,6 +37,9 @@ import {
 
 const {OPENAI_API_KEY, PINECONE_API_KEY} = process.env;
 
+// OpenAI's embedding model (defaults to text-embedding-ada-002)
+const embedder = new OpenAIEmbedder({apiKey: OPENAI_API_KEY});
+
 //////////////////////////////////
 // Connect to your vector store //
 //////////////////////////////////
@@ -46,8 +49,6 @@ const pinecone = new Pinecone({
   environment: 'us-west1-gcp-free',
   apiKey: PINECONE_API_KEY,
 });
-
-const embedder = new OpenAIEmbedder({apiKey: OPENAI_API_KEY});
 
 /////////////////////////////////
 // Ingest local markdown files //
