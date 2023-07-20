@@ -2,10 +2,10 @@ import type { IVectorStore } from './types';
 
 import { OpenAICompletion } from './models/open-ai-completion';
 import { BasicPrompt, PromptWithContext } from './prompts';
-import { RAG } from './queries/rag';
+import { RAG } from './generation/rag';
 import { Retriever } from './retrievers';
 import { OpenAIEmbedder } from './embedders/open-ai-embedder';
-import { Completion } from './queries/completion';
+import { Completion } from './generation/completion';
 import { QUESTION_WITH_CONTEXT, QUESTION_WITHOUT_CONTEXT } from './templates';
 
 type QueryOptions = {

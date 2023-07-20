@@ -109,7 +109,7 @@ The main components of the API are as follows:
 Additionally, there are two higher-level component types that create workflows out of the above components:
 
 1. **Ingestion** constructs a data ingestion pipeline from a data source, splitter, embedder, and vector store.
-2. **Queries** construct data generation pipelines (e.g., chat completion over your custom data) from some input, an embedder, prompts, and a model.
+2. **Generation** construct data generation pipelines (e.g., chat completion over your custom data) from some input, an embedder, prompts, and a model.
 
 ## Development
 

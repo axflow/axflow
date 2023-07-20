@@ -3,6 +3,11 @@
 ///////////////
 export * from './embedders';
 
+////////////////
+// Generation //
+////////////////
+export * from './generation';
+
 ///////////////
 // Ingestion //
 ///////////////
@@ -17,11 +22,6 @@ export * from './models';
 // Prompts //
 /////////////
 export * from './prompts';
-
-/////////////
-// Queries //
-/////////////
-export * from './queries';
 
 ////////////////
 // Retrievers //
