@@ -8,6 +8,8 @@ Ingest, structure, and query your data with ease using the latest vector databas
 npm i axgen
 ```
 
+Made with ❤️ by [Axilla](https://axilla.io).
+
 ### Goals
 
 Axgen's goal is to break down the various concepts of working with LLMs into components with well-defined interfaces.
