@@ -1,13 +1,14 @@
 {
   "name": "axgen",
   "version": "0.0.1-beta.6",
-  "description": "A framework for Retrieval Augmented Generation (RAG)",
+  "description": "A framework for connecting your data to large language models",
   "keywords": [
+    "framework",
+    "large language model",
+    "data",
     "retrieval agumented generation",
     "rag",
     "llm",
-    "framework",
-    "generation",
     "generative ai",
     "vector database",
     "pinecone",
