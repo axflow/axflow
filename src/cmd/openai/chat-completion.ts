@@ -100,7 +100,7 @@ async function rag(store: IVectorStore, options: QueryOptions) {
     embedder: new OpenAIEmbedder(),
   });
 
-  const result = rag.stream(query);
+  const { info, result } = rag.stream(query);
 
   for await (const chunk of result) {
     if (chunk.choices[0].finish_reason === null) {
@@ -109,4 +109,7 @@ async function rag(store: IVectorStore, options: QueryOptions) {
   }
 
   process.stdout.write('\n');
+
+  console.log('Context:');
+  console.log(info.context!.map((ctx) => ctx.id));
 }
