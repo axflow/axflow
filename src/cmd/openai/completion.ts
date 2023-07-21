@@ -98,11 +98,14 @@ async function rag(store: IVectorStore, options: QueryOptions) {
     embedder: new OpenAIEmbedder(),
   });
 
-  const result = rag.stream(query);
+  const { result, info } = rag.stream(query);
 
   for await (const chunk of result) {
     process.stdout.write(chunk);
   }
 
   process.stdout.write('\n');
+
+  console.log('Context:');
+  console.log(info.context!.map((ctx) => ctx.id));
 }

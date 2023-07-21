@@ -85,7 +85,7 @@ const rag = new RAG({
 });
 
 // stream the response
-const result = rag.stream(
+const {result, info} = rag.stream(
   'What were our biggest sales in Q4 of this year and who were the customers?'
 );
 
@@ -94,6 +94,9 @@ for await (const chunk of result) {
 }
 
 process.stdout.write('\n');
+
+// Information about what results were used from the vector database.
+console.log(info);
 ```
 
 ## Overview

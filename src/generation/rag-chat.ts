@@ -1,4 +1,4 @@
-import type { IDataEmbedder, IModel, IPrompt, IRetriever } from '../types';
+import type { IDataEmbedder, IModel, IPrompt, IRetriever, IVectorQueryResult } from '../types';
 
 import type {
   OpenAIChatCompletionMessageInput,
@@ -46,28 +46,34 @@ export class RAGChat {
 
     const result = await this.model.run(messages.concat(message));
 
-    return result;
+    return { result, context };
   }
 
   stream(query: string, messages: OpenAIChatCompletionMessageInput[] = []) {
     const self = this;
+    const info: { context?: IVectorQueryResult[] } = {};
 
     return {
-      async *[Symbol.asyncIterator]() {
-        const embeddings = await self.embedder.embed(query);
+      info: info,
+      result: {
+        async *[Symbol.asyncIterator]() {
+          const embeddings = await self.embedder.embed(query);
 
-        const context = await self.retriever.retrieve(embeddings[0]);
+          const context = await self.retriever.retrieve(embeddings[0]);
 
-        const message = await self.prompt.render({
-          query,
-          context: context.map((ctx) => ctx.chunk.text),
-        });
+          info.context = context;
 
-        const iterable = self.model.stream(messages.concat(message));
+          const message = await self.prompt.render({
+            query,
+            context: context.map((ctx) => ctx.chunk.text),
+          });
 
-        for await (const part of iterable) {
-          yield part;
-        }
+          const iterable = self.model.stream(messages.concat(message));
+
+          for await (const part of iterable) {
+            yield part;
+          }
+        },
       },
     };
   }
