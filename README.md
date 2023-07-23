@@ -8,7 +8,7 @@ Ingest, structure, and query your data with ease using the latest vector databas
 npm i axgen
 ```
 
-Made with ❤️ by [Axilla](https://axilla.io).
+We built an open source [demo UI](https://github.com/axilla-io/demo-ui) for axgen, with a [short video](https://www.loom.com/share/458f9b6679b740f0a5c78a33fffee3dc) that shows the features.
 
 ### Goals
 
@@ -34,19 +34,19 @@ import {
   RAG,
   Retriever,
   PromptWithContext,
-  OpenAICompletion
+  OpenAICompletion,
 } from 'axgen';
 
-const {OPENAI_API_KEY, PINECONE_API_KEY} = process.env;
+const { OPENAI_API_KEY, PINECONE_API_KEY } = process.env;
 
 // OpenAI's embedding model (defaults to text-embedding-ada-002)
-const embedder = new OpenAIEmbedder({apiKey: OPENAI_API_KEY});
+const embedder = new OpenAIEmbedder({ apiKey: OPENAI_API_KEY });
 
 //////////////////////////////////
 // Connect to your vector store //
 //////////////////////////////////
 const pinecone = new Pinecone({
-  index: "mdindex",
+  index: 'mdindex',
   namespace: 'default',
   environment: 'us-west1-gcp-free',
   apiKey: PINECONE_API_KEY,
@@ -57,11 +57,10 @@ const pinecone = new Pinecone({
 /////////////////////////////////
 await new Ingestion({
   store: pinecone,
-  source: new FileSystem({path: '../path/to/sales/data', glob: '**/*.md'}),
-  splitter: new MarkdownSplitter({chunkSize: 1000}),
+  source: new FileSystem({ path: '../path/to/sales/data', glob: '**/*.md' }),
+  splitter: new MarkdownSplitter({ chunkSize: 1000 }),
   embedder: embedder,
-}).run()
-
+}).run();
 
 ///////////////////////////////////////////////////////////
 // Use retrieval augmented generation to query your data //
@@ -80,12 +79,12 @@ const rag = new RAG({
     max_tokens: 256,
     apiKey: OPENAI_API_KEY,
   }),
-  prompt: new PromptWithContext({template}),
-  retriever: new Retriever({store: pinecone, topK: 3}),
+  prompt: new PromptWithContext({ template }),
+  retriever: new Retriever({ store: pinecone, topK: 3 }),
 });
 
 // stream the response
-const {result, info} = rag.stream(
+const { result, info } = rag.stream(
   'What were our biggest sales in Q4 of this year and who were the customers?'
 );
 
@@ -103,13 +102,13 @@ console.log(info);
 
 The main components of the API are as follows:
 
-* **Vector stores** persist your data embeddings which can later be queried.
-* **Data sources** are documents pulled from arbitrary locations, e.g., a PDF from your local file system, documents from Notion, a wikipedia page, etc.
-* **Data splitters** split documents from a data source into smaller chunks. The embeddings of those chunks can be persisted in a vector store and later queried by similarity.
-* **Data embedders** create embeddings from chunks of text.
-* **Data retrievers** query vector stores for chunks of text similar to an input.
-* **Prompts and prompt templates** are used to construct the instructions sent to the LLM.
-* **Models (LLMs)** perform calls to generate e.g. completions or chat completions.
+- **Vector stores** persist your data embeddings which can later be queried.
+- **Data sources** are documents pulled from arbitrary locations, e.g., a PDF from your local file system, documents from Notion, a wikipedia page, etc.
+- **Data splitters** split documents from a data source into smaller chunks. The embeddings of those chunks can be persisted in a vector store and later queried by similarity.
+- **Data embedders** create embeddings from chunks of text.
+- **Data retrievers** query vector stores for chunks of text similar to an input.
+- **Prompts and prompt templates** are used to construct the instructions sent to the LLM.
+- **Models (LLMs)** perform calls to generate e.g. completions or chat completions.
 
 Additionally, there are two higher-level component types that create workflows out of the above components:
 
