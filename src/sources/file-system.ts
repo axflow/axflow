@@ -1,5 +1,6 @@
-import { stat as fsStat, readFile as fsReadFile } from 'node:fs/promises';
-import { resolve, join } from 'node:path';
+import { stat as fsStat } from 'node:fs/promises';
+import { CONVERTERS, type CONVERTER_KEYS } from './files';
+import { resolve, join, extname } from 'node:path';
 
 import { glob } from 'glob';
 
@@ -38,11 +39,8 @@ export class FileSystem implements IDataSource {
   }
 
   private async documentFromFilePath(filePath: string) {
-    const text = await fsReadFile(filePath, { encoding: 'utf8' });
-
-    return {
-      url: `file://${filePath}`,
-      text: text,
-    };
+    const ext = extname(filePath).toLowerCase().slice(1) as CONVERTER_KEYS;
+    const toDocument = CONVERTERS[ext] || CONVERTERS['txt'];
+    return toDocument(filePath);
   }
 }
