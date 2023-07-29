@@ -18,6 +18,7 @@ export interface EvalResult {
   evalFunction: {
     id: string;
     args?: any[];
+    options?: Object;
   };
   response?: ProviderResponse;
   error?: string;

@@ -4,6 +4,7 @@ import { RUBRIC_SYSTEM_MESSAGE, makeUserRubricMessage, RubricResponse } from './
 export interface EvalFunction {
   description: string;
   id: string;
+  options?: Record<string, any>;
   run: (response: string, idealOutput: string) => Promise<number>;
 }
 
