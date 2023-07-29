@@ -10,15 +10,21 @@ In essence, axeval is a way to execute and fine-tune your prompts and evaluation
 
 Axeval is a code-first library, rather than configuration-first.
 
+## Installing
+
+```
+npm i axeval
+```
+
 ## Concepts
 
-Axeval was built to model the concepts of a unit testing framework like Jest. If you've used a unit testing framework before, these should feel familiar.
+Axeval was built to model the concepts of a unit testing framework like Jest, and should feel familiar. We have a set of `EvalCases`, which evaluate prompts against models and product `EvalResults`. They get run in a `Suite`, and produce a `Report`.
 
-### EvalCase
+### [EvalCase](./src/evalCase.ts)
 
 This is similar to a unit testCase. It contains a prompt, the evalFunctions (see below), and any options.
 
-### EvalFunction
+### [EvalFunction](./src/evalFunction.ts)
 
 Given a prompt and a response from an LLM to that prompt, produces a score from 0 to 1. Examples include:
 
@@ -30,15 +36,15 @@ Given a prompt and a response from an LLM to that prompt, produces a score from 
 
 You can use our evalFunctions or write your own easily.
 
-### EvalResult
+### [EvalResult](./src/evalResult.ts)
 
 The result of applying an `EvalFunction` to an `EvalCase`. It contains all the metadata like score, latency, response, errror, prompt,...
 
-### TestSuite
+### [Suite](./src/suite.ts)
 
 Similar to a jest test suite. It is configured with: a model, a set of `evalCases`. It's `run()` method produces a `report` (see below).
 
-### Report
+### [Report](./src/report.ts)
 
 A structured object containing all of the `EvalResults` for a given `TestSuite` run. It can output this to different formats, like for example stdout.
 
@@ -120,3 +126,7 @@ This would produce the following report (truncated for space):
 <p align="center">
   <img src="./assets/report-stdout.png" />
 </p>
+
+## License
+
+[MIT](LICENSE.md)
