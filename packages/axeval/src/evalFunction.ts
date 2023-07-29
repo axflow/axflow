@@ -1,6 +1,9 @@
+import { OpenAIChat, SUPPORTED_OPENAI_CHAT_MODELS } from './model';
+import { RUBRIC_SYSTEM_MESSAGE, makeUserRubricMessage, RubricResponse } from './prompt';
+
 export interface EvalFunction {
   description: string;
-  run: (response: string, idealOutput: string) => number;
+  run: (response: string, idealOutput: string) => Promise<number>;
 }
 
 export abstract class BaseEvalFunction implements EvalFunction {
@@ -10,7 +13,7 @@ export abstract class BaseEvalFunction implements EvalFunction {
     this.description = description;
   }
 
-  abstract run(response: string, idealOutput: string): number;
+  abstract run(response: string, idealOutput: string): Promise<number>;
 }
 
 export class IsValidJson extends BaseEvalFunction {
@@ -18,12 +21,12 @@ export class IsValidJson extends BaseEvalFunction {
     super('Check if response is valid JSON');
   }
 
-  run(response: string): number {
+  run(response: string): Promise<number> {
     try {
       JSON.parse(response);
-      return 1;
+      return Promise.resolve(1);
     } catch {
-      return 0;
+      return Promise.resolve(0);
     }
   }
 }
@@ -45,10 +48,10 @@ export class Match extends BaseEvalFunction {
     this.options = Object.assign(defaults, opts);
   }
 
-  run(response: string, idealOutput: string): number {
+  run(response: string, idealOutput: string): Promise<number> {
     response = this.options.trim ? response.trim() : response;
     response = this.options.caseSensitive ? response : response.toLowerCase();
-    return response === idealOutput ? 1 : 0;
+    return Promise.resolve(response === idealOutput ? 1 : 0);
   }
 }
 
@@ -57,8 +60,8 @@ export class Includes extends BaseEvalFunction {
     super('Check if response includes ideal output');
   }
 
-  run(response: string, idealOutput: string): number {
-    return response.includes(idealOutput) ? 1 : 0;
+  run(response: string, idealOutput: string): Promise<number> {
+    return Promise.resolve(response.includes(idealOutput) ? 1 : 0);
   }
 }
 
@@ -67,11 +70,37 @@ export class IsValidJSON extends BaseEvalFunction {
     super('Check if response is valid JSON');
   }
 
-  run(response: string): number {
+  run(response: string): Promise<number> {
     try {
       JSON.parse(response);
-      return 1;
+      return Promise.resolve(1);
     } catch {
+      return Promise.resolve(0);
+    }
+  }
+}
+
+export class LLMRubric extends BaseEvalFunction {
+  client: OpenAIChat;
+  rubric: string;
+
+  constructor(chatModel: SUPPORTED_OPENAI_CHAT_MODELS, rubric: string) {
+    super('Have an LLM take the response and evaluate it');
+    this.client = new OpenAIChat(chatModel);
+    this.rubric = rubric;
+  }
+
+  // TODO fix this. We should have typed options with a Record<string, any> on the base class
+  async run(response: string) {
+    const llmResponse = await this.client.run([
+      RUBRIC_SYSTEM_MESSAGE,
+      makeUserRubricMessage(response, this.rubric),
+    ]);
+    try {
+      const responseparsedResponse: RubricResponse = JSON.parse(llmResponse);
+      return responseparsedResponse.pass ? 1 : 0;
+    } catch {
+      // The LLM didn't respond with valid JSON. Maybe we can handle this better
       return 0;
     }
   }
