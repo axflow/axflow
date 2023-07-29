@@ -28,13 +28,27 @@ export class IsValidJson extends BaseEvalFunction {
   }
 }
 
+type MatchOptions = {
+  trim: boolean;
+  caseSensitive: boolean;
+};
 export class Match extends BaseEvalFunction {
-  constructor() {
+  options: MatchOptions;
+
+  constructor(opts?: MatchOptions) {
     super('Check if response exactly matches ideal output');
+    // The defaults are strict, to prevent false positives.
+    const defaults = {
+      trim: false,
+      caseSensitive: true,
+    };
+    this.options = Object.assign(defaults, opts);
   }
 
   run(response: string, idealOutput: string): number {
-    return response.toLowerCase() === idealOutput.toLowerCase() ? 1 : 0;
+    response = this.options.trim ? response.trim() : response;
+    response = this.options.caseSensitive ? response : response.toLowerCase();
+    return response === idealOutput ? 1 : 0;
   }
 }
 
