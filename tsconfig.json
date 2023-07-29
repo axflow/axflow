@@ -1,22 +1,18 @@
 {
   "compilerOptions": {
-    "strict": true,
-    "declaration": true,
-    "target": "es2021",
     "module": "commonjs",
+    "declaration": true,
+    "noImplicitAny": true,
+    "removeComments": true,
+    "strict": true,
+    "target": "es2021",
     "moduleResolution": "node",
     "outDir": "dist",
-    "noImplicitAny": true,
     "sourceMap": true,
     "inlineSources": false,
     "noUnusedLocals": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
-    "esModuleInterop": true,
-    "paths": {
-      "pgvector/pg": ["node_modules/pgvector/types/pg"]
-    }
+    "esModuleInterop": true
   },
-  "include": ["src"],
   "exclude": ["node_modules"]
 }

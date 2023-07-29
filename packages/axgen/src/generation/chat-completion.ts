@@ -3,7 +3,7 @@ import type {
   OpenAIChatCompletionMessageInput,
   OpenAIChatCompletionNoStreaming,
   OpenAIChatCompletionStreaming,
-} from 'src/models';
+} from '../models';
 
 export type ChatCompletionOptions = {
   model: IModel<

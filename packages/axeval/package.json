@@ -1,0 +1,46 @@
+{
+  "name": "axeval",
+  "version": "0.0.0",
+  "description": "A framework for evaluating LLM results",
+  "keywords": [
+    "framework",
+    "large language model",
+    "data",
+    "llm",
+    "generative ai",
+    "gpt",
+    "gpt-4",
+    "openai",
+    "models"
+  ],
+  "main": "./dist/index.js",
+  "files": [
+    "dist",
+    "docs",
+    "src"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "prebuild": "rm -rf ./dist",
+    "build": "tsc",
+    "lint": "prettier --check 'src/**/*.ts'",
+    "test": "jest --testMatch \"**/test/**/*.test.ts\"",
+    "example:chat": "ts-node -r ./src/config.ts ./example/chat.ts",
+    "example:completion": "ts-node -r ./src/config.ts ./example/completion.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "author": "Axilla (https://axilla.io)",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.5.8",
+    "axgen": "file:../axgen",
+    "chalk": "^4.1.2",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "prettier": "^2.8.8",
+    "ts-node": "^10.9.1"
+  }
+}
