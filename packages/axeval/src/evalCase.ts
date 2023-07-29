@@ -1,6 +1,6 @@
-import type { EvalResult } from "./evalResult";
-import { EvalFunction } from "./evalFunction";
-import { OpenAIChatCompletionMessageInput } from "axgen";
+import type { EvalResult } from './evalResult';
+import { EvalFunction } from './evalFunction';
+import { OpenAIChatCompletionMessageInput } from 'axgen';
 
 export interface EvalCase {
   description?: string;

@@ -1,4 +1,4 @@
-import type { EvalCase } from "./evalCase";
+import type { EvalCase } from './evalCase';
 
 export interface TokenUsage {
   total: number;

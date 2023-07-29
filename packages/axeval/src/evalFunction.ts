@@ -15,7 +15,7 @@ export abstract class BaseEvalFunction implements EvalFunction {
 
 export class IsValidJson extends BaseEvalFunction {
   constructor() {
-    super("Check if response is valid JSON");
+    super('Check if response is valid JSON');
   }
 
   run(response: string): number {
@@ -30,7 +30,7 @@ export class IsValidJson extends BaseEvalFunction {
 
 export class Match extends BaseEvalFunction {
   constructor() {
-    super("Check if response exactly matches ideal output");
+    super('Check if response exactly matches ideal output');
   }
 
   run(response: string, idealOutput: string): number {
@@ -40,7 +40,7 @@ export class Match extends BaseEvalFunction {
 
 export class Includes extends BaseEvalFunction {
   constructor() {
-    super("Check if response includes ideal output");
+    super('Check if response includes ideal output');
   }
 
   run(response: string, idealOutput: string): number {
@@ -50,7 +50,7 @@ export class Includes extends BaseEvalFunction {
 
 export class IsValidJSON extends BaseEvalFunction {
   constructor() {
-    super("Check if response is valid JSON");
+    super('Check if response is valid JSON');
   }
 
   run(response: string): number {

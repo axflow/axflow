@@ -1,5 +1,5 @@
-import chalk from "chalk";
-import type { EvalResult } from "./evalResult";
+import chalk from 'chalk';
+import type { EvalResult } from './evalResult';
 
 const ONE_SECOND_IN_MS = 1000;
 const TEN_SECONDS_IN_MS = 10000;
@@ -27,11 +27,7 @@ export class Report {
   passed: EvalResult[];
   failed: EvalResult[];
 
-  constructor(options: {
-    description: string;
-    timeMs: number;
-    results: EvalResult[];
-  }) {
+  constructor(options: { description: string; timeMs: number; results: EvalResult[] }) {
     this.description = options.description;
     this.timeMs = options.timeMs;
     this.results = options.results;
@@ -43,7 +39,7 @@ export class Report {
     const { success, response, score, evalCase, latencyMs } = result;
 
     const timeDisplay = `${formatMs(latencyMs)}`;
-    const successString = success ? chalk.green("passed") : chalk.red("failed");
+    const successString = success ? chalk.green('passed') : chalk.red('failed');
     return `
 Prompt:               ${JSON.stringify(evalCase.prompt)}
 Expected Output:      ${evalCase.idealOutput}
@@ -53,11 +49,9 @@ Time:                 ${timeDisplay}`;
   }
 
   toString(verbose: boolean = false) {
-    let resultsString = "";
+    let resultsString = '';
     if (verbose) {
-      resultsString = this.results
-        .map((result) => this.evalResultToString(result))
-        .join("\n");
+      resultsString = this.results.map((result) => this.evalResultToString(result)).join('\n');
     }
     const passCount = this.passed.length;
     const failCount = this.failed.length;
@@ -76,8 +70,8 @@ Time:                 ${timeDisplay}`;
 
     const summary = `
 Suite:       ${this.description}
-Tests:       ${testsDisplay.join(", ")}
+Tests:       ${testsDisplay.join(', ')}
 Time:        ${formatMs(this.timeMs)}\n`;
-    return verbose ? resultsString + "\n" + summary : summary;
+    return verbose ? resultsString + '\n' + summary : summary;
   }
 }

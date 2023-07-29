@@ -1,7 +1,7 @@
-import { ChatEvalCase, CompletionEvalCase } from "./evalCase";
-import { EvalResult } from "./evalResult";
-import { Report } from "./report";
-import type { ChatModel, CompletionModel } from "./model";
+import { ChatEvalCase, CompletionEvalCase } from './evalCase';
+import { EvalResult } from './evalResult';
+import { Report } from './report';
+import type { ChatModel, CompletionModel } from './model';
 
 export class ChatTestSuite {
   description: string;
@@ -60,11 +60,7 @@ export class CompletionTestSuite {
   model: CompletionModel;
   dataset: CompletionEvalCase[];
 
-  constructor(
-    description: string,
-    model: CompletionModel,
-    dataset: CompletionEvalCase[]
-  ) {
+  constructor(description: string, model: CompletionModel, dataset: CompletionEvalCase[]) {
     this.description = description;
     this.model = model;
     this.dataset = dataset;

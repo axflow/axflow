@@ -1,7 +1,7 @@
-import { OpenAIChatCompletionMessageInput } from "axgen";
-import { getEnvOrThrow } from "./config";
-import { Anthropic, HUMAN_PROMPT, AI_PROMPT } from "@anthropic-ai/sdk";
-import OpenAI from "openai";
+import { OpenAIChatCompletionMessageInput } from 'axgen';
+import { getEnvOrThrow } from './config';
+import { Anthropic, HUMAN_PROMPT, AI_PROMPT } from '@anthropic-ai/sdk';
+import OpenAI from 'openai';
 
 export type ChatModel = {
   run: (messages: OpenAIChatCompletionMessageInput[]) => Promise<string>;
@@ -16,7 +16,7 @@ export type CompletionModel = {
 // ANTHROPIC //
 ///////////////
 
-type SUPPORTED_ANTHROPIC_MODELS = "claude-1" | "claude-2";
+type SUPPORTED_ANTHROPIC_MODELS = 'claude-1' | 'claude-2';
 
 type AnthropicOptions = {
   max_tokens_to_sample: number;
@@ -33,12 +33,9 @@ export class AnthropicCompletion implements CompletionModel {
   private client: Anthropic;
   options: AnthropicOptions;
 
-  constructor(
-    model: SUPPORTED_ANTHROPIC_MODELS,
-    options?: Partial<AnthropicOptions>
-  ) {
+  constructor(model: SUPPORTED_ANTHROPIC_MODELS, options?: Partial<AnthropicOptions>) {
     const anthropic = new Anthropic({
-      apiKey: getEnvOrThrow("ANTHROPIC_API_KEY"),
+      apiKey: getEnvOrThrow('ANTHROPIC_API_KEY'),
     });
     this.client = anthropic;
     this.name = model;
@@ -46,12 +43,11 @@ export class AnthropicCompletion implements CompletionModel {
   }
 
   async run(prompt: string): Promise<string> {
-    const completion: Anthropic.Completion =
-      await this.client.completions.create({
-        ...this.options,
-        model: this.name,
-        prompt: `${HUMAN_PROMPT} ${prompt} ${AI_PROMPT}`,
-      });
+    const completion: Anthropic.Completion = await this.client.completions.create({
+      ...this.options,
+      model: this.name,
+      prompt: `${HUMAN_PROMPT} ${prompt} ${AI_PROMPT}`,
+    });
     return completion.completion;
   }
 }
@@ -59,9 +55,7 @@ export class AnthropicCompletion implements CompletionModel {
 // OPENAI //
 ////////////
 
-type SUPPORTED_OPENAI_COMPLETION_MODELS =
-  | "text-davinci-003"
-  | "text-davinci-002";
+type SUPPORTED_OPENAI_COMPLETION_MODELS = 'text-davinci-003' | 'text-davinci-002';
 
 export interface OpenAICompletionOptions {
   model: string;
@@ -93,13 +87,10 @@ export class OpenAICompletion implements CompletionModel {
   client: OpenAI;
   options: OpenAICompletionOptions;
 
-  constructor(
-    model: SUPPORTED_OPENAI_COMPLETION_MODELS,
-    options?: OpenAICompletionOptions
-  ) {
+  constructor(model: SUPPORTED_OPENAI_COMPLETION_MODELS, options?: OpenAICompletionOptions) {
     this.name = model;
     this.client = new OpenAI({
-      apiKey: getEnvOrThrow("OPENAI_API_KEY"),
+      apiKey: getEnvOrThrow('OPENAI_API_KEY'),
     });
     this.options = Object.assign({}, DEFAULTS, { ...options, model });
   }
