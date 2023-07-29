@@ -4,6 +4,10 @@
   "workspaces": [
     "packages/*"
   ],
+  "scripts": {
+    "lint": "npx lerna run lint",
+    "test": "npx lerna run test"
+  },
   "devDependencies": {
     "lerna": "^7.1.4",
     "ts-node": "^10.9.1",
