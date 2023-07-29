@@ -16,25 +16,11 @@ export abstract class BaseEvalFunction implements EvalFunction {
   abstract run(response: string, idealOutput: string): Promise<number>;
 }
 
-export class IsValidJson extends BaseEvalFunction {
-  constructor() {
-    super('Check if response is valid JSON');
-  }
-
-  run(response: string): Promise<number> {
-    try {
-      JSON.parse(response);
-      return Promise.resolve(1);
-    } catch {
-      return Promise.resolve(0);
-    }
-  }
-}
-
 type MatchOptions = {
   trim: boolean;
   caseSensitive: boolean;
 };
+
 export class Match extends BaseEvalFunction {
   options: MatchOptions;
 

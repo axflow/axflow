@@ -24,7 +24,7 @@ Takes a text response from an LLM and produces a score from 0 to 1. Examples inc
 
 - match
 - includes
-- isValidJson
+- isValidJSON
 - LLMAnalysis
   ...
 
