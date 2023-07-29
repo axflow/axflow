@@ -1,65 +1,17 @@
 {
-  "name": "axgen",
-  "version": "0.0.2",
-  "description": "A framework for connecting your data to large language models",
-  "keywords": [
-    "framework",
-    "large language model",
-    "data",
-    "retrieval agumented generation",
-    "rag",
-    "llm",
-    "generative ai",
-    "vector database",
-    "pinecone",
-    "chroma",
-    "pgvector",
-    "gpt",
-    "gpt-4",
-    "openai",
-    "ingestion",
-    "models"
-  ],
-  "main": "./dist/index.js",
-  "files": [
-    "dist",
-    "docs",
-    "src"
+  "name": "root",
+  "private": true,
+  "workspaces": [
+    "packages/*"
   ],
   "scripts": {
-    "prebuild": "rm -rf ./dist",
-    "build": "tsc",
-    "lint": "prettier --check 'src/**/*.ts' 'test/**/*.ts'",
-    "vector_store:prepare": "ts-node -r ./src/cmd/config.ts ./src/cmd/vector_store/prepare.ts",
-    "vector_store:upload": "ts-node -r ./src/cmd/config.ts ./src/cmd/vector_store/upload.ts",
-    "vector_store:delete": "ts-node -r ./src/cmd/config.ts ./src/cmd/vector_store/delete.ts",
-    "vector_store:teardown": "ts-node -r ./src/cmd/config.ts ./src/cmd/vector_store/teardown.ts",
-    "openai:completion": "ts-node -r ./src/cmd/config.ts ./src/cmd/openai/completion.ts",
-    "openai:chat-completion": "ts-node -r ./src/cmd/config.ts ./src/cmd/openai/chat-completion.ts",
-    "test": "jest --testMatch \"**/test/**/*.test.ts\"",
-    "prepublishOnly": "npm run build"
-  },
-  "author": "Axilla (https://axilla.io)",
-  "license": "MIT",
-  "dependencies": {
-    "@pinecone-database/pinecone": "^0.1.6",
-    "chromadb": "^1.5.3",
-    "d3-dsv": "^2.0.0",
-    "glob": "^10.3.1",
-    "langchain": "^0.0.101",
-    "openai": "^4.0.0-beta.5",
-    "pdf-parse": "^1.1.1"
+    "lint": "npx lerna run lint",
+    "test": "npx lerna run test",
+    "build": "npx lerna run build"
   },
   "devDependencies": {
-    "@types/d3-dsv": "^3.0.1",
-    "@types/jest": "^29.5.2",
-    "@types/pdf-parse": "^1.1.1",
-    "dotenv": "^16.3.1",
-    "jest": "^29.5.0",
-    "prettier": "^2.8.8",
-    "ts-jest": "^29.1.1",
+    "lerna": "^7.1.4",
     "ts-node": "^10.9.1",
-    "typescript": "^5.1.6",
-    "yargs": "^17.7.2"
+    "typescript": "^5.1.6"
   }
 }
