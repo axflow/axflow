@@ -44,6 +44,27 @@ Time:                 ${timeDisplay}\n`
   }
 }
 
+export class MatchReport implements EvalCaseReport {
+  constructor(private result: EvalResult) {}
+  print() {
+    const { success, response, evalFunction, score, evalCase, latencyMs } = this.result;
+
+    const timeDisplay = `${formatMs(latencyMs)}`;
+    const successString = success ? chalk.green('passed') : chalk.red('failed');
+    const firstLine = evalCase.description ? `\nTest:                 ${evalCase.description}` : ``;
+    return (
+      firstLine +
+      `
+EvalFunction:         match
+Params:               ${JSON.stringify(evalFunction.options)}
+Prompt:               ${JSON.stringify(evalCase.prompt)}
+LLM Response:         ${response?.output?.trim()}
+Score:                ${score} (${successString})
+Time:                 ${timeDisplay}`
+    );
+  }
+}
+
 export class LLMRubricReport implements EvalCaseReport {
   constructor(private result: EvalResult) {}
   print() {
@@ -51,7 +72,7 @@ export class LLMRubricReport implements EvalCaseReport {
 
     const timeDisplay = `${formatMs(latencyMs)}`;
     const successString = success ? chalk.green('passed') : chalk.red('failed');
-    const firstLine = evalCase.description ? `Test:                 ${evalCase.description}\n` : ``;
+    const firstLine = evalCase.description ? `\nTest:                 ${evalCase.description}` : ``;
     return (
       firstLine +
       `EvalFunction:         ${evalFunction.id}
@@ -82,6 +103,8 @@ export class Report {
     switch (result.evalFunction.id) {
       case 'llm-rubric':
         return new LLMRubricReport(result).print();
+      case 'match':
+        return new MatchReport(result).print();
       default:
         return new DefaultEvalCaseReport(result).print();
     }

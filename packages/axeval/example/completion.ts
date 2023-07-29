@@ -25,7 +25,7 @@ const dataset: CompletionEvalCase[] = [
   {
     description: 'Generate valid JSON',
     prompt:
-      'We have a Person object with the fields name, age, and children. Produce a valid JSON object for a family with 2 parents and 3 children. You can invent the names and ages. Respond with ONLY the JSON object, nothing else.',
+      'We have a Person object with the fields name, age, and children. Produce a valid JSON object for a family with 2 parents and 1 chil. You can invent the names and ages. Respond with ONLY the JSON object, nothing else.',
     idealOutput: '',
     evalFunctions: [new IsValidJson()],
   },
