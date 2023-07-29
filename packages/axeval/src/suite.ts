@@ -34,6 +34,9 @@ export class ChatTestSuite {
 
           return {
             evalCase: evalCase,
+            evalFunction: {
+              id: fn.id,
+            },
             success: score === 1,
             score: score,
             latencyMs: modelMs + evalFunctionMs,
@@ -87,6 +90,7 @@ export class CompletionTestSuite {
           const evalFunctionMs = evalFunctionStopMs - evalFunctionStartMs;
           return {
             evalCase: evalCase,
+            evalFunction: { id: fn.id },
             success: score === 1,
             score: score,
             latencyMs: modelMs + evalFunctionMs,

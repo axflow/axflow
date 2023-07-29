@@ -15,6 +15,10 @@ export interface ProviderResponse {
 
 export interface EvalResult {
   evalCase: EvalCase;
+  evalFunction: {
+    id: string;
+    args?: any[];
+  };
   response?: ProviderResponse;
   error?: string;
   success: boolean;

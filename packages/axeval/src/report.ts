@@ -20,6 +20,43 @@ function formatMs(ms: number) {
   }
 }
 
+export interface EvalCaseReport {
+  print: () => string;
+}
+
+export class DefaultEvalCaseReport implements EvalCaseReport {
+  constructor(private result: EvalResult) {}
+  print() {
+    const { success, response, score, evalCase, latencyMs } = this.result;
+
+    const timeDisplay = `${formatMs(latencyMs)}`;
+    const successString = success ? chalk.green('passed') : chalk.red('failed');
+    return `
+Test:                 ${evalCase.description}
+Prompt:               ${JSON.stringify(evalCase.prompt)}
+Expected Output:      ${evalCase.idealOutput}
+LLM Response:         ${response?.output?.trim()}
+Score:                ${score} (${successString})
+Time:                 ${timeDisplay}`;
+  }
+}
+
+export class LLMRubricReport implements EvalCaseReport {
+  constructor(private result: EvalResult) {}
+  print() {
+    const { success, response, score, evalCase, latencyMs } = this.result;
+
+    const timeDisplay = `${formatMs(latencyMs)}`;
+    const successString = success ? chalk.green('passed') : chalk.red('failed');
+    return `
+Test:                 ${evalCase.description}
+Prompt:               ${JSON.stringify(evalCase.prompt)}
+LLM Response:         ${response?.output?.trim()}
+Score:                ${score} (${successString})
+Time:                 ${timeDisplay}`;
+  }
+}
+
 export class Report {
   description: string;
   timeMs: number;
@@ -35,18 +72,13 @@ export class Report {
     this.failed = this.results.filter((result) => !result.success);
   }
 
-  evalResultToString(result: EvalResult) {
-    const { success, response, score, evalCase, latencyMs } = result;
-
-    const timeDisplay = `${formatMs(latencyMs)}`;
-    const successString = success ? chalk.green('passed') : chalk.red('failed');
-    return `
-Test:                 ${evalCase.description}
-Prompt:               ${JSON.stringify(evalCase.prompt)}
-Expected Output:      ${evalCase.idealOutput}
-LLM Response:         ${response?.output?.trim()}
-Score:                ${score} (${successString})
-Time:                 ${timeDisplay}`;
+  evalResultToString(result: EvalResult): string {
+    switch (result.evalFunction.id) {
+      case 'llm-rubric':
+        return new LLMRubricReport(result).print();
+      default:
+        return new DefaultEvalCaseReport(result).print();
+    }
   }
 
   toString(verbose: boolean = false) {

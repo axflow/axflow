@@ -3,17 +3,36 @@ import { RUBRIC_SYSTEM_MESSAGE, makeUserRubricMessage, RubricResponse } from './
 
 export interface EvalFunction {
   description: string;
+  id: string;
   run: (response: string, idealOutput: string) => Promise<number>;
 }
 
 export abstract class BaseEvalFunction implements EvalFunction {
   description: string;
+  id: string;
 
   constructor(description: string) {
     this.description = description;
+    this.id = 'base';
   }
 
   abstract run(response: string, idealOutput: string): Promise<number>;
+}
+
+export class IsValidJson extends BaseEvalFunction {
+  id = 'is-valid-json';
+  constructor() {
+    super('Check if response is valid JSON');
+  }
+
+  run(response: string): Promise<number> {
+    try {
+      JSON.parse(response);
+      return Promise.resolve(1);
+    } catch {
+      return Promise.resolve(0);
+    }
+  }
 }
 
 type MatchOptions = {
@@ -22,6 +41,7 @@ type MatchOptions = {
 };
 
 export class Match extends BaseEvalFunction {
+  id = 'match';
   options: MatchOptions;
 
   constructor(opts?: MatchOptions) {
@@ -42,6 +62,7 @@ export class Match extends BaseEvalFunction {
 }
 
 export class Includes extends BaseEvalFunction {
+  id = 'includes';
   constructor() {
     super('Check if response includes ideal output');
   }
@@ -51,22 +72,8 @@ export class Includes extends BaseEvalFunction {
   }
 }
 
-export class IsValidJSON extends BaseEvalFunction {
-  constructor() {
-    super('Check if response is valid JSON');
-  }
-
-  run(response: string): Promise<number> {
-    try {
-      JSON.parse(response);
-      return Promise.resolve(1);
-    } catch {
-      return Promise.resolve(0);
-    }
-  }
-}
-
 export class LLMRubric extends BaseEvalFunction {
+  id = 'llm-rubric';
   client: OpenAIChat;
   rubric: string;
 
