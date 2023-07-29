@@ -76,3 +76,14 @@ export class IsValidJSON extends BaseEvalFunction {
     }
   }
 }
+
+export class LLMRubric extends BaseEvalFunction {
+  constructor() {
+    super('Have an LLM take the response and evaluate it');
+  }
+
+  // TODO fix this. We should have typed options with a Record<string, any> on the base class
+  run(response: string, rubric: string) {
+    return 1;
+  }
+}

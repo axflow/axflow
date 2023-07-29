@@ -10,7 +10,7 @@ Used together, they form an end-to-end framework for developing AI applications.
 
 # Installation
 
-The modules can be installed independently:
+The modules can be installed independently, for incremental adoption and bundle size minimization.
 
 ```
 npm install axgen
