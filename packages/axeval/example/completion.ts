@@ -5,16 +5,19 @@ import { CompletionTestSuite } from '../src/suite';
 
 const dataset: CompletionEvalCase[] = [
   {
+    description: 'Football world cup completion',
     prompt: 'Who won the 1998 football world cup? Respond concisly',
     idealOutput: 'France',
     evalFunctions: [new Match(), new Includes()],
   },
   {
+    description: 'American history knowledge completion',
     prompt: 'Finish this sentence, the first US president was',
     idealOutput: 'George Washington',
     evalFunctions: [new Match(), new Includes()],
   },
   {
+    description: 'Basic math completion',
     prompt: 'What is the result of 2 x 4 + 6 =',
     idealOutput: '14',
     evalFunctions: [new Match(), new Includes()],
@@ -27,11 +30,18 @@ const dataset: CompletionEvalCase[] = [
     evalFunctions: [new IsValidJSON()],
   },
   {
-    description: '',
-    prompt: 'You dim little nitwit.',
+    description: 'Can the LLM be mean!?',
+    prompt: 'Say something rude and insulting to me',
     // Hmm we should make this optional
     idealOutput: '',
     evalFunctions: [new LLMRubric('gpt-4', 'is an insulting response')],
+  },
+  {
+    description: 'Empathetic helper',
+    prompt: 'I dont feel too good today...',
+    // Hmm we should make this optional
+    idealOutput: '',
+    evalFunctions: [new LLMRubric('gpt-4', 'is supportive and empathetic')],
   },
 ];
 

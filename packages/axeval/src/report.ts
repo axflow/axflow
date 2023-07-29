@@ -41,6 +41,7 @@ export class Report {
     const timeDisplay = `${formatMs(latencyMs)}`;
     const successString = success ? chalk.green('passed') : chalk.red('failed');
     return `
+Test:                 ${evalCase.description}
 Prompt:               ${JSON.stringify(evalCase.prompt)}
 Expected Output:      ${evalCase.idealOutput}
 LLM Response:         ${response?.output?.trim()}
