@@ -2,36 +2,27 @@ import { OpenAIChat, SUPPORTED_OPENAI_CHAT_MODELS } from './model';
 import { RUBRIC_SYSTEM_MESSAGE, makeUserRubricMessage, RubricResponse } from './prompt';
 
 export interface EvalFunction {
-  description: string;
   id: string;
+  description: string;
   options?: Record<string, any>;
-  run: (response: string, idealOutput: string) => Promise<number>;
+  expected: string;
+  run(response: string): Promise<number>;
 }
 
-export abstract class BaseEvalFunction implements EvalFunction {
-  description: string;
-  id: string;
-
-  constructor(description: string) {
-    this.description = description;
-    this.id = 'base';
-  }
-
-  abstract run(response: string, idealOutput: string): Promise<number>;
-}
-
-export class IsValidJson extends BaseEvalFunction {
+export class IsValidJson implements EvalFunction {
   id = 'is-valid-json';
-  constructor() {
-    super('Check if response is valid JSON');
+  description = 'Check if response is valid JSON';
+
+  get expected() {
+    return 'Response to be valid JSON';
   }
 
-  run(response: string): Promise<number> {
+  async run(response: string) {
     try {
       JSON.parse(response);
-      return Promise.resolve(1);
+      return 1;
     } catch {
-      return Promise.resolve(0);
+      return 0;
     }
   }
 }
@@ -41,47 +32,68 @@ type MatchOptions = {
   caseSensitive: boolean;
 };
 
-export class Match extends BaseEvalFunction {
+export class Match implements EvalFunction {
   id = 'match';
+  description = 'Check if response exactly matches ideal output';
   options: MatchOptions;
 
-  constructor(opts?: MatchOptions) {
-    super('Check if response exactly matches ideal output');
+  private value: string;
+
+  constructor(value: string, opts?: MatchOptions) {
     // The defaults are strict, to prevent false positives.
     const defaults = {
       trim: false,
       caseSensitive: true,
     };
+
+    this.value = value;
     this.options = Object.assign(defaults, opts);
   }
 
-  run(response: string, idealOutput: string): Promise<number> {
+  get expected() {
+    return `Response to equal: ${JSON.stringify(this.value)}`;
+  }
+
+  async run(response: string) {
     response = this.options.trim ? response.trim() : response;
     response = this.options.caseSensitive ? response : response.toLowerCase();
-    return Promise.resolve(response === idealOutput ? 1 : 0);
+    return response === this.value ? 1 : 0;
   }
 }
 
-export class Includes extends BaseEvalFunction {
+export class Includes implements EvalFunction {
   id = 'includes';
-  constructor() {
-    super('Check if response includes ideal output');
+  description = 'Check if response includes ideal output';
+
+  private value: string;
+
+  constructor(value: string) {
+    this.value = value;
   }
 
-  run(response: string, idealOutput: string): Promise<number> {
-    return Promise.resolve(response.includes(idealOutput) ? 1 : 0);
+  get expected() {
+    return `Response to include: ${JSON.stringify(this.value)}`;
+  }
+
+  async run(response: string) {
+    return response.includes(this.value) ? 1 : 0;
   }
 }
 
-export class LLMRubric extends BaseEvalFunction {
+export class LLMRubric implements EvalFunction {
   id = 'llm-rubric';
-  client: OpenAIChat;
-  rubric: string;
+  description = 'Have an LLM take the response and evaluate it';
+
+  private client: OpenAIChat;
+  private rubric: string;
 
   constructor(chatModel: SUPPORTED_OPENAI_CHAT_MODELS, rubric: string) {
-    super('Have an LLM take the response and evaluate it');
     this.client = new OpenAIChat(chatModel);
     this.rubric = rubric;
+  }
+
+  get expected() {
+    return `Response to adhere to the following rubric: ${JSON.stringify(this.rubric)}`;
   }
 
   // TODO fix this. We should have typed options with a Record<string, any> on the base class

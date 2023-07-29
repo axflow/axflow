@@ -20,69 +20,18 @@ function formatMs(ms: number) {
   }
 }
 
-export interface EvalCaseReport {
-  print: () => string;
-}
+class LogInfoFormatter {
+  constructor(private titleLength: number) {}
 
-export class DefaultEvalCaseReport implements EvalCaseReport {
-  constructor(private result: EvalResult) {}
-  print() {
-    const { success, response, evalFunction, score, evalCase, latencyMs } = this.result;
+  format(title: string, value: any, options: { stringify?: boolean } = {}) {
+    if (value === undefined || value === null) {
+      return '';
+    }
 
-    const timeDisplay = `${formatMs(latencyMs)}`;
-    const successString = success ? chalk.green('passed') : chalk.red('failed');
-    const firstLine = evalCase.description ? `Test:                 ${evalCase.description}` : ``;
-    return (
-      firstLine +
-      `
-EvalFunction:         ${evalFunction.id}
-Prompt:               ${JSON.stringify(evalCase.prompt)}
-Expected Output:      ${evalCase.idealOutput}
-LLM Response:         ${response?.output?.trim()}
-Score:                ${score} (${successString})
-Time:                 ${timeDisplay}`
-    );
-  }
-}
+    title = `${title}:`.padEnd(this.titleLength);
+    value = options.stringify === true ? JSON.stringify(value) : value;
 
-export class MatchReport implements EvalCaseReport {
-  constructor(private result: EvalResult) {}
-  print() {
-    const { success, response, evalFunction, score, evalCase, latencyMs } = this.result;
-
-    const timeDisplay = `${formatMs(latencyMs)}`;
-    const successString = success ? chalk.green('passed') : chalk.red('failed');
-    const firstLine = evalCase.description ? `Test:                 ${evalCase.description}` : ``;
-    return (
-      firstLine +
-      `
-EvalFunction:         match
-Params:               ${JSON.stringify(evalFunction.options)}
-Prompt:               ${JSON.stringify(evalCase.prompt)}
-LLM Response:         ${response?.output?.trim()}
-Score:                ${score} (${successString})
-Time:                 ${timeDisplay}`
-    );
-  }
-}
-
-export class LLMRubricReport implements EvalCaseReport {
-  constructor(private result: EvalResult) {}
-  print() {
-    const { success, response, score, evalFunction, evalCase, latencyMs } = this.result;
-
-    const timeDisplay = `${formatMs(latencyMs)}`;
-    const successString = success ? chalk.green('passed') : chalk.red('failed');
-    const firstLine = evalCase.description ? `Test:                 ${evalCase.description}` : ``;
-    return (
-      firstLine +
-      `
-EvalFunction:         ${evalFunction.id}
-Prompt:               ${JSON.stringify(evalCase.prompt)}
-LLM Response:         ${response?.output?.trim()}
-Score:                ${score} (${successString})
-Time:                 ${timeDisplay}`
-    );
+    return title + value + '\n';
   }
 }
 
@@ -93,23 +42,34 @@ export class Report {
   passed: EvalResult[];
   failed: EvalResult[];
 
+  private resultFormatter: LogInfoFormatter;
+
   constructor(options: { description: string; timeMs: number; results: EvalResult[] }) {
     this.description = options.description;
     this.timeMs = options.timeMs;
     this.results = options.results;
     this.passed = this.results.filter((result) => result.success);
     this.failed = this.results.filter((result) => !result.success);
+    this.resultFormatter = new LogInfoFormatter(25);
   }
 
   evalResultToString(result: EvalResult): string {
-    switch (result.evalFunction.id) {
-      case 'llm-rubric':
-        return new LLMRubricReport(result).print();
-      case 'match':
-        return new MatchReport(result).print();
-      default:
-        return new DefaultEvalCaseReport(result).print();
-    }
+    const { success, response, evalFunction, score, evalCase, latencyMs } = result;
+
+    const successString = success ? chalk.green('passed') : chalk.red('failed');
+
+    let str = '';
+
+    str += this.resultFormatter.format('Test', evalCase.description);
+    str += this.resultFormatter.format('EvalFunction', evalFunction.id);
+    str += this.resultFormatter.format('Params', evalFunction.options, { stringify: true });
+    str += this.resultFormatter.format('Prompt', evalCase.prompt, { stringify: true });
+    str += this.resultFormatter.format('Expected', evalFunction.expected);
+    str += this.resultFormatter.format('LLM Response', response?.output, { stringify: true });
+    str += this.resultFormatter.format('Score', `${score} (${successString})`);
+    str += this.resultFormatter.format('Time', formatMs(latencyMs));
+
+    return str;
   }
 
   toString(verbose: boolean = false) {

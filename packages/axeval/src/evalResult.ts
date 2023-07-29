@@ -1,4 +1,5 @@
 import type { EvalCase } from './evalCase';
+import type { EvalFunction } from './evalFunction';
 
 export interface TokenUsage {
   total: number;
@@ -15,11 +16,7 @@ export interface ProviderResponse {
 
 export interface EvalResult {
   evalCase: EvalCase;
-  evalFunction: {
-    id: string;
-    args?: any[];
-    options?: Object;
-  };
+  evalFunction: EvalFunction;
   response?: ProviderResponse;
   error?: string;
   success: boolean;

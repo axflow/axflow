@@ -27,17 +27,14 @@ export class ChatTestSuite {
       const results = await Promise.all(
         evalCase.evalFunctions.map(async (fn) => {
           const evalFunctionStartMs = Date.now();
-          const score = await fn.run(response, evalCase.idealOutput);
+          const score = await fn.run(response);
           const evalFunctionStopMs = Date.now();
 
           const evalFunctionMs = evalFunctionStopMs - evalFunctionStartMs;
 
           return {
             evalCase: evalCase,
-            evalFunction: {
-              id: fn.id,
-              options: fn.options,
-            },
+            evalFunction: fn,
             success: score === 1,
             score: score,
             latencyMs: modelMs + evalFunctionMs,
@@ -85,13 +82,13 @@ export class CompletionTestSuite {
       const results = await Promise.all(
         evalCase.evalFunctions.map(async (fn) => {
           const evalFunctionStartMs = Date.now();
-          const score = await fn.run(response, evalCase.idealOutput);
+          const score = await fn.run(response);
           const evalFunctionStopMs = Date.now();
 
           const evalFunctionMs = evalFunctionStopMs - evalFunctionStartMs;
           return {
             evalCase: evalCase,
-            evalFunction: { id: fn.id, options: fn.options },
+            evalFunction: fn,
             success: score === 1,
             score: score,
             latencyMs: modelMs + evalFunctionMs,
