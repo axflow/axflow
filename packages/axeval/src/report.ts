@@ -31,7 +31,7 @@ export class DefaultEvalCaseReport implements EvalCaseReport {
 
     const timeDisplay = `${formatMs(latencyMs)}`;
     const successString = success ? chalk.green('passed') : chalk.red('failed');
-    const firstLine = evalCase.description ? `\nTest:                 ${evalCase.description}` : ``;
+    const firstLine = evalCase.description ? `Test:                 ${evalCase.description}` : ``;
     return (
       firstLine +
       `
@@ -52,7 +52,7 @@ export class MatchReport implements EvalCaseReport {
 
     const timeDisplay = `${formatMs(latencyMs)}`;
     const successString = success ? chalk.green('passed') : chalk.red('failed');
-    const firstLine = evalCase.description ? `\nTest:                 ${evalCase.description}` : ``;
+    const firstLine = evalCase.description ? `Test:                 ${evalCase.description}` : ``;
     return (
       firstLine +
       `
@@ -73,7 +73,7 @@ export class LLMRubricReport implements EvalCaseReport {
 
     const timeDisplay = `${formatMs(latencyMs)}`;
     const successString = success ? chalk.green('passed') : chalk.red('failed');
-    const firstLine = evalCase.description ? `\nTest:                 ${evalCase.description}` : ``;
+    const firstLine = evalCase.description ? `Test:                 ${evalCase.description}` : ``;
     return (
       firstLine +
       `
@@ -115,7 +115,7 @@ export class Report {
   toString(verbose: boolean = false) {
     let resultsString = '';
     if (verbose) {
-      resultsString = this.results.map((result) => this.evalResultToString(result)).join('\n');
+      resultsString = this.results.map((result) => this.evalResultToString(result)).join('\n\n');
     }
     const passCount = this.passed.length;
     const failCount = this.failed.length;
