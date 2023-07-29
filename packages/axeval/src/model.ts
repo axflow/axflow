@@ -101,7 +101,7 @@ export interface ChatResponse {
   };
 }
 
-type SUPPORTED_OPENAI_CHAT_MODELS = 'gpt-4' | 'gpt-3.5-turbo';
+export type SUPPORTED_OPENAI_CHAT_MODELS = 'gpt-4' | 'gpt-3.5-turbo';
 
 const CHAT_DEFAULTS = Object.freeze({
   temperature: 0,

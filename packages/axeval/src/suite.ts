@@ -24,23 +24,25 @@ export class ChatTestSuite {
       const response = await this.model.run(evalCase.prompt);
       const modelStopMs = Date.now();
       const modelMs = modelStopMs - modelStartMs;
-      const results = evalCase.evalFunctions.map((fn) => {
-        const evalFunctionStartMs = Date.now();
-        const score = fn.run(response, evalCase.idealOutput);
-        const evalFunctionStopMs = Date.now();
+      const results = await Promise.all(
+        evalCase.evalFunctions.map(async (fn) => {
+          const evalFunctionStartMs = Date.now();
+          const score = await fn.run(response, evalCase.idealOutput);
+          const evalFunctionStopMs = Date.now();
 
-        const evalFunctionMs = evalFunctionStopMs - evalFunctionStartMs;
+          const evalFunctionMs = evalFunctionStopMs - evalFunctionStartMs;
 
-        return {
-          evalCase: evalCase,
-          success: score === 1,
-          score: score,
-          latencyMs: modelMs + evalFunctionMs,
-          response: {
-            output: response,
-          },
-        };
-      });
+          return {
+            evalCase: evalCase,
+            success: score === 1,
+            score: score,
+            latencyMs: modelMs + evalFunctionMs,
+            response: {
+              output: response,
+            },
+          };
+        })
+      );
 
       caseResults = caseResults.concat(results);
     }
@@ -76,22 +78,24 @@ export class CompletionTestSuite {
       const response = await this.model.run(evalCase.prompt);
       const modelStopMs = Date.now();
       const modelMs = modelStopMs - modelStartMs;
-      const results = evalCase.evalFunctions.map((fn) => {
-        const evalFunctionStartMs = Date.now();
-        const score = fn.run(response, evalCase.idealOutput);
-        const evalFunctionStopMs = Date.now();
+      const results = await Promise.all(
+        evalCase.evalFunctions.map(async (fn) => {
+          const evalFunctionStartMs = Date.now();
+          const score = await fn.run(response, evalCase.idealOutput);
+          const evalFunctionStopMs = Date.now();
 
-        const evalFunctionMs = evalFunctionStopMs - evalFunctionStartMs;
-        return {
-          evalCase: evalCase,
-          success: score === 1,
-          score: score,
-          latencyMs: modelMs + evalFunctionMs,
-          response: {
-            output: response,
-          },
-        };
-      });
+          const evalFunctionMs = evalFunctionStopMs - evalFunctionStartMs;
+          return {
+            evalCase: evalCase,
+            success: score === 1,
+            score: score,
+            latencyMs: modelMs + evalFunctionMs,
+            response: {
+              output: response,
+            },
+          };
+        })
+      );
 
       caseResults = caseResults.concat(results);
     }

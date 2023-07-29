@@ -1,4 +1,4 @@
-import { Match, Includes, IsValidJSON } from '../src/evalFunction';
+import { Match, Includes, IsValidJSON, LLMRubric } from '../src/evalFunction';
 import { CompletionEvalCase } from '../src/evalCase';
 import { AnthropicCompletion, OpenAICompletion } from '../src/model';
 import { CompletionTestSuite } from '../src/suite';
@@ -28,14 +28,10 @@ const dataset: CompletionEvalCase[] = [
   },
   {
     description: '',
-    prompt: 'I just want an AI TypeScript library that works.',
+    prompt: 'You dim little nitwit.',
     // Hmm we should make this optional
     idealOutput: '',
-    evalFunctions: [
-      new LLMRubric(
-        'Classify the sentiment of this tweet. Reply with only one word, one of [positive, negative, neutral]'
-      ),
-    ],
+    evalFunctions: [new LLMRubric('gpt-4', 'is an insulting response')],
   },
 ];
 
