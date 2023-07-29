@@ -31,15 +31,16 @@ export class DefaultEvalCaseReport implements EvalCaseReport {
 
     const timeDisplay = `${formatMs(latencyMs)}`;
     const successString = success ? chalk.green('passed') : chalk.red('failed');
-    const firstLine = evalCase.description ? `Test:                 ${evalCase.description}\n` : ``;
+    const firstLine = evalCase.description ? `\nTest:                 ${evalCase.description}` : ``;
     return (
       firstLine +
-      `EvalFunction:         ${evalFunction.id}
+      `
+EvalFunction:         ${evalFunction.id}
 Prompt:               ${JSON.stringify(evalCase.prompt)}
 Expected Output:      ${evalCase.idealOutput}
 LLM Response:         ${response?.output?.trim()}
 Score:                ${score} (${successString})
-Time:                 ${timeDisplay}\n`
+Time:                 ${timeDisplay}`
     );
   }
 }
@@ -75,11 +76,12 @@ export class LLMRubricReport implements EvalCaseReport {
     const firstLine = evalCase.description ? `\nTest:                 ${evalCase.description}` : ``;
     return (
       firstLine +
-      `EvalFunction:         ${evalFunction.id}
+      `
+EvalFunction:         ${evalFunction.id}
 Prompt:               ${JSON.stringify(evalCase.prompt)}
 LLM Response:         ${response?.output?.trim()}
 Score:                ${score} (${successString})
-Time:                 ${timeDisplay}\n`
+Time:                 ${timeDisplay}`
     );
   }
 }
