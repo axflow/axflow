@@ -6,7 +6,8 @@
   ],
   "scripts": {
     "lint": "npx lerna run lint",
-    "test": "npx lerna run test"
+    "test": "npx lerna run test",
+    "build": "npx lerna run build"
   },
   "devDependencies": {
     "lerna": "^7.1.4",
