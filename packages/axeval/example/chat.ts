@@ -2,12 +2,12 @@ import * as Path from 'node:path';
 import fs from 'fs';
 import readline from 'readline';
 import { ChatTestSuite } from '../src/suite';
-import { OpenAIChatCompletion, OpenAIChatCompletionMessageInput } from 'axgen';
+import { OpenAIChatMessage, OpenAIChat } from '../src/model';
 import { ChatEvalCase } from '../src/evalCase';
 import { Match } from '../src/evalFunction';
 
 interface JsonLDChat {
-  input: OpenAIChatCompletionMessageInput[];
+  input: OpenAIChatMessage[];
   ideal: string;
   threshhold: number;
 }
@@ -25,13 +25,9 @@ async function readJsonL(file: string): Promise<JsonLDChat[]> {
 }
 
 const evalModel = {
-  run: async (messages: OpenAIChatCompletionMessageInput[]) => {
-    const chatModel = new OpenAIChatCompletion({
-      model: 'gpt-4',
-      max_tokens: 1000,
-    });
-    const result = await chatModel.run(messages);
-    return result.choices[0].message.content || '';
+  run: async (messages: OpenAIChatMessage[]) => {
+    const chatModel = new OpenAIChat('gpt-4', { max_tokens: 300 });
+    return chatModel.run(messages);
   },
 };
 

@@ -1,16 +1,16 @@
 import type { EvalResult } from './evalResult';
 import { EvalFunction } from './evalFunction';
-import { OpenAIChatCompletionMessageInput } from 'axgen';
+import { OpenAIChatMessage } from './model';
 
 export interface EvalCase {
   description?: string;
-  prompt: string | OpenAIChatCompletionMessageInput[];
+  prompt: string | OpenAIChatMessage[];
   idealOutput: string;
   evalFunctions: EvalFunction[];
 }
 
 export interface ChatEvalCase extends EvalCase {
-  prompt: OpenAIChatCompletionMessageInput[];
+  prompt: OpenAIChatMessage[];
   idealOutput: string;
   evalFunctions: EvalFunction[];
 }
@@ -22,13 +22,13 @@ export interface CompletionEvalCase extends EvalCase {
 }
 
 export class ChatEvalCase implements EvalCase {
-  prompt: OpenAIChatCompletionMessageInput[];
+  prompt: OpenAIChatMessage[];
   idealOutput: string;
   evalFunctions: EvalFunction[];
   evalResults: EvalResult[] = [];
 
   constructor(
-    messages: OpenAIChatCompletionMessageInput[],
+    messages: OpenAIChatMessage[],
     idealOutput: string,
     evalFunctions: EvalFunction[] = []
   ) {

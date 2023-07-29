@@ -1,14 +1,24 @@
-import { OpenAIChatCompletionMessageInput } from 'axgen';
 import { getEnvOrThrow } from './config';
 import { Anthropic, HUMAN_PROMPT, AI_PROMPT } from '@anthropic-ai/sdk';
 import OpenAI from 'openai';
 
+export interface OpenAIChatMessage {
+  role: 'system' | 'user' | 'assistant' | 'function';
+  content: string | null;
+  function_call?: {
+    name: string;
+    arguments: string;
+  };
+}
+
 export type ChatModel = {
-  run: (messages: OpenAIChatCompletionMessageInput[]) => Promise<string>;
+  // TODO, improve run() interface to get metadata (token count, latency, ...)
+  run: (messages: OpenAIChatMessage[]) => Promise<string>;
 };
 
 export type CompletionModel = {
   name: string;
+  // TODO, improve run() interface to get metadata (token count, latency, ...)
   run: (prompt: string) => Promise<string>;
 };
 
@@ -55,6 +65,77 @@ export class AnthropicCompletion implements CompletionModel {
 // OPENAI //
 ////////////
 
+// CHAT MODELS
+
+export interface OpenAIChatOptions {
+  frequency_penalty?: number | null;
+  function_call?: 'none' | 'auto' | { name: string };
+  functions?: Array<{
+    name: string;
+    parameters: Record<string, unknown>;
+    description?: string;
+  }>;
+  logit_bias?: Record<string, number> | null;
+  max_tokens?: number;
+  presence_penalty?: number | null;
+  stop?: string | null | Array<string>;
+  temperature?: number | null;
+  top_p?: number | null;
+  user?: string;
+}
+
+export interface ChatResponse {
+  id: string;
+  created: number;
+  model: string;
+  object: string;
+  choices: Array<{
+    finish_reason: 'stop' | 'length' | 'function_call';
+    index: number;
+    message: OpenAIChatMessage;
+  }>;
+  usage?: {
+    completion_tokens: number;
+    prompt_tokens: number;
+    total_tokens: number;
+  };
+}
+
+type SUPPORTED_OPENAI_CHAT_MODELS = 'gpt-4' | 'gpt-3.5-turbo';
+
+const CHAT_DEFAULTS = Object.freeze({
+  temperature: 0,
+  frequency_penalty: 0,
+  presence_penalty: 0,
+  stop: null,
+});
+
+export class OpenAIChat implements ChatModel {
+  name: SUPPORTED_OPENAI_CHAT_MODELS;
+  client: OpenAI;
+  options: OpenAIChatOptions;
+
+  constructor(model: SUPPORTED_OPENAI_CHAT_MODELS, options?: OpenAIChatOptions) {
+    this.name = model;
+    this.client = new OpenAI({
+      apiKey: getEnvOrThrow('OPENAI_API_KEY'),
+    });
+    this.options = Object.assign({}, CHAT_DEFAULTS, options, { model });
+  }
+
+  async run(messages: OpenAIChatMessage[]): Promise<string> {
+    const response = await this.client.chat.completions.create({
+      ...this.options,
+      model: this.name,
+      messages,
+      stream: false,
+    });
+
+    return response.choices[0].message.content!;
+  }
+}
+
+// COMPLETION MODELS
 type SUPPORTED_OPENAI_COMPLETION_MODELS = 'text-davinci-003' | 'text-davinci-002';
 
 export interface OpenAICompletionOptions {
@@ -74,7 +155,7 @@ export interface OpenAICompletionOptions {
   user?: string;
 }
 
-const DEFAULTS = Object.freeze({
+const COMPLETION_DEFAULTS = Object.freeze({
   temperature: 0,
   max_tokens: 400,
   frequency_penalty: 0,
@@ -92,7 +173,7 @@ export class OpenAICompletion implements CompletionModel {
     this.client = new OpenAI({
       apiKey: getEnvOrThrow('OPENAI_API_KEY'),
     });
-    this.options = Object.assign({}, DEFAULTS, { ...options, model });
+    this.options = Object.assign({}, COMPLETION_DEFAULTS, { ...options, model });
   }
 
   async run(prompt: string): Promise<string> {
