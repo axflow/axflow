@@ -34,13 +34,12 @@ export class DefaultEvalCaseReport implements EvalCaseReport {
     const firstLine = evalCase.description ? `Test:                 ${evalCase.description}\n` : ``;
     return (
       firstLine +
-      `
-EvalFunction:         ${evalFunction.id}
+      `EvalFunction:         ${evalFunction.id}
 Prompt:               ${JSON.stringify(evalCase.prompt)}
 Expected Output:      ${evalCase.idealOutput}
 LLM Response:         ${response?.output?.trim()}
 Score:                ${score} (${successString})
-Time:                 ${timeDisplay}`
+Time:                 ${timeDisplay}\n`
     );
   }
 }
@@ -55,12 +54,11 @@ export class LLMRubricReport implements EvalCaseReport {
     const firstLine = evalCase.description ? `Test:                 ${evalCase.description}\n` : ``;
     return (
       firstLine +
-      `
-EvalFunction:         ${evalFunction.id}
+      `EvalFunction:         ${evalFunction.id}
 Prompt:               ${JSON.stringify(evalCase.prompt)}
 LLM Response:         ${response?.output?.trim()}
 Score:                ${score} (${successString})
-Time:                 ${timeDisplay}`
+Time:                 ${timeDisplay}\n`
     );
   }
 }
