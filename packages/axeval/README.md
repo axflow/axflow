@@ -114,3 +114,9 @@ async function main() {
 
 main();
 ```
+
+This would produce the following report (truncated for space):
+
+<p align="center">
+  <img src="./assets/report-stdout.png" />
+</p>
