@@ -22,6 +22,8 @@ export type CompletionModel = {
   run: (prompt: string) => Promise<string>;
 };
 
+export type Model = ChatModel | CompletionModel;
+
 ///////////////
 // ANTHROPIC //
 ///////////////

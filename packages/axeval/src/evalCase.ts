@@ -5,35 +5,24 @@ import { OpenAIChatMessage } from './model';
 export interface EvalCase {
   description?: string;
   prompt: string | OpenAIChatMessage[];
-  idealOutput: string;
   evalFunctions: EvalFunction[];
 }
 
 export interface ChatEvalCase extends EvalCase {
   prompt: OpenAIChatMessage[];
-  idealOutput: string;
-  evalFunctions: EvalFunction[];
 }
 
 export interface CompletionEvalCase extends EvalCase {
   prompt: string;
-  idealOutput: string;
-  evalFunctions: EvalFunction[];
 }
 
 export class ChatEvalCase implements EvalCase {
   prompt: OpenAIChatMessage[];
-  idealOutput: string;
   evalFunctions: EvalFunction[];
   evalResults: EvalResult[] = [];
 
-  constructor(
-    messages: OpenAIChatMessage[],
-    idealOutput: string,
-    evalFunctions: EvalFunction[] = []
-  ) {
+  constructor(messages: OpenAIChatMessage[], evalFunctions: EvalFunction[] = []) {
     this.prompt = messages;
-    this.idealOutput = idealOutput;
     this.evalFunctions = evalFunctions;
   }
 

@@ -49,7 +49,7 @@ const chatTestRun = async () => {
   // We pass {trim: true, caseSensitive: false} to the function, since we don't care about case or spaces.
   const dataset: ChatEvalCase[] = files.map((data) => {
     const ideal = data.ideal;
-    return new ChatEvalCase(data.input, ideal, [new Match({ trim: true, caseSensitive: false })]);
+    return new ChatEvalCase(data.input, [new Match(ideal, { trim: true, caseSensitive: false })]);
   });
 
   const suite = new ChatTestSuite('Simple test suite of chat examples', evalModel, dataset);
