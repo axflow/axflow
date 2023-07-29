@@ -27,33 +27,41 @@ export interface EvalCaseReport {
 export class DefaultEvalCaseReport implements EvalCaseReport {
   constructor(private result: EvalResult) {}
   print() {
-    const { success, response, score, evalCase, latencyMs } = this.result;
+    const { success, response, evalFunction, score, evalCase, latencyMs } = this.result;
 
     const timeDisplay = `${formatMs(latencyMs)}`;
     const successString = success ? chalk.green('passed') : chalk.red('failed');
-    return `
-Test:                 ${evalCase.description}
+    const firstLine = evalCase.description ? `Test:                 ${evalCase.description}\n` : ``;
+    return (
+      firstLine +
+      `
+EvalFunction:         ${evalFunction.id}
 Prompt:               ${JSON.stringify(evalCase.prompt)}
 Expected Output:      ${evalCase.idealOutput}
 LLM Response:         ${response?.output?.trim()}
 Score:                ${score} (${successString})
-Time:                 ${timeDisplay}`;
+Time:                 ${timeDisplay}`
+    );
   }
 }
 
 export class LLMRubricReport implements EvalCaseReport {
   constructor(private result: EvalResult) {}
   print() {
-    const { success, response, score, evalCase, latencyMs } = this.result;
+    const { success, response, score, evalFunction, evalCase, latencyMs } = this.result;
 
     const timeDisplay = `${formatMs(latencyMs)}`;
     const successString = success ? chalk.green('passed') : chalk.red('failed');
-    return `
-Test:                 ${evalCase.description}
+    const firstLine = evalCase.description ? `Test:                 ${evalCase.description}\n` : ``;
+    return (
+      firstLine +
+      `
+EvalFunction:         ${evalFunction.id}
 Prompt:               ${JSON.stringify(evalCase.prompt)}
 LLM Response:         ${response?.output?.trim()}
 Score:                ${score} (${successString})
-Time:                 ${timeDisplay}`;
+Time:                 ${timeDisplay}`
+    );
   }
 }
 
