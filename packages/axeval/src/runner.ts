@@ -1,4 +1,5 @@
 import { Report } from './report';
+import { wrap } from './utils';
 
 import type { Model } from './model';
 import type { EvalCase } from './evalCase';
@@ -43,20 +44,22 @@ export class Runner {
       const response = await suite.model.run(evalCase.prompt);
       const modelStopMs = Date.now();
       const modelMs = modelStopMs - modelStartMs;
-      const results = await Promise.all(
-        evalCase.evalFunctions.map(async (fn) => {
-          const evalFunctionStartMs = Date.now();
-          const score = await fn.run(response);
-          const evalFunctionStopMs = Date.now();
+      const evaluators = wrap(evalCase.evaluation);
 
-          const evalFunctionMs = evalFunctionStopMs - evalFunctionStartMs;
+      const results = await Promise.all(
+        evaluators.map(async (evaluator) => {
+          const evaluatorStartMs = Date.now();
+          const score = await evaluator.run(response);
+          const evaluatorStopMs = Date.now();
+
+          const evaluatorMs = evaluatorStopMs - evaluatorStartMs;
 
           return {
             evalCase: evalCase,
-            evalFunction: fn,
+            evaluator: evaluator,
             success: score === 1,
             score: score,
-            latencyMs: modelMs + evalFunctionMs,
+            latencyMs: modelMs + evaluatorMs,
             response: {
               output: response,
             },

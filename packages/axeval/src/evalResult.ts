@@ -1,5 +1,5 @@
 import type { EvalCase } from './evalCase';
-import type { EvalFunction } from './evalFunction';
+import type { Evaluator } from './evaluators';
 
 export interface TokenUsage {
   total: number;
@@ -16,7 +16,7 @@ export interface ProviderResponse {
 
 export interface EvalResult {
   evalCase: EvalCase;
-  evalFunction: EvalFunction;
+  evaluator: Evaluator;
   response?: ProviderResponse;
   error?: string;
   success: boolean;
