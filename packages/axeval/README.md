@@ -1,12 +1,12 @@
 # Axeval - a TypeScript evaluation & unit testing framework for LLMs
 
-This is a foundational framework that enables test-driven LLM engineering, and can be used for various evaluation use cases:
+This is a foundational framework that enables test-driven LLM engineering and can be used for various evaluation use cases:
 
 - creating unit tests for your prompts
 - iterating on prompts with data driven measurements
 - evaluating different models on latency / cost / accuracy to make the optimal production decision
 
-In essence, axeval is a way to execute and fine-tune your prompts and evaluation functions for TypeScript.
+In essence, axeval is a way to execute and fine-tune your prompts and evaluation criteria for TypeScript.
 
 Axeval is a code-first library, rather than configuration-first.
 
@@ -18,11 +18,11 @@ npm i axeval
 
 ## Concepts
 
-Axeval was built to model the concepts of a unit testing framework like Jest, and should feel familiar. We have a set of `EvalCases`, which evaluate prompts against models and product `EvalResults`. They get run in a `Suite`, and produce a `Report`.
+Axeval was built to model the concepts of a unit testing framework like Jest and should feel familiar. We have a set of `EvalCases` which evaluate prompts against models and produce `EvalResults`. They are exected via the `Runner`.d
 
 ### [EvalCase](./src/evalCase.ts)
 
-This is similar to a unit testCase. It contains a prompt, the evalFunctions (see below), and any options.
+This is similar to a unit test case. It contains a prompt, the evalFunctions (see below), and any options.
 
 ### [EvalFunction](./src/evalFunction.ts)
 
@@ -40,13 +40,13 @@ You can use our evalFunctions or write your own easily.
 
 The result of applying an `EvalFunction` to an `EvalCase`. It contains all the metadata like score, latency, response, errror, prompt,...
 
-### [Suite](./src/suite.ts)
-
-Similar to a jest test suite. It is configured with: a model, a set of `evalCases`. It's `run()` method produces a `report` (see below).
-
 ### [Report](./src/report.ts)
 
 A structured object containing all of the `EvalResults` for a given `TestSuite` run. It can output this to different formats, like for example stdout.
+
+### [Runner](./src/runner.ts)
+
+The `Runner` is responsible for taking one or more test suites, running each test against the given model, and reporting the results.
 
 ## Example
 
@@ -56,9 +56,8 @@ You can find full examples in the [example directory](./example), here is a comp
 import { Match, Includes, IsValidJson, LLMRubric } from '../src/evalFunction';
 import { CompletionEvalCase } from '../src/evalCase';
 import { AnthropicCompletion, OpenAICompletion } from '../src/model';
-import { CompletionTestSuite } from '../src/suite';
 
-const dataset: CompletionEvalCase[] = [
+const tests: CompletionEvalCase[] = [
   {
     description: 'Football world cup completion',
     prompt: 'Who won the 1998 football world cup? Respond concisly',
@@ -94,25 +93,19 @@ const dataset: CompletionEvalCase[] = [
   },
 ];
 
-async function main() {
-  // As an example, let's make Claude creative with a temperature of 1
-  const claude2 = new AnthropicCompletion('claude-2', { temperature: 1 });
-  const davinci3 = new OpenAICompletion('text-davinci-003');
+// Create a test runner
+const runner = new Runner({ verbose: true });
 
-  const suites = [
-    new CompletionTestSuite('Claude2 completion', claude2, dataset),
-    new CompletionTestSuite('text-davinci-003 completion', davinci3, dataset),
-  ];
+// Register a suite of tests that test the Anthropic Claude model
+const claude2 = new AnthropicCompletion('claude-2', { temperature: 1 });
+runner.register('Claude2 completion', claude2, tests);
 
-  const runningSuites = suites.map(async (suite) => {
-    const report = await suite.run();
-    console.log(report.toString(true));
-  });
+// Register another suite of tests that test the OpenAI Davinci model
+const davinci3 = new OpenAICompletion('text-davinci-003');
+runner.register('text-davinci-003 completion', davinci3, tests);
 
-  return Promise.all(runningSuites);
-}
-
-main();
+// Run the tests
+runner.run();
 ```
 
 This would produce the following report (truncated for space):

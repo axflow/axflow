@@ -11,18 +11,19 @@ export interface OpenAIChatMessage {
   };
 }
 
-export type ChatModel = {
-  // TODO, improve run() interface to get metadata (token count, latency, ...)
-  run: (messages: OpenAIChatMessage[]) => Promise<string>;
-};
-
-export type CompletionModel = {
+export interface Model {
   name: string;
   // TODO, improve run() interface to get metadata (token count, latency, ...)
-  run: (prompt: string) => Promise<string>;
-};
+  run(prompt: string | OpenAIChatMessage[]): Promise<string>;
+}
 
-export type Model = ChatModel | CompletionModel;
+export interface ChatModel extends Model {
+  run(messages: OpenAIChatMessage[]): Promise<string>;
+}
+
+export interface CompletionModel {
+  run(prompt: string): Promise<string>;
+}
 
 ///////////////
 // ANTHROPIC //
