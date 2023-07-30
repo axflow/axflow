@@ -1,9 +1,8 @@
 import { Report } from './report';
-import { wrap } from './utils';
+import { wrap, time } from './utils';
 
 import type { Model } from './model';
 import type { EvalCase } from './evalCase';
-import type { EvalResult } from './evalResult';
 
 type SuiteType = {
   model: Model;
@@ -28,54 +27,49 @@ export class Runner {
   }
 
   async run() {
-    for (const suite of this.suites) {
-      const report = await this.runSuite(suite);
+    // For loops with await in them run each loop iteration one after the other, rather than in parallel.
+    const pending = this.suites.map(async (suite) => {
+      const { ms: timeMs, result: caseResults } = await time(() => this.runSuite(suite));
+      const report = new Report({
+        description: suite.description,
+        timeMs: timeMs,
+        results: caseResults,
+      });
       console.log(report.toString(this.options.verbose));
-    }
+    });
+
+    await Promise.all(pending);
   }
 
   private async runSuite(suite: SuiteType) {
-    const startMs = Date.now();
+    // For loops with await in them run each loop iteration one after the other, rather than in parallel.
+    const pendingCases = suite.cases.map((evalCase) => this.runCase(suite, evalCase));
+    const nested = await Promise.all(pendingCases);
+    const flattened = nested.reduce((flattened, nested) => flattened.concat(nested), []);
+    return flattened;
+  }
 
-    let caseResults: EvalResult[] = [];
+  private async runCase(suite: SuiteType, evalCase: EvalCase) {
+    const { ms: modelMs, result: response } = await time(() => suite.model.run(evalCase.prompt));
 
-    for (const evalCase of suite.cases) {
-      const modelStartMs = Date.now();
-      const response = await suite.model.run(evalCase.prompt);
-      const modelStopMs = Date.now();
-      const modelMs = modelStopMs - modelStartMs;
-      const evaluators = wrap(evalCase.evaluation);
+    const evaluators = wrap(evalCase.evaluation);
 
-      const results = await Promise.all(
-        evaluators.map(async (evaluator) => {
-          const evaluatorStartMs = Date.now();
-          const score = await evaluator.run(response);
-          const evaluatorStopMs = Date.now();
+    // For loops with await in them run each loop iteration one after the other, rather than in parallel.
+    const pendingResults = evaluators.map(async (evaluator) => {
+      const { ms: evaluatorMs, result: score } = await time(() => evaluator.run(response));
 
-          const evaluatorMs = evaluatorStopMs - evaluatorStartMs;
-
-          return {
-            evalCase: evalCase,
-            evaluator: evaluator,
-            success: score === 1,
-            score: score,
-            latencyMs: modelMs + evaluatorMs,
-            response: {
-              output: response,
-            },
-          };
-        })
-      );
-
-      caseResults = caseResults.concat(results);
-    }
-
-    const endMs = Date.now();
-
-    return new Report({
-      description: suite.description,
-      timeMs: endMs - startMs,
-      results: caseResults,
+      return {
+        evalCase: evalCase,
+        evaluator: evaluator,
+        success: score === 1,
+        score: score,
+        latencyMs: modelMs + evaluatorMs,
+        response: {
+          output: response,
+        },
+      };
     });
+
+    return Promise.all(pendingResults);
   }
 }
