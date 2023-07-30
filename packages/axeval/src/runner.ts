@@ -42,11 +42,11 @@ export class Runner {
   }
 
   private async runSuite(suite: SuiteType) {
-    // For loops with await in them run each loop iteration one after the other, rather than in parallel.
-    const pendingCases = suite.cases.map((evalCase) => this.runCase(suite, evalCase));
-    const nested = await Promise.all(pendingCases);
-    const flattened = nested.reduce((flattened, nested) => flattened.concat(nested), []);
-    return flattened;
+    const results = [];
+    for (const evalCase of suite.cases) {
+      results.push(await this.runCase(suite, evalCase));
+    }
+    return results.flat();
   }
 
   private async runCase(suite: SuiteType, evalCase: EvalCase) {
