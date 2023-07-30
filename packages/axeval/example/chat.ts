@@ -1,10 +1,35 @@
 import * as Path from 'node:path';
-import fs from 'fs';
-import readline from 'readline';
-import { ChatTestSuite } from '../src/suite';
+import * as fs from 'node:fs/promises';
 import { OpenAIChatMessage, OpenAIChat } from '../src/model';
 import { ChatEvalCase } from '../src/evalCase';
 import { Match } from '../src/evalFunction';
+import { Runner } from '../src/runner';
+
+main();
+
+async function main() {
+  const testFile = Path.resolve(__dirname, 'tests.jsonld');
+  const tests = await getTestsFromFilePath(testFile);
+
+  // Create a test runner
+  const runner = new Runner({ verbose: true });
+
+  // Register a suite of tests (in this case, from the tests.jsonld file)
+  const model = new OpenAIChat('gpt-4', { max_tokens: 300 });
+  runner.register('Simple test suite of chat examples', model, tests);
+
+  // Run the tests
+  return runner.run();
+}
+
+async function getTestsFromFilePath(path: string) {
+  const jsonlds = await readJsonL(path);
+
+  return jsonlds.map((data) => {
+    const ideal = data.ideal;
+    return new ChatEvalCase(data.input, [new Match(ideal, { trim: true, caseSensitive: false })]);
+  });
+}
 
 interface JsonLDChat {
   input: OpenAIChatMessage[];
@@ -13,49 +38,7 @@ interface JsonLDChat {
 }
 
 async function readJsonL(file: string): Promise<JsonLDChat[]> {
-  const fileStream = fs.createReadStream(file);
-  const rl = readline.createInterface({ input: fileStream });
-
-  const data: JsonLDChat[] = [];
-  for await (const line of rl) {
-    data.push(JSON.parse(line));
-  }
-
-  return data;
+  const jsonld = await fs.readFile(file, { encoding: 'utf8' });
+  const lines = jsonld.split('\n');
+  return lines.filter((line) => !!line.trim()).map((line) => JSON.parse(line));
 }
-
-const evalModel = {
-  run: async (messages: OpenAIChatMessage[]) => {
-    const chatModel = new OpenAIChat('gpt-4', { max_tokens: 300 });
-    return chatModel.run(messages);
-  },
-};
-
-/**
-/* For this example, let's test a Chat model with a simple test suite of exact Match evalFunctions.
-*  We will:
-/* 1. Read files from disk from a .jsonld file
-/* 2. Create a ChatTestSuite from the EvalCases in the files
-/* 4. Register the EvalFunctions
-/* 5. Run!
-/* 6. Print the report to stdout
- */
-const chatTestRun = async () => {
-  const path = Path.resolve(__dirname, 'tests.jsonld');
-  const files = await readJsonL(path);
-
-  // Let's register the evalFunction "Match" for this set.
-  // This will success / fail based on matching the `idealOutput` exactly.
-  // We pass {trim: true, caseSensitive: false} to the function, since we don't care about case or spaces.
-  const dataset: ChatEvalCase[] = files.map((data) => {
-    const ideal = data.ideal;
-    return new ChatEvalCase(data.input, [new Match(ideal, { trim: true, caseSensitive: false })]);
-  });
-
-  const suite = new ChatTestSuite('Simple test suite of chat examples', evalModel, dataset);
-  return suite.run();
-};
-
-chatTestRun().then((report) => {
-  console.log(report.toString(true));
-});

@@ -1,9 +1,9 @@
 import { Match, Includes, IsValidJson, LLMRubric } from '../src/evalFunction';
 import { CompletionEvalCase } from '../src/evalCase';
 import { AnthropicCompletion, OpenAICompletion } from '../src/model';
-import { CompletionTestSuite } from '../src/suite';
+import { Runner } from '../src/runner';
 
-const dataset: CompletionEvalCase[] = [
+const tests: CompletionEvalCase[] = [
   {
     description: 'Football world cup completion',
     prompt: 'Who won the 1998 football world cup? Respond concisly',
@@ -37,22 +37,16 @@ const dataset: CompletionEvalCase[] = [
   },
 ];
 
-async function main() {
-  // As an example, let's make Claude creative with a temperature of 1
-  const claude2 = new AnthropicCompletion('claude-2', { temperature: 1 });
-  const davinci3 = new OpenAICompletion('text-davinci-003');
+// Create a test runner
+const runner = new Runner({ verbose: true });
 
-  const suites = [
-    new CompletionTestSuite('Claude2 completion', claude2, dataset),
-    new CompletionTestSuite('text-davinci-003 completion', davinci3, dataset),
-  ];
+// Register a suite of tests that test the Anthropic Claude model
+const claude2 = new AnthropicCompletion('claude-2', { temperature: 1 });
+runner.register('Claude2 completion', claude2, tests);
 
-  const runningSuites = suites.map(async (suite) => {
-    const report = await suite.run();
-    console.log(report.toString(true));
-  });
+// Register another suite of tests that test the OpenAI Davinci model
+const davinci3 = new OpenAICompletion('text-davinci-003');
+runner.register('text-davinci-003 completion', davinci3, tests);
 
-  return Promise.all(runningSuites);
-}
-
-main();
+// Run the tests
+runner.run();
