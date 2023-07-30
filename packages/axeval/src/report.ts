@@ -54,17 +54,17 @@ export class Report {
   }
 
   evalResultToString(result: EvalResult): string {
-    const { success, response, evalFunction, score, evalCase, latencyMs } = result;
+    const { success, response, evaluator, score, evalCase, latencyMs } = result;
 
     const successString = success ? chalk.green('passed') : chalk.red('failed');
 
     let str = '';
 
     str += this.resultFormatter.format('Test', evalCase.description);
-    str += this.resultFormatter.format('EvalFunction', evalFunction.id);
-    str += this.resultFormatter.format('Params', evalFunction.options, { stringify: true });
+    str += this.resultFormatter.format('Evaluator', evaluator.id);
+    str += this.resultFormatter.format('Params', evaluator.options, { stringify: true });
     str += this.resultFormatter.format('Prompt', evalCase.prompt, { stringify: true });
-    str += this.resultFormatter.format('Expected', evalFunction.expected);
+    str += this.resultFormatter.format('Expected', evaluator.expected);
     str += this.resultFormatter.format('LLM Response', response?.output, { stringify: true });
     str += this.resultFormatter.format('Score', `${score} (${successString})`);
     str += this.resultFormatter.format('Time', formatMs(latencyMs));

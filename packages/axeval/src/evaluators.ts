@@ -1,7 +1,7 @@
 import { OpenAIChat, SUPPORTED_OPENAI_CHAT_MODELS } from './model';
 import { RUBRIC_SYSTEM_MESSAGE, makeUserRubricMessage, RubricResponse } from './prompt';
 
-export interface EvalFunction {
+export interface Evaluator {
   id: string;
   description: string;
   options?: Record<string, any>;
@@ -9,7 +9,11 @@ export interface EvalFunction {
   run(response: string): Promise<number>;
 }
 
-export class IsValidJson implements EvalFunction {
+export function isValidJson() {
+  return new IsValidJson();
+}
+
+class IsValidJson implements Evaluator {
   id = 'is-valid-json';
   description = 'Check if response is valid JSON';
 
@@ -32,7 +36,11 @@ type MatchOptions = {
   caseSensitive: boolean;
 };
 
-export class Match implements EvalFunction {
+export function match(value: string, options?: MatchOptions) {
+  return new Match(value, options);
+}
+
+class Match implements Evaluator {
   id = 'match';
   description = 'Check if response exactly matches ideal output';
   options: MatchOptions;
@@ -61,7 +69,11 @@ export class Match implements EvalFunction {
   }
 }
 
-export class Includes implements EvalFunction {
+export function includes(value: string) {
+  return new Includes(value);
+}
+
+class Includes implements Evaluator {
   id = 'includes';
   description = 'Check if response includes ideal output';
 
@@ -80,7 +92,11 @@ export class Includes implements EvalFunction {
   }
 }
 
-export class LLMRubric implements EvalFunction {
+export function llmRubric(chatModel: SUPPORTED_OPENAI_CHAT_MODELS, rubric: string) {
+  return new LLMRubric(chatModel, rubric);
+}
+
+class LLMRubric implements Evaluator {
   id = 'llm-rubric';
   description = 'Have an LLM take the response and evaluate it';
 

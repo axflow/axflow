@@ -1,9 +1,10 @@
 import * as Path from 'node:path';
 import * as fs from 'node:fs/promises';
 import { OpenAIChatMessage, OpenAIChat } from '../src/model';
-import { ChatEvalCase } from '../src/evalCase';
-import { Match } from '../src/evalFunction';
+import { match } from '../src/evaluators';
 import { Runner } from '../src/runner';
+
+import type { EvalCase } from '../src/evalCase';
 
 main();
 
@@ -26,8 +27,13 @@ async function getTestsFromFilePath(path: string) {
   const jsonlds = await readJsonL(path);
 
   return jsonlds.map((data) => {
-    const ideal = data.ideal;
-    return new ChatEvalCase(data.input, [new Match(ideal, { trim: true, caseSensitive: false })]);
+    const evalCase: EvalCase = {
+      description: data.description,
+      prompt: data.input,
+      evaluation: match(data.ideal, { trim: true, caseSensitive: false }),
+    };
+
+    return evalCase;
   });
 }
 
@@ -35,6 +41,7 @@ interface JsonLDChat {
   input: OpenAIChatMessage[];
   ideal: string;
   threshhold: number;
+  description?: string;
 }
 
 async function readJsonL(file: string): Promise<JsonLDChat[]> {

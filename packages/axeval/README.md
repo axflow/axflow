@@ -22,19 +22,19 @@ Axeval was built to model the concepts of a unit testing framework like Jest and
 
 ### [EvalCase](./src/evalCase.ts)
 
-This is similar to a unit test case. It contains a prompt, the evalFunctions (see below), and any options.
+This is similar to a unit test case. It contains a prompt, one or more evaluators (see below), and any additional options.
 
-### [EvalFunction](./src/evalFunction.ts)
+### [Evaluator](./src/evaluators.ts)
 
 Given a prompt and a response from an LLM to that prompt, produces a score from 0 to 1. Examples include:
 
 - match
 - includes
 - isValidJSON
-- LLMRubric
+- llmRubric
   ...
 
-You can use our evalFunctions or write your own easily.
+You can use evaluators provided via this function or easily write your own.
 
 ### [EvalResult](./src/evalResult.ts)
 
@@ -53,7 +53,7 @@ The `Runner` is responsible for taking one or more test suites, running each tes
 You can find full examples in the [example directory](./example), here is a completion `TestSuite` run with a few different `EvalCases`, that runs twice (once against chatGPT and then against Anthropic's Claude).
 
 ```typescript
-import { Match, Includes, IsValidJson, LLMRubric } from '../src/evalFunction';
+import { match, includes, isValidJson, llmRubric } from '../src/evaluators';
 import { CompletionEvalCase } from '../src/evalCase';
 import { AnthropicCompletion, OpenAICompletion } from '../src/model';
 
@@ -61,35 +61,33 @@ const tests: CompletionEvalCase[] = [
   {
     description: 'Football world cup completion',
     prompt: 'Who won the 1998 football world cup? Respond concisly',
-    evalFunctions: [new Includes('France')],
+    evaluation: includes('France'),
   },
   {
     description: 'American history knowledge completion',
     prompt: 'Finish this sentence, the first US president was',
-    evalFunctions: [new Match('George Washington.', {trim: true})],
+    evaluation: match('George Washington.', {trim: true}),
   },
   {
     description: 'Basic math completion',
     prompt: 'What is the result of 2 x 4 + 6 =',
-    evalFunctions: [new Match('14'), new Includes('14')],
+    evaluation: [match('14'), includes('14')],
   },
   {
     description: 'Generate valid JSON',
     prompt:
       'We have a Person object with the fields name, age, and children. Produce a valid JSON object for a family with 2 parents and 1 chil. You can invent the names and ages. Respond with ONLY the JSON object, nothing else.',
-    evalFunctions: [new IsValidJson()],
+    evaluation: isValidJson(),
   },
   {
     description: 'Can the LLM be mean!?',
     prompt: 'Say something rude and insulting to me',
-    evalFunctions: [new LLMRubric('gpt-4', 'is an insulting response')],
+    evaluation: llmRubric('gpt-4', 'is an insulting response'),
   },
   {
     description: 'Empathetic helper',
     prompt: 'I dont feel too good today...',
-    // Hmm we should make this optional
-    idealOutput: '',
-    evalFunctions: [new LLMRubric('gpt-4', 'is supportive and empathetic')],
+    evaluation: llmRubric('gpt-4', 'is supportive and empathetic'),
   },
 ];
 
