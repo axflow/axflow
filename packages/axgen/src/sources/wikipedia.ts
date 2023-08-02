@@ -25,6 +25,7 @@ export class Wikipedia implements IDataSource {
     yield {
       url: `https://en.wikipedia.org/?curid=${doc.id}`,
       text: doc.text,
+      metadata: {},
     };
   }
 

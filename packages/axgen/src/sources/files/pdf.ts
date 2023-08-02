@@ -27,5 +27,6 @@ async function toDocument(file: Buffer | string, options?: OptionsType): Promise
   return {
     url: url,
     text: pdf.text,
+    metadata: {},
   };
 }

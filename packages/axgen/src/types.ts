@@ -5,6 +5,7 @@
 export type Document = {
   url: string;
   text: string;
+  metadata: Record<string, any>;
 };
 
 export type Chunk = {

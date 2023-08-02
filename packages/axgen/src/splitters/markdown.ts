@@ -28,7 +28,7 @@ export class MarkdownSplitter implements IDataSplitter {
       id: generateId(),
       url: document.url,
       text: chunk,
-      metadata: {},
+      metadata: document.metadata,
     }));
 
     return chunks;

@@ -22,14 +22,14 @@ export class TextSplitter implements IDataSplitter {
     });
   }
 
-  async split(node: Document): Promise<Chunk[]> {
-    const textChunks = await this.splitter.splitText(node.text);
+  async split(document: Document): Promise<Chunk[]> {
+    const textChunks = await this.splitter.splitText(document.text);
 
     const chunks: Chunk[] = textChunks.map((chunk) => ({
       id: generateId(),
-      url: node.url,
+      url: document.url,
       text: chunk,
-      metadata: {},
+      metadata: document.metadata,
     }));
 
     return chunks;
