@@ -17,7 +17,7 @@ describe('splitters', () => {
   describe('CSVSplitter', () => {
     it('can split a csv document', async () => {
       const splitter = new CSVSplitter();
-      const result = await splitter.split({ url: 'file.csv', text: CSV_FILE });
+      const result = await splitter.split({ url: 'file.csv', text: CSV_FILE, metadata: {} });
 
       expect(result).toHaveLength(2);
 
@@ -38,7 +38,7 @@ describe('splitters', () => {
 
     it('can split a csv document taking a single column', async () => {
       const splitter = new CSVSplitter({ column: 'text' });
-      const result = await splitter.split({ url: 'file.csv', text: CSV_FILE });
+      const result = await splitter.split({ url: 'file.csv', text: CSV_FILE, metadata: {} });
 
       expect(result).toHaveLength(2);
 
@@ -59,7 +59,7 @@ describe('splitters', () => {
 
     it('can split a csv document using a separator other than a comma', async () => {
       const splitter = new CSVSplitter({ separator: '\t' });
-      const result = await splitter.split({ url: 'file.csv', text: TSV_FILE });
+      const result = await splitter.split({ url: 'file.csv', text: TSV_FILE, metadata: {} });
 
       expect(result).toHaveLength(2);
 

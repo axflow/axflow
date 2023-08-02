@@ -20,6 +20,7 @@ export class TextDocument implements IDataSource {
     yield {
       url: this.options.url,
       text: content,
+      metadata: {},
     };
   }
 }

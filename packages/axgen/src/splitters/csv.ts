@@ -33,7 +33,7 @@ export class CSVSplitter implements IDataSplitter {
         id: generateId(),
         url: document.url,
         text: row[column] || '',
-        metadata: {},
+        metadata: document.metadata,
       }));
     }
 
@@ -43,7 +43,7 @@ export class CSVSplitter implements IDataSplitter {
       text: Object.keys(row)
         .map((key) => `${key.trim()}: ${row[key]?.trim()}`)
         .join('\n'),
-      metadata: {},
+      metadata: document.metadata,
     }));
   }
 }
