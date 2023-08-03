@@ -14,6 +14,7 @@
     "models"
   ],
   "main": "./dist/index.js",
+  "homepage": "https://github.com/axilla-io/ax/tree/main/packages/axeval",
   "files": [
     "dist",
     "docs",
@@ -41,5 +42,12 @@
   "devDependencies": {
     "prettier": "^2.8.8",
     "ts-node": "^10.9.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axilla-io/ax.git"
+  },
+  "bugs": {
+    "url": "https://github.com/axilla-io/ax/issues"
   }
 }
