@@ -26,6 +26,7 @@
     "docs",
     "src"
   ],
+  "homepage": "https://github.com/axilla-io/ax/tree/main/packages/axgen",
   "publishConfig": {
     "access": "public"
   },
@@ -64,5 +65,12 @@
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6",
     "yargs": "^17.7.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axilla-io/ax.git"
+  },
+  "bugs": {
+    "url": "https://github.com/axilla-io/ax/issues"
   }
 }
