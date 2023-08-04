@@ -1,15 +1,16 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "es6",
+    "target": "es2022",
+    "moduleResolution": "node",
     "declaration": true,
     "noImplicitAny": true,
     "removeComments": true,
     "strict": true,
-    "target": "es2021",
-    "moduleResolution": "node",
     "outDir": "dist",
     "sourceMap": true,
     "inlineSources": false,
+    "skipLibCheck": true,
     "noUnusedLocals": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true
