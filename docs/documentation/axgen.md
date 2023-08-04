@@ -114,11 +114,3 @@ Additionally, there are two higher-level component types that create workflows o
 
 1. **Ingestion** constructs a data ingestion pipeline from a data source, splitter, embedder, and vector store.
 2. **Generation** construct data generation pipelines (e.g., chat completion over your custom data) from some input, an embedder, prompts, and a model.
-
-## Development
-
-See the [development docs](docs/development.md).
-
-## License
-
-[MIT](LICENSE.md)

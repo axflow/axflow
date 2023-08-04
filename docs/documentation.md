@@ -19,8 +19,8 @@ As a foundational framework, Ax empowers developers to build higher-level TypeSc
 
 ## Modules
 
-- [axgen](/documentation/axgen/): A framework for connecting your data to large language models
-- [axeval](/documentation/axeval/): A framework for evaluating LLM output quality
+- [axgen](/documentation/axgen.md): A framework for connecting your data to large language models
+- [axeval](/documentation/axeval.md): A framework for evaluating LLM output quality
 
 ## Getting started
 
