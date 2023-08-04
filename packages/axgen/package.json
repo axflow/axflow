@@ -48,6 +48,7 @@
   "dependencies": {
     "@pinecone-database/pinecone": "^0.1.6",
     "d3-dsv": "^2.0.0",
+    "encoding": "^0.1.13",
     "glob": "^10.3.1",
     "langchain": "^0.0.101",
     "openai": "^4.0.0-beta.7",
