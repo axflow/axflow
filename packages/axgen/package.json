@@ -12,7 +12,6 @@
     "generative ai",
     "vector database",
     "pinecone",
-    "chroma",
     "pgvector",
     "gpt",
     "gpt-4",
@@ -47,7 +46,6 @@
   "license": "MIT",
   "dependencies": {
     "@pinecone-database/pinecone": "^0.1.6",
-    "chromadb": "^1.5.3",
     "d3-dsv": "^2.0.0",
     "glob": "^10.3.1",
     "langchain": "^0.0.101",

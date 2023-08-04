@@ -1,8 +1,7 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
-import { getEnv, getEnvOrThrow } from '../../config';
-import { Chroma } from '../../vector_stores/chroma';
+import { getEnvOrThrow } from '../../config';
 import { Pinecone } from '../../vector_stores/pinecone';
 import { SUPPORTED_VECTOR_STORES, type SupportedVectorStores } from '../../vector_stores';
 
@@ -18,11 +17,6 @@ teardown(argv.store);
 
 async function teardown(store: SupportedVectorStores) {
   switch (store) {
-    case 'chroma':
-      return await Chroma.teardown({
-        path: getEnv('CHROMA_PATH'),
-        collection: getEnvOrThrow('CHROMA_COLLECTION'),
-      });
     case 'pinecone':
       return await Pinecone.teardown({
         apiKey: getEnvOrThrow('PINECONE_API_KEY'),
