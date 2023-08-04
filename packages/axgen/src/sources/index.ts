@@ -1,6 +1,7 @@
 import { NAME as fileSystem } from './file-system';
 import { NAME as wikipedia } from './wikipedia';
 import { NAME as textDocument } from './text-document';
+export { CONVERTERS } from './files';
 
 export const SUPPORTED_DATA_SOURCES = [fileSystem, wikipedia, textDocument] as const;
 export type SupportedDataSources = (typeof SUPPORTED_DATA_SOURCES)[number];
