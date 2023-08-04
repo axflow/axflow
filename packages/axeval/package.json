@@ -13,6 +13,7 @@
     "openai",
     "models"
   ],
+  "type": "module",
   "main": "./dist/index.js",
   "homepage": "https://github.com/axilla-io/ax/tree/main/packages/axeval",
   "files": [
