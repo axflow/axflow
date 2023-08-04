@@ -38,7 +38,8 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.5.8",
     "chalk": "^4.1.2",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "openai": "^4.0.0-beta.7"
   },
   "devDependencies": {
     "prettier": "^2.8.8",
