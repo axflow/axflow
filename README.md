@@ -12,6 +12,8 @@ Used together, they form an end-to-end framework for developing AI applications.
 - [axgen](./packages/axgen/): A framework for connecting your data to large language models
 - [axeval](./packages/axeval/): A framework for evaluating LLM output quality
 
+## [Documentation](https://docs.axilla.io)
+
 # Installation
 
 The modules can be installed independently, for incremental adoption and bundle size minimization.
