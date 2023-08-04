@@ -1,0 +1,26 @@
+{
+  "name": "docs",
+  "private": "true,",
+  "version": "0.0.1",
+  "description": "Documentation site for the Ax framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview"
+  },
+  "keywords": [
+    "docs",
+    "ax",
+    "axilla",
+    "llm",
+    "ai",
+    "documentation"
+  ],
+  "author": "axilla",
+  "license": "MIT",
+  "devDependencies": {
+    "vitepress": "^1.0.0-beta.7"
+  }
+}
