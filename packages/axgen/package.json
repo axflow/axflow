@@ -1,6 +1,6 @@
 {
   "name": "axgen",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A framework for connecting your data to large language models",
   "keywords": [
     "framework",
@@ -19,6 +19,7 @@
     "ingestion",
     "models"
   ],
+  "type": "module",
   "main": "./dist/index.js",
   "files": [
     "dist",
