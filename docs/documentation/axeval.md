@@ -1,14 +1,10 @@
-# Axeval
-
-> TypeScript evaluation & unit testing framework for LLMs
+# Axeval <Badge type="tip" text="^0.0.7" />
 
 Axeval is a foundational framework that enables test-driven LLM engineering and can be used for various evaluation use cases:
 
 - creating unit tests for your prompts
 - iterating on prompts with data driven measurements
 - evaluating different models on latency / cost / accuracy to make the optimal production decision
-
-In essence, axeval is a way to execute and fine-tune your prompts and evaluation criteria for TypeScript.
 
 Axeval is a _code-first library_, rather than configuration-first.
 
@@ -22,11 +18,11 @@ npm i axeval
 
 Axeval was built to model the concepts of a unit testing framework like Jest and should feel familiar. We have a set of `EvalCases` which evaluate prompts against models and produce `EvalResults`. They are exected via the `Runner`.d
 
-### [EvalCase](./src/evalCase.ts)
+### EvalCase
 
 This is similar to a unit test case. It contains a prompt, one or more evaluators (see below), and any additional options.
 
-### [Evaluator](./src/evaluators.ts)
+### Evaluator
 
 Given a prompt and a response from an LLM to that prompt, produces a score from 0 to 1. Examples include:
 
@@ -38,15 +34,15 @@ Given a prompt and a response from an LLM to that prompt, produces a score from 
 
 You can use evaluators provided via this function or easily write your own.
 
-### [EvalResult](./src/evalResult.ts)
+### EvalResult
 
 The result of applying an `EvalFunction` to an `EvalCase`. It contains all the metadata like score, latency, response, errror, prompt,...
 
-### [Report](./src/report.ts)
+### Report
 
 A structured object containing all of the `EvalResults` for a given `TestSuite` run. It can output this to different formats, like for example stdout.
 
-### [Runner](./src/runner.ts)
+### Runner
 
 The `Runner` is responsible for taking one or more test suites, running each test against the given model, and reporting the results.
 
