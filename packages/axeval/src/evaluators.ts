@@ -32,8 +32,8 @@ class IsValidJson implements Evaluator {
 }
 
 type MatchOptions = {
-  trim: boolean;
-  caseSensitive: boolean;
+  trim?: boolean;
+  caseSensitive?: boolean;
 };
 
 export function match(value: string, options?: MatchOptions) {

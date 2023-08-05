@@ -29,9 +29,9 @@ export interface CompletionModel {
 // ANTHROPIC //
 ///////////////
 
-type SUPPORTED_ANTHROPIC_MODELS = 'claude-1' | 'claude-2';
+export type SUPPORTED_ANTHROPIC_MODELS = 'claude-1' | 'claude-2';
 
-type AnthropicOptions = {
+export type AnthropicOptions = {
   max_tokens_to_sample: number;
   temperature: number;
 };
@@ -139,7 +139,7 @@ export class OpenAIChat implements ChatModel {
 }
 
 // COMPLETION MODELS
-type SUPPORTED_OPENAI_COMPLETION_MODELS = 'text-davinci-003' | 'text-davinci-002';
+export type SUPPORTED_OPENAI_COMPLETION_MODELS = 'text-davinci-003' | 'text-davinci-002';
 
 export interface OpenAICompletionOptions {
   model: string;

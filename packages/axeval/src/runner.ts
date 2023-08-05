@@ -10,7 +10,7 @@ type SuiteType = {
   description: string;
 };
 
-type RunnerOptionsType = {
+export type RunnerOptionsType = {
   verbose: boolean;
 };
 
