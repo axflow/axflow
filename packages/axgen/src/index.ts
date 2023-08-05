@@ -1,52 +1,97 @@
 ///////////////
 // Embedders //
 ///////////////
-export * from './embedders';
+export type { OpenAIEmbedderOptions, SupportedDataEmbedders } from './embedders';
+
+export { OpenAIEmbedder, SUPPORTED_DATA_EMBEDDERS } from './embedders';
 
 ////////////////
 // Generation //
 ////////////////
-export * from './generation';
+export type {
+  CompletionOptions,
+  ChatCompletionOptions,
+  RAGOptions,
+  RAGChatOptions,
+} from './generation';
+
+export { Completion, ChatCompletion, RAG, RAGChat } from './generation';
 
 ///////////////
 // Ingestion //
 ///////////////
-export * from './ingestion';
+export type { LoggerType } from './ingestion';
+
+export { Ingestion } from './ingestion';
 
 ////////////
 // Models //
 ////////////
-export * from './models';
+export type {
+  OpenAICompletionOptions,
+  OpenAIChatCompletionMessageInput,
+  OpenAIChatCompletionOptions,
+  OpenAIChatCompletionNoStreaming,
+  OpenAIChatCompletionStreaming,
+} from './models';
+
+export { OpenAICompletion, OpenAIChatCompletion } from './models';
 
 /////////////
 // Prompts //
 /////////////
-export * from './prompts';
+export type {
+  BasicPromptOptions,
+  PromptWithContextOptions,
+  PromptMessageWithContextOptions,
+} from './prompts';
+
+export {
+  BasicPrompt,
+  BasicPromptMessage,
+  PromptWithContext,
+  PromptMessageWithContext,
+} from './prompts';
 
 ////////////////
 // Retrievers //
 ////////////////
-export * from './retrievers';
+export { Retriever } from './retrievers';
 
 /////////////
 // Sources //
 /////////////
-export * from './sources';
+export type {
+  FileSystemOptions,
+  WikipediaOptions,
+  TextDocumentOptions,
+  SupportedDataSources,
+  ConverterKeys,
+} from './sources';
+
+export { converters, FileSystem, Wikipedia, TextDocument, SUPPORTED_DATA_SOURCES } from './sources';
 
 ///////////////
 // Splitters //
 ///////////////
-export * from './splitters';
+export type {
+  MarkdownSplitterOptions,
+  TextSplitterOptions,
+  CSVSplitterOptions,
+  SupportedDataSplitters,
+} from './splitters';
+
+export { MarkdownSplitter, TextSplitter, CSVSplitter, SUPPORTED_DATA_SPLITTERS } from './splitters';
 
 ///////////////
 // Templates //
 ///////////////
-export * from './templates';
+export { QUESTION_WITHOUT_CONTEXT, QUESTION_WITH_CONTEXT } from './templates';
 
 ///////////
 // Types //
 ///////////
-export * from './types';
+export type * from './types';
 
 ///////////
 // Utils //
@@ -56,4 +101,6 @@ export { formatTemplate } from './utils';
 //////////////////
 // Vector Store //
 //////////////////
-export * from './vector_stores';
+export type { SupportedVectorStores } from './vector_stores';
+
+export { Pinecone, SUPPORTED_VECTOR_STORES } from './vector_stores';

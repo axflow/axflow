@@ -1,5 +1,5 @@
 import { stat as fsStat } from 'node:fs/promises';
-import { CONVERTERS, type CONVERTER_KEYS } from './files';
+import { converters, type ConverterKeys } from './files';
 import { resolve, join, extname } from 'node:path';
 
 import { glob } from 'glob';
@@ -39,8 +39,8 @@ export class FileSystem implements IDataSource {
   }
 
   private async documentFromFilePath(filePath: string) {
-    const ext = extname(filePath).toLowerCase().slice(1) as CONVERTER_KEYS;
-    const toDocument = CONVERTERS[ext] || CONVERTERS['txt'];
+    const ext = extname(filePath).toLowerCase().slice(1) as ConverterKeys;
+    const toDocument = converters[ext] || converters['txt'];
     return toDocument(filePath);
   }
 }
