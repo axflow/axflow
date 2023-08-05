@@ -29,7 +29,9 @@ export default defineConfig({
         ],
       },
     ],
-
+    search: {
+      provider: 'local',
+    },
     socialLinks: [
       { icon: 'github', link: 'https://github.com/axilla-io/ax' },
       { icon: 'twitter', link: 'https://twitter.com/axilla_io' },
