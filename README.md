@@ -12,6 +12,12 @@ Used together, they form an end-to-end framework for developing AI applications.
 - [axgen](./packages/axgen/): A framework for connecting your data to large language models
 - [axeval](./packages/axeval/): A framework for evaluating LLM output quality
 
+In addition to the above modules, we're working on the following modules:
+
+- axextract: A library focused exclusively on chunking data from different sources and creating documents for embeddings & ingestion.
+- axserve: A serving framework, to run any LLM model (OSS or otherwise). It will also provide middleware options for user throttling, analytics, and logging
+- axtune: A library focused on fine-tuning models
+
 ## [Documentation](https://docs.axilla.io)
 
 # Installation
