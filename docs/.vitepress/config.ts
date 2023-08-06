@@ -4,6 +4,17 @@ import { defineConfig } from 'vitepress';
 export default defineConfig({
   title: 'Axilla documentation',
   description: 'Documentation for the Ax framework — write AI applications in TypeScript',
+  head: [
+    [
+      'script',
+      {
+        src: 'https://plausible.io/js/script.js',
+        async: '',
+        defer: '',
+        'data-domain': 'docs.axilla.io',
+      },
+    ],
+  ],
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     logo: './logo.svg',
