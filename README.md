@@ -14,8 +14,8 @@ Used together, they form an end-to-end framework for developing AI applications.
 
 In addition to the above modules, we're working on the following modules:
 
-- axextract: A library focused exclusively on chunking data from different sources and creating documents for embeddings & ingestion.
-- axserve: A serving framework, to run any LLM model (OSS or otherwise). It will also provide middleware options for user throttling, analytics, and logging
+- axextract: A library for efficient data processing, particularly loading, transforming, and chunking documents from arbitrary sources. Most useful for applications that need to load and preprocess data for vector search.
+- axserve: A serving framework to run any LLM model (OSS or otherwise). It will also provide middleware options for user throttling, analytics, and logging
 - axtune: A library focused on fine-tuning models
 
 ## [Documentation](https://docs.axilla.io)
