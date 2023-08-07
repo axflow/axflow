@@ -1,5 +1,6 @@
 import { readFile } from 'fs/promises';
-import { pdfToText } from 'pdf-ts';
+// @ts-ignore
+import pdfParse from '../../../pdf-parse';
 import type { Document } from '../../types';
 
 export { toDocument };
@@ -22,11 +23,11 @@ async function toDocument(file: Buffer | string, options?: OptionsType): Promise
     url = options?.url || 'file.pdf';
   }
 
-  const text = await pdfToText(buffer);
+  const result = await pdfParse(buffer);
 
   return {
     url: url,
-    text: text,
+    text: result.text,
     metadata: {},
   };
 }
