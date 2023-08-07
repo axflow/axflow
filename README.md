@@ -4,6 +4,8 @@
 
 # Ax — A comprehensive AI framework for TypeScript
 
+![Github CI](https://github.com/axilla-io/ax/workflows/Github%20CI/badge.svg) [![Slack](https://img.shields.io/badge/Join%20Our%20Community-Slack-blue)](https://join.slack.com/t/axilladevelopers/shared_invite/zt-212wj3ek0-NHzIFtVg1lxL1t0ViPbysA)
+
 Ax is a collection of modules designed for creating robust AI applications. These modules can be adopted incrementally, thus providing a modular and scalable end-to-end solution.
 Used together, they form an end-to-end framework for developing AI applications.
 
