@@ -100,3 +100,7 @@ npm run query -- --store=pinecone --query="How do I do X where X is something in
 ```
 
 You can also use chat completions with `npm run openai:chat-completion` using the same options as above.
+
+## Setting up qdrant
+
+You can follow the quickstart [here](https://qdrant.tech/documentation/quick-start/). For local development, you'll want to pull the docker image and run it. The default UI is findable at http://localhost:6333/dashboard#/console

@@ -1,8 +1,9 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
-import { getEnvOrThrow } from '../../config';
+import { getEnvOrThrow, getEnv } from '../../config';
 import { Pinecone } from '../../vector_stores/pinecone';
+import { Qdrant } from '../../vector_stores/qdrant';
 import { SUPPORTED_VECTOR_STORES, type SupportedVectorStores } from '../../vector_stores';
 
 const argv = yargs(hideBin(process.argv))
@@ -22,6 +23,12 @@ async function teardown(store: SupportedVectorStores) {
         apiKey: getEnvOrThrow('PINECONE_API_KEY'),
         environment: getEnvOrThrow('PINECONE_ENVIRONMENT'),
         index: getEnvOrThrow('PINECONE_INDEX'),
+      });
+    case 'qdrant':
+      return await Qdrant.teardown({
+        url: getEnvOrThrow('QDRANT_URL'),
+        collection: getEnvOrThrow('QDRANT_COLLECTION'),
+        apiKey: getEnv('QDRANT_API_KEY'),
       });
     default:
       throw new Error(`Unrecognized store "${store}"`);
