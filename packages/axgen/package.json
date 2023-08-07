@@ -23,7 +23,8 @@
   "files": [
     "dist",
     "docs",
-    "src"
+    "src",
+    "pdf-parse"
   ],
   "homepage": "https://github.com/axilla-io/ax/tree/main/packages/axgen",
   "publishConfig": {
