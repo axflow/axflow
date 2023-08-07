@@ -1,6 +1,6 @@
 {
   "name": "axgen",
-  "version": "0.0.8",
+  "version": "0.0.11",
   "description": "A framework for connecting your data to large language models",
   "keywords": [
     "framework",
@@ -23,7 +23,8 @@
   "files": [
     "dist",
     "docs",
-    "src"
+    "src",
+    "pdf-parse"
   ],
   "homepage": "https://github.com/axilla-io/ax/tree/main/packages/axgen",
   "publishConfig": {
@@ -51,8 +52,7 @@
     "encoding": "^0.1.13",
     "glob": "^10.3.1",
     "langchain": "^0.0.101",
-    "openai": "^4.0.0-beta.7",
-    "pdf-parse": "^1.1.1"
+    "openai": "^4.0.0-beta.7"
   },
   "devDependencies": {
     "@types/d3-dsv": "^3.0.1",
