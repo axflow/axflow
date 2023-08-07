@@ -47,6 +47,7 @@
   "license": "MIT",
   "dependencies": {
     "@pinecone-database/pinecone": "^0.1.6",
+    "@qdrant/qdrant-js": "^1.4.0",
     "d3-dsv": "^2.0.0",
     "encoding": "^0.1.13",
     "glob": "^10.3.1",

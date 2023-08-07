@@ -103,4 +103,4 @@ export { formatTemplate } from './utils';
 //////////////////
 export type { SupportedVectorStores } from './vector_stores';
 
-export { Pinecone, SUPPORTED_VECTOR_STORES } from './vector_stores';
+export { Pinecone, Qdrant, SUPPORTED_VECTOR_STORES } from './vector_stores';
