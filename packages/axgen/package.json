@@ -23,8 +23,7 @@
   "files": [
     "dist",
     "docs",
-    "src",
-    "pdf-parse"
+    "src"
   ],
   "homepage": "https://github.com/axilla-io/ax/tree/main/packages/axgen",
   "publishConfig": {
@@ -52,7 +51,8 @@
     "encoding": "^0.1.13",
     "glob": "^10.3.1",
     "langchain": "^0.0.101",
-    "openai": "^4.0.0-beta.7"
+    "openai": "^4.0.0-beta.7",
+    "pdf-ts": "^0.0.2"
   },
   "devDependencies": {
     "@types/d3-dsv": "^3.0.1",
