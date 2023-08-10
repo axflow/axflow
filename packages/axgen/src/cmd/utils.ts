@@ -5,8 +5,10 @@ import { TextSplitter } from '../splitters/text';
 import { OpenAIEmbedder } from '../embedders/open-ai-embedder';
 import { Pinecone } from '../vector_stores/pinecone';
 import { Qdrant } from '../vector_stores/qdrant';
+import { Chroma } from '../vector_stores/chroma';
 import { getEnv, getEnvOrThrow } from '../config';
 import { IVectorStore } from '../types';
+
 
 import type { SupportedDataSources } from '../sources';
 import type { SupportedVectorStores } from '../vector_stores';
@@ -15,6 +17,11 @@ import type { SupportedDataEmbedders } from '../embedders';
 
 export function getVectorStore(store: SupportedVectorStores): IVectorStore {
   switch (store) {
+    case 'chroma':
+      return new Chroma({
+        path: getEnv('CHROMA_PATH'),
+        collection: getEnvOrThrow('CHROMA_COLLECTION'),
+      });
     case 'pinecone':
       return new Pinecone({
         index: getEnvOrThrow('PINECONE_INDEX'),

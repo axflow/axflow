@@ -2,6 +2,16 @@
 
 ## Setup
 
+### Chroma
+
+You'll need to follow their instructions if you want to run it locally:
+
+```bash
+git clone https://github.com/chroma-core/chroma.git
+cd chroma
+docker-compose up -d --build
+```
+
 ## CLI
 
 There is a CLI local to this repo that is useful for testing locally.

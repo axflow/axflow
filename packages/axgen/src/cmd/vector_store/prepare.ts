@@ -1,6 +1,6 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-
+import { Chroma } from '../../vector_stores/chroma';
 import { Pinecone } from '../../vector_stores/pinecone';
 import { Qdrant } from '../../vector_stores/qdrant';
 import { SUPPORTED_VECTOR_STORES, type SupportedVectorStores } from '../../vector_stores';
@@ -18,6 +18,11 @@ prepare(argv.store);
 
 async function prepare(store: SupportedVectorStores) {
   switch (store) {
+    case 'chroma':
+      return await Chroma.prepare({
+        path: getEnvOrThrow('CHROMA_PATH'),
+        collection: getEnvOrThrow('CHROMA_COLLECTION'),
+      });
     case 'pinecone':
       return await Pinecone.prepare({
         apiKey: getEnvOrThrow('PINECONE_API_KEY'),
