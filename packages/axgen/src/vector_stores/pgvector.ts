@@ -29,7 +29,9 @@ function getDB(dsn: string) {
   };
 
   const pgp = pgpromise(initOptions);
-  return pgp(dsn);
+  const db = pgp(dsn);
+
+  return { pgp, db };
 }
 
 export const NAME = 'pgvector' as const;
@@ -40,7 +42,7 @@ export class PgVector implements IVectorStore {
       throw new Error('pgvector currently only supports dimensions less than 2000');
     }
 
-    const db = getDB(options.dsn);
+    const { db } = getDB(options.dsn);
 
     await db.none('CREATE EXTENSION IF NOT EXISTS vector;');
     await db.none(schema(options.tableName), [options.dimension]);
@@ -48,36 +50,48 @@ export class PgVector implements IVectorStore {
 
   static async teardown(options: { tableName: string; dsn: string }) {
     const name = options.tableName;
-    const db = getDB(options.dsn);
+    const { db } = getDB(options.dsn);
     await db.none(`DROP TABLE IF EXISTS ${name};`);
   }
 
   private db: pgpromise.IDatabase<{}>;
+  private pgp: pgpromise.IMain;
   private tableName: string;
 
   constructor(options: { dsn: string; tableName: string }) {
-    this.db = getDB(options.dsn);
+    const { db, pgp } = getDB(options.dsn);
+    this.db = db;
+    this.pgp = pgp;
     this.tableName = options.tableName;
   }
 
   async add(chunks: ChunkWithEmbeddings[]): Promise<string[]> {
     const ids = [];
+    const values = [];
 
     for (const chunk of chunks) {
       ids.push(chunk.id);
-
-      // TODO make this a put_multi
-      await this.db.none(
-        `INSERT INTO ${this.tableName} (id, embedding, text, url, metadata) VALUES ($1, $2, $3, $4, $5)`,
-        [chunk.id, toSql(chunk.embeddings), chunk.text, chunk.url, chunk.metadata]
-      );
+      values.push({
+        id: chunk.id,
+        embedding: toSql(chunk.embeddings),
+        text: chunk.text,
+        url: chunk.url,
+        metadata: chunk.metadata,
+      });
     }
+
+    const { ColumnSet, insert } = this.pgp.helpers;
+    const columnSet = new ColumnSet(['id', 'embedding', 'text', 'url', 'metadata'], {
+      table: this.tableName,
+    });
+
+    await this.db.none(insert(values, columnSet));
 
     return ids;
   }
 
   async delete(ids: string | string[]) {
-    await this.db.result(`DELETE FROM ${this.tableName} WHERE id IN ($1:list)`, [wrap(ids)]);
+    await this.db.result(`DELETE FROM "${this.tableName}" WHERE id IN ($1:list)`, [wrap(ids)]);
   }
 
   async query(embedding: number[], options: IVectorQueryOptions): Promise<IVectorQueryResult[]> {
