@@ -3,6 +3,7 @@ import { hideBin } from 'yargs/helpers';
 
 import { Pinecone } from '../../vector_stores/pinecone';
 import { Qdrant } from '../../vector_stores/qdrant';
+import { PgVector } from '../../vector_stores/pgvector';
 import { SUPPORTED_VECTOR_STORES, type SupportedVectorStores } from '../../vector_stores';
 import { getEnvOrThrow } from '../../config';
 
@@ -31,6 +32,12 @@ async function prepare(store: SupportedVectorStores) {
         url: getEnvOrThrow('QDRANT_URL'),
         distance: getEnvOrThrow('QDRANT_DISTANCE') as 'Cosine' | 'Euclid' | 'Dot',
         dimension: Number(getEnvOrThrow('QDRANT_DIMENSION')),
+      });
+    case 'pgvector':
+      return await PgVector.prepare({
+        tableName: getEnvOrThrow('PG_TABLE_NAME'),
+        dimension: Number(getEnvOrThrow('PG_VECTOR_DIMENSION')),
+        dsn: getEnvOrThrow('PG_DSN'),
       });
     default:
       throw new Error(`Unrecognized store "${store}"`);
