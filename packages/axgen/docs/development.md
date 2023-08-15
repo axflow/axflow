@@ -2,6 +2,26 @@
 
 ## Setup
 
+### PGVector
+
+If you plan on using postgres + pgvector, you need to have a URL to a Postgres instance with pgvector installed. To install locally, you'll need to:
+
+1. Install pgvector, e.g., `brew install pgvector`. *Note: you may need to restart your postgres server after installing this package.*
+2. Follow the [installation instructions in the pgvector README](https://github.com/pgvector/pgvector)
+3. Create a table with the proper schema (see schema below). Or use our npm `npm run vector_store:prepare -- --store=pgvector` script do so.
+
+This is the schema required by axgen (table name and vector dimension is configurable):
+
+```sql
+CREATE TABLE IF NOT EXISTS "<table name>" (
+  id TEXT PRIMARY KEY,
+  embedding VECTOR(<vector dimension>) NOT NULL,
+  text TEXT NOT NULL,
+  url TEXT NOT NULL,
+  metadata JSONB NOT NULL DEFAULT '{}'::jsonb
+);
+```
+
 ## CLI
 
 There is a CLI local to this repo that is useful for testing locally.

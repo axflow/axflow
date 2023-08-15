@@ -4,7 +4,7 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "pgvector/pg": ["node_modules/pgvector/types/pg"]
+      "pgvector/pg": ["../../node_modules/pgvector/types/pg"]
     }
   },
   "include": ["src"]

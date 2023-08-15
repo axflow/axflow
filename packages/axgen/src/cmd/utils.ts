@@ -5,6 +5,7 @@ import { TextSplitter } from '../splitters/text';
 import { OpenAIEmbedder } from '../embedders/open-ai-embedder';
 import { Pinecone } from '../vector_stores/pinecone';
 import { Qdrant } from '../vector_stores/qdrant';
+import { PgVector } from '../vector_stores/pgvector';
 import { getEnv, getEnvOrThrow } from '../config';
 import { IVectorStore } from '../types';
 
@@ -26,6 +27,11 @@ export function getVectorStore(store: SupportedVectorStores): IVectorStore {
       return new Qdrant({
         collection: getEnvOrThrow('QDRANT_COLLECTION'),
         url: getEnvOrThrow('QDRANT_URL'),
+      });
+    case 'pgvector':
+      return new PgVector({
+        dsn: getEnvOrThrow('PG_DSN'),
+        tableName: getEnvOrThrow('PG_TABLE_NAME'),
       });
     default:
       throw new Error(`Unrecognized vector store "${store}"`);
