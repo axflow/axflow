@@ -2,12 +2,12 @@ import { FileSystem } from '../sources/file-system';
 import { Wikipedia } from '../sources/wikipedia';
 import { MarkdownSplitter } from '../splitters/markdown';
 import { TextSplitter } from '../splitters/text';
-import { OpenAIEmbedder } from '../embedders/open-ai-embedder';
 import { Pinecone } from '../vector_stores/pinecone';
 import { Qdrant } from '../vector_stores/qdrant';
 import { PgVector } from '../vector_stores/pgvector';
 import { getEnv, getEnvOrThrow } from '../config';
 import { IVectorStore } from '../types';
+import { OpenAIEmbedder, VertexAIEmbedder } from '../embedders';
 
 import type { SupportedDataSources } from '../sources';
 import type { SupportedVectorStores } from '../vector_stores';
@@ -67,6 +67,8 @@ export function getDataEmbedder(type: SupportedDataEmbedders, options: any) {
         apiKey: getEnv('OPENAI_API_KEY'),
         ...options,
       });
+    case 'vertexai':
+      return new VertexAIEmbedder();
     default:
       throw new Error(`Unsupported data embedder "${type}"`);
   }
