@@ -54,7 +54,7 @@
     "glob": "^10.3.1",
     "google-auth-library": "^8.9.0",
     "langchain": "^0.0.101",
-    "openai": "^4.0.0-beta.7",
+    "openai": "^4.0.0",
     "pdf-ts": "^0.0.2",
     "pg-promise": "^11.5.3",
     "pgvector": "^0.1.4"
