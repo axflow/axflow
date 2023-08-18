@@ -120,9 +120,10 @@ Additionally, there are two higher-level component types that create workflows o
 We currently support
 
 * OpenAI models
+* Anthropic models
 * Google models (e.g., text-bison, chat-bison, textembedding-gecko) through vertexai.
 
-Anthropic, Hugging Face inference, and more coming soon!
+Hugging Face inference and more coming soon!
 
 ## Development
 
