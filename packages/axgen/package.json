@@ -38,6 +38,7 @@
     "vector_store:delete": "ts-node -r ./src/cmd/config.ts ./src/cmd/vector_store/delete.ts",
     "vector_store:teardown": "ts-node -r ./src/cmd/config.ts ./src/cmd/vector_store/teardown.ts",
     "anthropic": "ts-node -r ./src/cmd/config.ts ./src/cmd/anthropic",
+    "cohere": "ts-node -r ./src/cmd/config.ts ./src/cmd/cohere",
     "openai:completion": "ts-node -r ./src/cmd/config.ts ./src/cmd/openai/completion.ts",
     "openai:chat-completion": "ts-node -r ./src/cmd/config.ts ./src/cmd/openai/chat-completion.ts",
     "vertexai:chat": "ts-node -r ./src/cmd/config.ts ./src/cmd/vertexai/chat.ts",

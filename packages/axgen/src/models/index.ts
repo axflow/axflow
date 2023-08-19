@@ -13,3 +13,4 @@ export { VertexAIChat, type VertexAIChatTypes } from './vertexai/chat';
 export { VertexAIText, type VertexAITextTypes } from './vertexai/text';
 
 export { Anthropic, type AnthropicTypes } from './anthropic';
+export { Cohere, type CohereTypes } from './cohere';

@@ -122,6 +122,7 @@ We currently support
 * OpenAI models
 * Anthropic models
 * Google models (e.g., text-bison, chat-bison, textembedding-gecko) through vertexai.
+* Cohere generate models
 
 Hugging Face inference and more coming soon!
 
