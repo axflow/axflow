@@ -16,9 +16,24 @@ export function without<T extends object, K extends keyof T>(
 ): Omit<T, K> {
   const result = {} as Omit<T, K>;
 
+  const includeKey = (k: any): k is Exclude<keyof T, K> => !keys.includes(k);
+
   for (const key of Object.keys(obj)) {
-    if (!keys.includes(key as any)) {
-      // @ts-ignore
+    if (includeKey(key)) {
+      result[key] = obj[key];
+    }
+  }
+
+  return result;
+}
+
+export function only<T extends object, K extends keyof T>(obj: T, ...keys: Array<K>): Pick<T, K> {
+  const result = {} as Pick<T, K>;
+
+  const includeKey = (k: any): k is K => keys.includes(k);
+
+  for (const key of Object.keys(obj)) {
+    if (includeKey(key)) {
       result[key] = obj[key];
     }
   }

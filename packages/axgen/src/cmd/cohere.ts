@@ -4,7 +4,7 @@ import { hideBin } from 'yargs/helpers';
 import { getVectorStore } from './utils';
 import { SUPPORTED_VECTOR_STORES, type SupportedVectorStores } from '../vector_stores';
 import { Cohere } from '../models';
-import { OpenAIEmbedder } from '../embedders';
+import { CohereEmbedder } from '../embedders';
 import { BasicPrompt, PromptWithContext } from '../prompts';
 import { QUESTION_WITHOUT_CONTEXT, QUESTION_WITH_CONTEXT } from '../templates';
 
@@ -80,7 +80,7 @@ async function rag(options: QueryOptions) {
 
   const store = getVectorStore(options.store);
   const model = new Cohere();
-  const embedder = new OpenAIEmbedder();
+  const embedder = new CohereEmbedder();
   const prompt = new PromptWithContext({ template: QUESTION_WITH_CONTEXT });
 
   // Grab embeddings for the query
