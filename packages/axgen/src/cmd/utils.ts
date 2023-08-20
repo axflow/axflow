@@ -1,14 +1,10 @@
-import { FileSystem } from '../sources/file-system';
-import { Wikipedia } from '../sources/wikipedia';
-import { MarkdownSplitter } from '../splitters/markdown';
-import { TextSplitter } from '../splitters/text';
-import { Pinecone } from '../vector_stores/pinecone';
-import { Qdrant } from '../vector_stores/qdrant';
-import { PgVector } from '../vector_stores/pgvector';
-import { getEnv, getEnvOrThrow } from '../config';
-import { IVectorStore } from '../types';
+import { FileSystem, Wikipedia } from '../sources';
+import { Pinecone, PgVector, Qdrant } from '../vector_stores';
 import { OpenAIEmbedder, VertexAIEmbedder, CohereEmbedder } from '../embedders';
+import { CSVSplitter, MarkdownSplitter, TextSplitter } from '../splitters';
+import { getEnv, getEnvOrThrow } from '../config';
 
+import type { IVectorStore } from '../types';
 import type { SupportedDataSources } from '../sources';
 import type { SupportedVectorStores } from '../vector_stores';
 import type { SupportedDataSplitters } from '../splitters';
@@ -55,6 +51,8 @@ export function getDataSplitter(type: SupportedDataSplitters, options: any) {
       return new MarkdownSplitter(options);
     case 'text':
       return new TextSplitter(options);
+    case 'csv':
+      return new CSVSplitter(options);
     default:
       throw new Error(`Unsupported data splitter "${type}"`);
   }
@@ -68,7 +66,7 @@ export function getDataEmbedder(type: SupportedDataEmbedders, options: any) {
         ...options,
       });
     case 'vertexai':
-      return new VertexAIEmbedder();
+      return new VertexAIEmbedder(options);
     case 'cohere':
       return new CohereEmbedder(options);
     default:
