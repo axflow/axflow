@@ -7,7 +7,7 @@ import { Qdrant } from '../vector_stores/qdrant';
 import { PgVector } from '../vector_stores/pgvector';
 import { getEnv, getEnvOrThrow } from '../config';
 import { IVectorStore } from '../types';
-import { OpenAIEmbedder, VertexAIEmbedder } from '../embedders';
+import { OpenAIEmbedder, VertexAIEmbedder, CohereEmbedder } from '../embedders';
 
 import type { SupportedDataSources } from '../sources';
 import type { SupportedVectorStores } from '../vector_stores';
@@ -69,6 +69,8 @@ export function getDataEmbedder(type: SupportedDataEmbedders, options: any) {
       });
     case 'vertexai':
       return new VertexAIEmbedder();
+    case 'cohere':
+      return new CohereEmbedder(options);
     default:
       throw new Error(`Unsupported data embedder "${type}"`);
   }
