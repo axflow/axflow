@@ -22,6 +22,10 @@ CREATE TABLE IF NOT EXISTS "<table name>" (
 );
 ```
 
+### Qdrant
+
+You can follow the quickstart [here](https://qdrant.tech/documentation/quick-start/). For local development, you'll want to pull the docker image and run it. The default UI is findable at http://localhost:6333/dashboard#/console
+
 ## CLI
 
 There is a CLI local to this repo that is useful for testing locally.
@@ -85,6 +89,19 @@ npm run vector_store:delete -- --store pinecone --ids id-1 id-2 id-3
 
 ### Query records
 
+This will use openai as the example, but the following commands are supported:
+
+* `npm run openai:completion -- <options>`
+* `npm run openai:chat-completion -- <options>`
+* `npm run vertexai:text -- <options>`
+* `npm run vertexai:chat -- <options>`
+* `npm run anthropic -- <options>`
+* `npm run cohere -- <options>`
+
+These commands all have roughly the same API as the openai examples below.
+
+To ask the openai completion models a question, we can run the following command:
+
 ```bash
 npm run openai:completion -- --store=pinecone --query="When was the San Francisco Police Department founded?"
 ```
@@ -120,7 +137,3 @@ npm run query -- --store=pinecone --query="How do I do X where X is something in
 ```
 
 You can also use chat completions with `npm run openai:chat-completion` using the same options as above.
-
-## Setting up qdrant
-
-You can follow the quickstart [here](https://qdrant.tech/documentation/quick-start/). For local development, you'll want to pull the docker image and run it. The default UI is findable at http://localhost:6333/dashboard#/console

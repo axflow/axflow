@@ -126,6 +126,31 @@ We currently support
 
 Hugging Face inference and more coming soon!
 
+## Documentation
+
+We're working on new documentation website. In the meantime, please check out the following (runnable) examples:
+
+### Vector Stores
+
+These implement CRUD operations for the supported vector stores.
+
+* [prepare](src/cmd/vector_store/prepare.ts). Run with `npm run vector_store:prepare -- <options>`
+* [teardown](src/cmd/vector_store/teardown.ts). Run with `npm run vector_store:teardown -- <options>`
+* [upload](src/cmd/vector_store/upload.ts). Run with `npm run vector_store:upload -- <options>`
+* [delete](src/cmd/vector_store/delete.ts). Run with `npm run vector_store:delete -- <options>`
+
+### Models / RAG pipelines
+
+These implement basic LLM queries as well as RAG queries with all supported models.
+
+* [openai completion](src/cmd/openai/completion.ts). Run with `npm run openai:completion -- <options>`
+* [openai chat completion](src/cmd/openai/chat-completion.ts). Run with `npm run openai:chat-completion -- <options>`
+* [vertexai text](src/cmd/vertexai/text.ts). Run with `npm run vertexai:text -- <options>`
+* [vertexai chat](src/cmd/vertexai/chat.ts). Run with `npm run vertexai:chat -- <options>`
+* [anthropic](src/cmd/anthropic.ts). Run with `npm run anthropic -- <options>`
+* [cohere](src/cmd/cohere.ts). Run with `npm run cohere -- <options>`
+
+
 ## Development
 
 See the [development docs](docs/development.md).
