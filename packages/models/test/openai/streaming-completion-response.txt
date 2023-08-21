@@ -1,0 +1,38 @@
+data: {"id":"cmpl-7qQ8kzVH3A2i3ln9VV193ydev56RV","object":"text_completion","created":1692727894,"choices":[{"text":"\n","index":0,"logprobs":null,"finish_reason":null}],"model":"text-davinci-003"}
+
+data: {"id":"cmpl-7qQ8kzVH3A2i3ln9VV193ydev56RV","object":"text_completion","created":1692727894,"choices":[{"text":"\n","index":0,"logprobs":null,"finish_reason":null}],"model":"text-davinci-003"}
+
+data: {"id":"cmpl-7qQ8kzVH3A2i3ln9VV193ydev56RV","object":"text_completion","created":1692727894,"choices":[{"text":"Icon","index":0,"logprobs":null,"finish_reason":null}],"model":"text-davinci-003"}
+
+data: {"id":"cmpl-7qQ8kzVH3A2i3ln9VV193ydev56RV","object":"text_completion","created":1692727894,"choices":[{"text":"ic","index":0,"logprobs":null,"finish_reason":null}],"model":"text-davinci-003"}
+
+data: {"id":"cmpl-7qQ8kzVH3A2i3ln9VV193ydev56RV","object":"text_completion","created":1692727894,"choices":[{"text":" iron","index":0,"logprobs":null,"finish_reason":null}],"model":"text-davinci-003"}
+
+data: {"id":"cmpl-7qQ8kzVH3A2i3ln9VV193ydev56RV","object":"text_completion","created":1692727894,"choices":[{"text":" latt","index":0,"logprobs":null,"finish_reason":null}],"model":"text-davinci-003"}
+
+data: {"id":"cmpl-7qQ8kzVH3A2i3ln9VV193ydev56RV","object":"text_completion","created":1692727894,"choices":[{"text":"ice","index":0,"logprobs":null,"finish_reason":null}],"model":"text-davinci-003"}
+
+data: {"id":"cmpl-7qQ8kzVH3A2i3ln9VV193ydev56RV","object":"text_completion","created":1692727894,"choices":[{"text":" tower","index":0,"logprobs":null,"finish_reason":null}],"model":"text-davinci-003"}
+
+data: {"id":"cmpl-7qQ8kzVH3A2i3ln9VV193ydev56RV","object":"text_completion","created":1692727894,"choices":[{"text":" in","index":0,"logprobs":null,"finish_reason":null}],"model":"text-davinci-003"}
+
+data: {"id":"cmpl-7qQ8kzVH3A2i3ln9VV193ydev56RV","object":"text_completion","created":1692727894,"choices":[{"text":" Paris","index":0,"logprobs":null,"finish_reason":null}],"model":"text-davinci-003"}
+
+data: {"id":"cmpl-7qQ8kzVH3A2i3ln9VV193ydev56RV","object":"text_completion","created":1692727894,"choices":[{"text":",","index":0,"logprobs":null,"finish_reason":null}],"model":"text-davinci-003"}
+
+data: {"id":"cmpl-7qQ8kzVH3A2i3ln9VV193ydev56RV","object":"text_completion","created":1692727894,"choices":[{"text":" France","index":0,"logprobs":null,"finish_reason":null}],"model":"text-davinci-003"}
+
+data: {"id":"cmpl-7qQ8kzVH3A2i3ln9VV193ydev56RV","object":"text_completion","created":1692727894,"choices":[{"text":",","index":0,"logprobs":null,"finish_reason":null}],"model":"text-davinci-003"}
+
+data: {"id":"cmpl-7qQ8kzVH3A2i3ln9VV193ydev56RV","object":"text_completion","created":1692727894,"choices":[{"text":" measuring 324","index":0,"logprobs":null,"finish_reason":null}],"model":"text-davinci-003"}
+
+data: {"id":"cmpl-7qQ8kzVH3A2i3ln9VV193ydev56RV","object":"text_completion","created":1692727894,"choices":[{"text":" meters","index":0,"logprobs":null,"finish_reason":null}],"model":"text-davinci-003"}
+
+data: {"id":"cmpl-7qQ8kzVH3A2i3ln9VV193ydev56RV","object":"text_completion","created":1692727894,"choices":[{"text":" tall","index":0,"logprobs":null,"finish_reason":null}],"model":"text-davinci-003"}
+
+data: {"id":"cmpl-7qQ8kzVH3A2i3ln9VV193ydev56RV","object":"text_completion","created":1692727894,"choices":[{"text":".","index":0,"logprobs":null,"finish_reason":null}],"model":"text-davinci-003"}
+
+data: {"id":"cmpl-7qQ8kzVH3A2i3ln9VV193ydev56RV","object":"text_completion","created":1692727894,"choices":[{"text":"","index":0,"logprobs":null,"finish_reason":"stop"}],"model":"text-davinci-003"}
+
+data: [DONE]
+
