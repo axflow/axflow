@@ -33,9 +33,20 @@ export type {
   OpenAIChatCompletionOptions,
   OpenAIChatCompletionNoStreaming,
   OpenAIChatCompletionStreaming,
+  VertexAIChatTypes,
+  VertexAITextTypes,
+  AnthropicTypes,
+  CohereTypes,
 } from './models';
 
-export { OpenAICompletion, OpenAIChatCompletion } from './models';
+export {
+  OpenAICompletion,
+  OpenAIChatCompletion,
+  VertexAIChat,
+  VertexAIText,
+  Anthropic,
+  Cohere,
+} from './models';
 
 /////////////
 // Prompts //
@@ -103,4 +114,4 @@ export { formatTemplate } from './utils';
 //////////////////
 export type { SupportedVectorStores } from './vector_stores';
 
-export { Pinecone, Qdrant, SUPPORTED_VECTOR_STORES } from './vector_stores';
+export { Pinecone, Qdrant, PgVector, SUPPORTED_VECTOR_STORES } from './vector_stores';
