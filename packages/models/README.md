@@ -8,20 +8,21 @@ npm i @axflow/models
 
 ## Features
 
-* Zero-dependency, lightweight package to consume all the most popular models and APIs
-* First-class streaming support with both low-level byte streams or higher-level parsed chunks
-* Supports Node 17.5.0+, browsers, ESM, CJS, and more environments
-* Supports custom `fetch` implementation, allowing for older node environments or request middleware (e.g., logging)
+* Zero-dependency, lightweight package to consume all the most popular LLMs, embedding models, and more
+* Built exclusively on modern web standards such as `fetch` and the stream APIs
+* First-class streaming support with both low-level byte streams or higher-level JavaScript objects
+* Supports Node 18+, Next.js serverless or edge runtime, browsers, ESM, CJS, and more
+* Supports a custom `fetch` implementation for request middleware (e.g., custom headers, logging)
 
 ## Supported models
 
-- [X] OpenAI and OpenAI-compatible Chat, Completion, and Embedding models
-- [X] Cohere and Cohere-compatible generation and embedding models
-- [X] Anthropic and Anthropic-compatible completion models
-- [ ] Google PaLM models
-- [ ] Azure OpenAI
-- [ ] Replicate
-- [ ] HuggingFace
+- ✅ OpenAI and OpenAI-compatible Chat, Completion, and Embedding models
+- ✅ Cohere and Cohere-compatible Generation and Embedding models
+- ✅ Anthropic and Anthropic-compatible Completion models
+- Google PaLM models (coming soon)
+- Azure OpenAI (coming soon)
+- Replicate (coming soon)
+- HuggingFace (coming soon)
 
 ## Basic Usage
 
@@ -61,25 +62,50 @@ for await (const chunk of StreamToIterable(cohereStream)) {
 }
 ```
 
-In NextJS, it's as simple as:
+## Next.js edge proxy example
+
+The server intercepts the request on the edge, adds the proper API key, and forwards the byte stream back to the client.
+
+*Note this pattern works exactly the same with our other models that support streaming, like Cohere and Anthropic.*
 
 ```ts
-import {OpenAIChat} from '@axflow/models/openai/chat';
+import { NextRequest, NextResponse } from 'next/server';
+import { OpenAIChat } from '@axflow/models/openai/chat';
 
+export const runtime = 'edge'
+
+// POST /api/openai/chat
 export async function POST(request: NextRequest) {
-  // Byte stream is more efficient here because we do not parse the stream and
-  // re-encode it, but rather just pass the bytes directly through to the client.
-  const stream = await OpenAIChat.streamBytes(
-    {
-      model: 'gpt-4',
-      messages: [{ role: 'user', content: 'What is the Eiffel tower?' }],
-    },
-    {
-      apiKey: process.env.OPENAI_API_KEY,
-    },
-  );
+  const chatRequest = await request.json();
 
-  return new Response(stream);
+  // Byte stream is more efficient here because we do not parse the stream and
+  // re-encode it, but rather pass the bytes directly through to the client.
+  const stream = await OpenAIChat.streamBytes(chatRequest, {
+    apiKey: process.env.OPENAI_API_KEY!,
+  });
+
+  return new NextResponse(stream);
+}
+```
+
+On the client, we can use `OpenAIChat.stream` with a custom `apiUrl` in place of the `apiKey` that points to our Next.js edge route.
+
+```ts
+import { OpenAIChat } from '@axflow/models/openai/chat';
+import { StreamToIterable } from '@axflow/models/utils';
+
+const stream = await OpenAIChat.stream(
+  {
+    model: 'gpt-4',
+    messages: [{ role: 'user', content: 'What is the Eiffel tower?' }],
+  },
+  {
+    apiUrl: "/api/openai/chat",
+  }
+);
+
+for await (const chunk of StreamToIterable(stream)) {
+  console.log(chunk.choices[0].delta.content);
 }
 ```
 
@@ -139,4 +165,10 @@ import {AnthropicCompletion} from '@axflow/models/anthropic/completion';
 AnthropicCompletion.run(/* args */)
 AnthropicCompletion.stream(/* args */)
 AnthropicCompletion.streamBytes(/* args */)
+```
+
+### @axflow/models/utils
+
+```ts
+import {StreamToIterable, HttpError, isHttpError} from '@axflow/models/anthropic/completion';
 ```
