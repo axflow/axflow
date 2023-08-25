@@ -1,0 +1,12 @@
+event: completion
+data: {"completion":" Hello","stop_reason":null,"model":"claude-2.0","stop":null,"log_id":"1a0ef3db1e77e533ec0d36cd41f6a0a7faa7ddddfc39b2c0cd36c7e38f628652"}
+
+event: completion
+data: {"completion":"!","stop_reason":null,"model":"claude-2.0","stop":null,"log_id":"1a0ef3db1e77e533ec0d36cd41f6a0a7faa7ddddfc39b2c0cd36c7e38f628652"}
+
+event: ping
+data: {}
+
+event: completion
+data: {"completion":"","stop_reason":"stop_sequence","model":"claude-2.0","stop":"\n\nHuman:","log_id":"1a0ef3db1e77e533ec0d36cd41f6a0a7faa7ddddfc39b2c0cd36c7e38f628652"}
+

@@ -1,0 +1,45 @@
+{"text":" LL","is_finished":false}
+{"text":"Ms","is_finished":false}
+{"text":" work","is_finished":false}
+{"text":" by","is_finished":false}
+{"text":" using","is_finished":false}
+{"text":" a","is_finished":false}
+{"text":" large","is_finished":false}
+{"text":" amount","is_finished":false}
+{"text":" of","is_finished":false}
+{"text":" data","is_finished":false}
+{"text":" to","is_finished":false}
+{"text":" train","is_finished":false}
+{"text":" a","is_finished":false}
+{"text":" model","is_finished":false}
+{"text":" that","is_finished":false}
+{"text":" can","is_finished":false}
+{"text":" then","is_finished":false}
+{"text":" be","is_finished":false}
+{"text":" used","is_finished":false}
+{"text":" to","is_finished":false}
+{"text":" generate","is_finished":false}
+{"text":" text","is_finished":false}
+{"text":".","is_finished":false}
+{"text":" The","is_finished":false}
+{"text":" model","is_finished":false}
+{"text":" is","is_finished":false}
+{"text":" trained","is_finished":false}
+{"text":" to","is_finished":false}
+{"text":" predict","is_finished":false}
+{"text":" the","is_finished":false}
+{"text":" next","is_finished":false}
+{"text":" word","is_finished":false}
+{"text":" in","is_finished":false}
+{"text":" a","is_finished":false}
+{"text":" sequence","is_finished":false}
+{"text":" based","is_finished":false}
+{"text":" on","is_finished":false}
+{"text":" the","is_finished":false}
+{"text":" words","is_finished":false}
+{"text":" that","is_finished":false}
+{"text":" came","is_finished":false}
+{"text":" before","is_finished":false}
+{"text":" it","is_finished":false}
+{"text":".","is_finished":false}
+{"is_finished":true,"finish_reason":"COMPLETE","response":{"id":"4da8de42-bb7a-499c-bc4b-18dbeed4a1e3","generations":[{"id":"94c37068-cd65-4caa-ab62-ffe29856e197","text":" LLMs work by using a large amount of data to train a model that can then be used to generate text. The model is trained to predict the next word in a sequence based on the words that came before it.","finish_reason":"COMPLETE"}],"prompt":"Please explain to me how LLMs work in two sentences or less"}}
