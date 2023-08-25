@@ -1,6 +1,6 @@
 {
   "name": "@axflow/models",
-  "version": "0.0.1-alpha.2",
+  "version": "0.0.1-alpha.3",
   "description": "Zero-dependency module to run, stream, and render results across the most popular LLMs and embedding models",
   "author": "Axilla (https://axilla.io)",
   "homepage": "https://github.com/axilla-io/ax/tree/main/packages/models#readme",
@@ -52,13 +52,27 @@
   },
   "typesVersions": {
     "*": {
-      "openai/chat": ["./dist/openai/chat.d.ts"],
-      "openai/completion": ["./dist/openai/completion.d.ts"],
-      "openai/embedding": ["./dist/openai/embedding.d.ts"],
-      "anthropic/completion": ["./dist/anthropic/completion.d.ts"],
-      "cohere/generation": ["./dist/cohere/generation.d.ts"],
-      "cohere/embedding": ["./dist/cohere/embedding.d.ts"],
-      "utils": ["./dist/utils/index.d.ts"]
+      "openai/chat": [
+        "./dist/openai/chat.d.ts"
+      ],
+      "openai/completion": [
+        "./dist/openai/completion.d.ts"
+      ],
+      "openai/embedding": [
+        "./dist/openai/embedding.d.ts"
+      ],
+      "anthropic/completion": [
+        "./dist/anthropic/completion.d.ts"
+      ],
+      "cohere/generation": [
+        "./dist/cohere/generation.d.ts"
+      ],
+      "cohere/embedding": [
+        "./dist/cohere/embedding.d.ts"
+      ],
+      "utils": [
+        "./dist/utils/index.d.ts"
+      ]
     }
   },
   "exports": {
