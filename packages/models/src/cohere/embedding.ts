@@ -1,4 +1,6 @@
 import { POST } from '@axflow/models/utils';
+import { headers } from './shared';
+import type { SharedRequestOptions } from './shared';
 
 const COHERE_API_URL = 'https://api.cohere.ai/v1/embed';
 
@@ -9,11 +11,7 @@ export namespace CohereEmbeddingTypes {
     truncate?: 'NONE' | 'START' | 'END';
   };
 
-  export type RequestOptions = {
-    apiKey: string;
-    apiUrl?: string;
-    fetch?: typeof fetch;
-  };
+  export type RequestOptions = SharedRequestOptions;
 
   export type Response = {
     id: string;
@@ -27,14 +25,6 @@ export namespace CohereEmbeddingTypes {
       };
       warnings: string[];
     };
-  };
-}
-
-function headers(apiKey: string) {
-  return {
-    accept: 'application/json',
-    'content-type': 'application/json',
-    authorization: `Bearer ${apiKey}`,
   };
 }
 

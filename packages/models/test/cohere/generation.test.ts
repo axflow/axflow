@@ -92,7 +92,9 @@ describe('cohere generation', () => {
       let resultingText = '';
 
       for await (const chunk of StreamToIterable(response)) {
-        resultingText += chunk.text;
+        if (chunk.is_finished !== true) {
+          resultingText += chunk.text;
+        }
       }
 
       expect(resultingText).toEqual(

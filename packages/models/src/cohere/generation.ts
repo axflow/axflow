@@ -1,4 +1,6 @@
 import { POST, HttpError } from '@axflow/models/utils';
+import { headers } from './shared';
+import type { SharedRequestOptions } from './shared';
 
 const COHERE_API_URL = 'https://api.cohere.ai/v1/generate';
 
@@ -21,11 +23,7 @@ export namespace CohereGenerationTypes {
     logit_bias?: Record<string, any>;
   };
 
-  export type RequestOptions = {
-    apiKey: string;
-    apiUrl?: string;
-    fetch?: typeof fetch;
-  };
+  export type RequestOptions = SharedRequestOptions;
 
   export type Generation = {
     id: string;
@@ -53,7 +51,7 @@ export namespace CohereGenerationTypes {
   };
 
   export type Chunk = {
-    text: string;
+    text?: string;
     is_finished: boolean;
     finished_reason?: 'COMPLETE' | 'MAX_TOKENS' | 'ERROR' | 'ERROR_TOXIC';
     response?: {
@@ -61,14 +59,6 @@ export namespace CohereGenerationTypes {
       prompt?: string;
       generations: Generation[];
     };
-  };
-}
-
-function headers(apiKey: string) {
-  return {
-    accept: 'application/json',
-    'content-type': 'application/json',
-    authorization: `Bearer ${apiKey}`,
   };
 }
 
@@ -133,14 +123,7 @@ class EventDecoderStream extends TransformStream<string, CohereGenerationTypes.C
     }
 
     try {
-      const event: CohereGenerationTypes.Chunk = JSON.parse(line);
-
-      // The last event doesn't include this, but this makes the type system more pleasant.
-      if (typeof event.text !== 'string') {
-        event.text = '';
-      }
-
-      return event;
+      return JSON.parse(line);
     } catch (error) {
       throw new Error(
         `Invalid event: expected well-formed event lines but got ${JSON.stringify(line)}`,

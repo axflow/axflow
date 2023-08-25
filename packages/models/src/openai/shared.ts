@@ -1,15 +1,20 @@
 export type SharedRequestOptions = {
-  apiKey: string;
+  apiKey?: string;
   apiUrl?: string;
   fetch?: typeof fetch;
 };
 
-export function headers(apiKey: string) {
-  return {
+export function headers(apiKey?: string) {
+  const headers: Record<string, string> = {
     accept: 'application/json',
-    authorization: `Bearer ${apiKey}`,
     'content-type': 'application/json',
   };
+
+  if (typeof apiKey === 'string') {
+    headers.authorization = `Bearer ${apiKey}`;
+  }
+
+  return headers;
 }
 
 export function streamTransformer<T>() {

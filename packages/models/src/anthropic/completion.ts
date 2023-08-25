@@ -15,7 +15,7 @@ export namespace AnthropicTypes {
   };
 
   export type RequestOptions = {
-    apiKey: string;
+    apiKey?: string;
     apiUrl?: string;
     version?: string;
     fetch?: typeof fetch;
@@ -52,13 +52,18 @@ export namespace AnthropicTypes {
   export type Events = 'completion' | 'ping' | 'error';
 }
 
-function headers(apiKey: string, version?: string) {
-  return {
+function headers(apiKey?: string, version?: string) {
+  const headers: Record<string, string> = {
     accept: 'application/json',
     'content-type': 'application/json',
     'anthropic-version': version || '2023-06-01',
-    'x-api-key': apiKey,
   };
+
+  if (typeof apiKey === 'string') {
+    headers['x-api-key'] = apiKey;
+  }
+
+  return headers;
 }
 
 export async function run(
