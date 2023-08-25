@@ -2,21 +2,36 @@
   "name": "@axflow/models",
   "version": "0.0.1-alpha.1",
   "description": "Zero-dependency module to run, stream, and render results across the most popular LLMs and embedding models",
-  "author": "Axilla <https://axilla.io>",
-  "homepage": "https://github.com/axilla-io/ax#readme",
+  "author": "Axilla (https://axilla.io)",
+  "homepage": "https://github.com/axilla-io/ax/tree/main/packages/models#readme",
   "license": "MIT",
-  "main": "dist/index.js",
-  "directories": {
-    "lib": "src",
-    "test": "test"
+  "keywords": [
+    "ai",
+    "llm",
+    "streaming",
+    "openai",
+    "anthropic",
+    "cohere",
+    "vertexai",
+    "embeddings",
+    "generative ai",
+    "gpt4",
+    "models",
+    "nextjs",
+    "react"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "files": [
-    "openai",
-    "utils"
+    "dist"
   ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/axilla-io/ax.git"
+  },
+  "bugs": {
+    "url": "https://github.com/axilla-io/ax/issues"
   },
   "scripts": {
     "clean": "rm -rf ./dist",
@@ -25,9 +40,6 @@
     "lint": "prettier --check 'src/**/*.ts' 'test/**/*.ts'",
     "test": "jest --testMatch \"./**/test/**/*.test.ts\"",
     "prepublishOnly": "npm run build"
-  },
-  "bugs": {
-    "url": "https://github.com/axilla-io/ax/issues"
   },
   "devDependencies": {
     "@types/jest": "^29.5.3",
