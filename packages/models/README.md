@@ -78,8 +78,7 @@ export const runtime = 'edge'
 export async function POST(request: NextRequest) {
   const chatRequest = await request.json();
 
-  // Byte stream is more efficient here because we do not parse the stream and
-  // re-encode it, but rather pass the bytes directly through to the client.
+  // We'll stream the bytes from OpenAI directly to the client
   const stream = await OpenAIChat.streamBytes(chatRequest, {
     apiKey: process.env.OPENAI_API_KEY!,
   });
@@ -89,6 +88,8 @@ export async function POST(request: NextRequest) {
 ```
 
 On the client, we can use `OpenAIChat.stream` with a custom `apiUrl` in place of the `apiKey` that points to our Next.js edge route.
+
+*DO NOT expose api keys to your frontend.*
 
 ```ts
 import { OpenAIChat } from '@axflow/models/openai/chat';
