@@ -62,7 +62,7 @@ export namespace CohereGenerationTypes {
   };
 }
 
-export async function run(
+async function run(
   request: CohereGenerationTypes.Request,
   options: CohereGenerationTypes.RequestOptions,
 ): Promise<CohereGenerationTypes.Response> {
@@ -77,7 +77,7 @@ export async function run(
   return response.json();
 }
 
-export async function streamBytes(
+async function streamBytes(
   request: CohereGenerationTypes.Request,
   options: CohereGenerationTypes.RequestOptions,
 ): Promise<ReadableStream<Uint8Array>> {
@@ -96,15 +96,12 @@ export async function streamBytes(
   return response.body;
 }
 
-export async function stream(
+async function stream(
   request: CohereGenerationTypes.Request,
   options: CohereGenerationTypes.RequestOptions,
 ): Promise<ReadableStream<CohereGenerationTypes.Chunk>> {
   const byteStream = await streamBytes(request, options);
-
-  return byteStream
-    .pipeThrough(new TextDecoderStream()) // Raw bytes  => JS strings
-    .pipeThrough(new EventDecoderStream()); // JS strings => CohereGenerationTypes.Chunk objects
+  return byteStream.pipeThrough(new CohereGenerationDecoderStream());
 }
 
 export class CohereGeneration {
@@ -113,7 +110,10 @@ export class CohereGeneration {
   static streamBytes = streamBytes;
 }
 
-class EventDecoderStream extends TransformStream<string, CohereGenerationTypes.Chunk> {
+export class CohereGenerationDecoderStream extends TransformStream<
+  Uint8Array,
+  CohereGenerationTypes.Chunk
+> {
   private static parse(line: string): CohereGenerationTypes.Chunk | null {
     line = line.trim();
 
@@ -133,8 +133,11 @@ class EventDecoderStream extends TransformStream<string, CohereGenerationTypes.C
 
   private static transformer() {
     let buffer: string[] = [];
+    const decoder = new TextDecoder();
 
-    return (chunk: string, controller: TransformStreamDefaultController) => {
+    return (bytes: Uint8Array, controller: TransformStreamDefaultController) => {
+      const chunk = decoder.decode(bytes);
+
       for (let i = 0, len = chunk.length; i < len; ++i) {
         // Cohere separates events with '\n'
         const isEventSeparator = chunk[i] === '\n';
@@ -145,7 +148,7 @@ class EventDecoderStream extends TransformStream<string, CohereGenerationTypes.C
           continue;
         }
 
-        const event = EventDecoderStream.parse(buffer.join(''));
+        const event = CohereGenerationDecoderStream.parse(buffer.join(''));
 
         if (event) {
           controller.enqueue(event);
@@ -157,6 +160,6 @@ class EventDecoderStream extends TransformStream<string, CohereGenerationTypes.C
   }
 
   constructor() {
-    super({ transform: EventDecoderStream.transformer() });
+    super({ transform: CohereGenerationDecoderStream.transformer() });
   }
 }

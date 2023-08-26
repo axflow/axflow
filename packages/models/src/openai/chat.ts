@@ -79,7 +79,7 @@ export namespace OpenAIChatTypes {
   };
 }
 
-export async function run(
+async function run(
   request: OpenAIChatTypes.Request,
   options: OpenAIChatTypes.RequestOptions,
 ): Promise<OpenAIChatTypes.Response> {
@@ -94,7 +94,7 @@ export async function run(
   return response.json();
 }
 
-export async function streamBytes(
+async function streamBytes(
   request: OpenAIChatTypes.Request,
   options: OpenAIChatTypes.RequestOptions,
 ): Promise<ReadableStream<Uint8Array>> {
@@ -113,23 +113,22 @@ export async function streamBytes(
   return response.body;
 }
 
-export async function stream(
+async function stream(
   request: OpenAIChatTypes.Request,
   options: OpenAIChatTypes.RequestOptions,
 ): Promise<ReadableStream<OpenAIChatTypes.Chunk>> {
   const byteStream = await streamBytes(request, options);
-
-  const chunkTransformerStream = new TransformStream<string, OpenAIChatTypes.Chunk>({
-    transform: streamTransformer(),
-  });
-
-  return byteStream
-    .pipeThrough(new TextDecoderStream()) // Raw bytes  => JS strings
-    .pipeThrough(chunkTransformerStream); // JS strings => OpenAIChatTypes.Chunk objects
+  return byteStream.pipeThrough(new OpenAIChatDecoderStream());
 }
 
 export class OpenAIChat {
   static run = run;
   static stream = stream;
   static streamBytes = streamBytes;
+}
+
+export class OpenAIChatDecoderStream extends TransformStream<Uint8Array, OpenAIChatTypes.Chunk> {
+  constructor() {
+    super({ transform: streamTransformer() });
+  }
 }

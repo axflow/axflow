@@ -19,8 +19,11 @@ export function headers(apiKey?: string) {
 
 export function streamTransformer<T>() {
   let buffer: string[] = [];
+  const decoder = new TextDecoder();
 
-  return (chunk: string, controller: TransformStreamDefaultController<T>) => {
+  return (bytes: Uint8Array, controller: TransformStreamDefaultController<T>) => {
+    const chunk = decoder.decode(bytes);
+
     for (let i = 0, len = chunk.length; i < len; ++i) {
       // OpenAI separates data lines with '\n\n'
       const isChunkSeparator = chunk[i] === '\n' && buffer[buffer.length - 1] === '\n';

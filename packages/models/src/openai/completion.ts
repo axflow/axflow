@@ -61,7 +61,7 @@ export namespace OpenAICompletionTypes {
   };
 }
 
-export async function run(
+async function run(
   request: OpenAICompletionTypes.Request,
   options: OpenAICompletionTypes.RequestOptions,
 ): Promise<OpenAICompletionTypes.Response> {
@@ -76,7 +76,7 @@ export async function run(
   return response.json();
 }
 
-export async function streamBytes(
+async function streamBytes(
   request: OpenAICompletionTypes.Request,
   options: OpenAICompletionTypes.RequestOptions,
 ): Promise<ReadableStream<Uint8Array>> {
@@ -95,23 +95,25 @@ export async function streamBytes(
   return response.body;
 }
 
-export async function stream(
+async function stream(
   request: OpenAICompletionTypes.Request,
   options: OpenAICompletionTypes.RequestOptions,
 ): Promise<ReadableStream<OpenAICompletionTypes.Chunk>> {
   const byteStream = await streamBytes(request, options);
-
-  const chunkTransformerStream = new TransformStream<string, OpenAICompletionTypes.Chunk>({
-    transform: streamTransformer(),
-  });
-
-  return byteStream
-    .pipeThrough(new TextDecoderStream()) // Raw bytes  => JS strings
-    .pipeThrough(chunkTransformerStream); // JS strings => OpenAICompletionTypes.Chunk objects
+  return byteStream.pipeThrough(new OpenAICompletionDecoderStream());
 }
 
 export class OpenAICompletion {
   static run = run;
   static stream = stream;
   static streamBytes = streamBytes;
+}
+
+export class OpenAICompletionDecoderStream extends TransformStream<
+  Uint8Array,
+  OpenAICompletionTypes.Chunk
+> {
+  constructor() {
+    super({ transform: streamTransformer() });
+  }
 }

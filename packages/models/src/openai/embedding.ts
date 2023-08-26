@@ -31,7 +31,7 @@ export namespace OpenAIEmbeddingTypes {
   };
 }
 
-export async function run(
+async function run(
   request: OpenAIEmbeddingTypes.Request,
   options: OpenAIEmbeddingTypes.RequestOptions,
 ): Promise<OpenAIEmbeddingTypes.Response> {

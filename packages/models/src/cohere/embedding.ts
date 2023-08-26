@@ -28,7 +28,7 @@ export namespace CohereEmbeddingTypes {
   };
 }
 
-export async function run(
+async function run(
   request: CohereEmbeddingTypes.Request,
   options: CohereEmbeddingTypes.RequestOptions,
 ): Promise<CohereEmbeddingTypes.Response> {

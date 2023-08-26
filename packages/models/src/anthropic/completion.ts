@@ -2,7 +2,7 @@ import { POST, HttpError } from '@axflow/models/utils';
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/complete';
 
-export namespace AnthropicTypes {
+export namespace AnthropicCompletionTypes {
   export type Request = {
     model: string;
     prompt: string;
@@ -66,10 +66,10 @@ function headers(apiKey?: string, version?: string) {
   return headers;
 }
 
-export async function run(
-  request: AnthropicTypes.Request,
-  options: AnthropicTypes.RequestOptions,
-): Promise<AnthropicTypes.Response> {
+async function run(
+  request: AnthropicCompletionTypes.Request,
+  options: AnthropicCompletionTypes.RequestOptions,
+): Promise<AnthropicCompletionTypes.Response> {
   const url = options.apiUrl || ANTHROPIC_API_URL;
 
   const response = await POST(url, {
@@ -81,9 +81,9 @@ export async function run(
   return response.json();
 }
 
-export async function streamBytes(
-  request: AnthropicTypes.Request,
-  options: AnthropicTypes.RequestOptions,
+async function streamBytes(
+  request: AnthropicCompletionTypes.Request,
+  options: AnthropicCompletionTypes.RequestOptions,
 ): Promise<ReadableStream<Uint8Array>> {
   const url = options.apiUrl || ANTHROPIC_API_URL;
 
@@ -100,15 +100,12 @@ export async function streamBytes(
   return response.body;
 }
 
-export async function stream(
-  request: AnthropicTypes.Request,
-  options: AnthropicTypes.RequestOptions,
-): Promise<ReadableStream<AnthropicTypes.Chunk>> {
+async function stream(
+  request: AnthropicCompletionTypes.Request,
+  options: AnthropicCompletionTypes.RequestOptions,
+): Promise<ReadableStream<AnthropicCompletionTypes.Chunk>> {
   const byteStream = await streamBytes(request, options);
-
-  return byteStream
-    .pipeThrough(new TextDecoderStream()) // Raw bytes  => JS strings
-    .pipeThrough(new EventDecoderStream()); // JS strings => AnthropicTypes.Chunk objects
+  return byteStream.pipeThrough(new AnthropicCompletionDecoderStream());
 }
 
 export class AnthropicCompletion {
@@ -117,10 +114,13 @@ export class AnthropicCompletion {
   static streamBytes = streamBytes;
 }
 
-class EventDecoderStream extends TransformStream<string, AnthropicTypes.Chunk> {
+export class AnthropicCompletionDecoderStream extends TransformStream<
+  Uint8Array,
+  AnthropicCompletionTypes.Chunk
+> {
   private static EVENT_LINES_RE = /^event:\s*(\w+)\r\ndata:\s*(.+)$/;
 
-  private static parse(lines: string): AnthropicTypes.Chunk | null {
+  private static parse(lines: string): AnthropicCompletionTypes.Chunk | null {
     lines = lines.trim();
 
     // Empty lines are ignored
@@ -128,14 +128,14 @@ class EventDecoderStream extends TransformStream<string, AnthropicTypes.Chunk> {
       return null;
     }
 
-    const match = lines.match(EventDecoderStream.EVENT_LINES_RE);
+    const match = lines.match(AnthropicCompletionDecoderStream.EVENT_LINES_RE);
 
     try {
       const event = match![1];
       const data = match![2];
 
       return {
-        event: event as AnthropicTypes.Events,
+        event: event as AnthropicCompletionTypes.Events,
         data: JSON.parse(data),
       };
     } catch (error) {
@@ -145,8 +145,11 @@ class EventDecoderStream extends TransformStream<string, AnthropicTypes.Chunk> {
 
   private static transformer() {
     let buffer: string[] = [];
+    const decoder = new TextDecoder();
 
-    return (chunk: string, controller: TransformStreamDefaultController) => {
+    return (bytes: Uint8Array, controller: TransformStreamDefaultController) => {
+      const chunk = decoder.decode(bytes);
+
       for (let i = 0, len = chunk.length; i < len; ++i) {
         const bufferLen = buffer.length;
 
@@ -163,7 +166,7 @@ class EventDecoderStream extends TransformStream<string, AnthropicTypes.Chunk> {
           continue;
         }
 
-        const event = EventDecoderStream.parse(buffer.join(''));
+        const event = AnthropicCompletionDecoderStream.parse(buffer.join(''));
 
         if (event) {
           controller.enqueue(event);
@@ -175,6 +178,6 @@ class EventDecoderStream extends TransformStream<string, AnthropicTypes.Chunk> {
   }
 
   constructor() {
-    super({ transform: EventDecoderStream.transformer() });
+    super({ transform: AnthropicCompletionDecoderStream.transformer() });
   }
 }

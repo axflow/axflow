@@ -115,7 +115,8 @@ for await (const chunk of StreamToIterable(stream)) {
 ### @axflow/models/openai/chat
 
 ```ts
-import {OpenAIChat} from '@axflow/models/openai/chat';
+import {OpenAIChat, OpenAIChatDecoderStream} from '@axflow/models/openai/chat';
+import type {OpenAIChatTypes} from '@axflow/models/openai/chat';
 
 OpenAIChat.run(/* args */)
 OpenAIChat.stream(/* args */)
@@ -125,7 +126,8 @@ OpenAIChat.streamBytes(/* args */)
 ### @axflow/models/openai/completion
 
 ```ts
-import {OpenAICompletion} from '@axflow/models/openai/completion';
+import {OpenAICompletion, OpenAICompletionDecoderStream} from '@axflow/models/openai/completion';
+import type {OpenAICompletionTypes} from '@axflow/models/openai/completion';
 
 OpenAICompletion.run(/* args */)
 OpenAICompletion.stream(/* args */)
@@ -136,6 +138,7 @@ OpenAICompletion.streamBytes(/* args */)
 
 ```ts
 import {OpenAIEmbedding} from '@axflow/models/openai/embedding';
+import type {OpenAIEmbeddingTypes} from '@axflow/models/openai/embedding';
 
 OpenAIEmbedding.run(/* args */)
 ```
@@ -143,7 +146,8 @@ OpenAIEmbedding.run(/* args */)
 ### @axflow/models/cohere/generation
 
 ```ts
-import {CohereGeneration} from '@axflow/models/cohere/generation';
+import {CohereGeneration, CohereGenerationDecoderStream} from '@axflow/models/cohere/generation';
+import type {CohereGenerationTypes} from '@axflow/models/cohere/generation';
 
 CohereGeneration.run(/* args */)
 CohereGeneration.stream(/* args */)
@@ -154,6 +158,7 @@ CohereGeneration.streamBytes(/* args */)
 
 ```ts
 import {CohereEmbedding} from '@axflow/models/cohere/embedding';
+import type {CohereEmbeddingTypes} from '@axflow/models/cohere/embedding';
 
 CohereEmbedding.run(/* args */)
 ```
@@ -161,7 +166,8 @@ CohereEmbedding.run(/* args */)
 ### @axflow/models/anthropic/completion
 
 ```ts
-import {AnthropicCompletion} from '@axflow/models/anthropic/completion';
+import {AnthropicCompletion, AnthropicCompletionDecoderStream} from '@axflow/models/anthropic/completion';
+import type {AnthropicCompletionTypes} from '@axflow/models/anthropic/completion';
 
 AnthropicCompletion.run(/* args */)
 AnthropicCompletion.stream(/* args */)
