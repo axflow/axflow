@@ -1,9 +1,13 @@
 import fs from 'node:fs/promises';
 import Path from 'node:path';
 
-import { createFakeFetch, createUnpredictableByteStream } from '../utils';
-import { OpenAIChat } from '../../src/openai/chat';
-import { StreamToIterable } from '../../src/utils/stream';
+import {
+  createFakeFetch,
+  createUnpredictableByteStream,
+  NdJsonStreamToParsedObjects,
+} from '../utils';
+import { OpenAIChat, OpenAIChatTypes } from '../../src/openai/chat';
+import { StreamToIterable, StreamToNdJson } from '../../src/utils/stream';
 
 describe('openai chat', () => {
   let streamingChatResponse: string;
@@ -127,6 +131,71 @@ describe('openai chat', () => {
           { role: 'user', content: 'Using no more than 20 words, what is the Eiffel tower?' },
         ],
         stream: true,
+      });
+    });
+
+    it('can transform to ndjson', async () => {
+      const fetchSpy = createFakeFetch({
+        body: createUnpredictableByteStream(streamingChatResponse),
+      });
+
+      const response = await OpenAIChat.stream(
+        {
+          model: 'gpt-4',
+          messages: [
+            { role: 'user', content: 'Using no more than 20 words, what is the Eiffel tower?' },
+          ],
+        },
+        { apiKey: 'sk-not-real', fetch: fetchSpy as any },
+      );
+
+      const stream = StreamToNdJson(response);
+
+      let firstChunk: OpenAIChatTypes.Chunk | null = null;
+      let lastChunk: OpenAIChatTypes.Chunk | null = null;
+
+      for await (const entry of StreamToIterable(NdJsonStreamToParsedObjects(stream))) {
+        if (!firstChunk) {
+          firstChunk = entry.value as OpenAIChatTypes.Chunk;
+        }
+
+        lastChunk = entry.value as OpenAIChatTypes.Chunk;
+
+        expect(entry).toMatchObject({
+          type: 'chunk',
+          value: expect.any(Object),
+        });
+      }
+
+      expect(firstChunk).toEqual({
+        choices: [
+          {
+            delta: {
+              content: '',
+              role: 'assistant',
+            },
+            finish_reason: null,
+            index: 0,
+          },
+        ],
+        created: 1692681841,
+        id: 'chatcmpl-7qE9x0hLViEWfRzBOTJDU7itwkPJn',
+        model: 'gpt-4-0613',
+        object: 'chat.completion.chunk',
+      });
+
+      expect(lastChunk).toEqual({
+        choices: [
+          {
+            delta: {},
+            finish_reason: 'stop',
+            index: 0,
+          },
+        ],
+        created: 1692681841,
+        id: 'chatcmpl-7qE9x0hLViEWfRzBOTJDU7itwkPJn',
+        model: 'gpt-4-0613',
+        object: 'chat.completion.chunk',
       });
     });
   });
