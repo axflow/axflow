@@ -7,7 +7,7 @@ import {
   NdJsonStreamToParsedObjects,
 } from '../utils';
 import { OpenAIChat, OpenAIChatTypes } from '../../src/openai/chat';
-import { StreamToIterable, StreamToNdJson } from '../../src/utils/stream';
+import { StreamToIterable, NdJsonStream } from '../../src/utils/stream';
 
 describe('openai chat', () => {
   let streamingChatResponse: string;
@@ -149,7 +149,7 @@ describe('openai chat', () => {
         { apiKey: 'sk-not-real', fetch: fetchSpy as any },
       );
 
-      const stream = StreamToNdJson(response);
+      const stream = NdJsonStream.from(response);
 
       let firstChunk: OpenAIChatTypes.Chunk | null = null;
       let lastChunk: OpenAIChatTypes.Chunk | null = null;

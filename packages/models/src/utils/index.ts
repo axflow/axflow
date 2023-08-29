@@ -1,3 +1,3 @@
 export { HttpError, isHttpError, POST } from './http';
 
-export { StreamToIterable, StreamToNdJson } from './stream';
+export { StreamToIterable, NdJsonStream } from './stream';

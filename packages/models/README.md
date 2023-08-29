@@ -177,5 +177,5 @@ AnthropicCompletion.streamBytes(/* args */)
 ### @axflow/models/utils
 
 ```ts
-import {StreamToIterable, StreamToNdJson, HttpError, isHttpError} from '@axflow/models/anthropic/completion';
+import {StreamToIterable, NdJsonStream, HttpError, isHttpError} from '@axflow/models/anthropic/completion';
 ```
