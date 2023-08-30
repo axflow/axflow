@@ -1,7 +1,8 @@
-import { StreamToIterable, NdJsonStream, NdJsonValueType } from '../../src/utils';
+import { StreamToIterable, NdJsonStream, StreamingJsonResponse } from '../../src/utils';
+import type { NdJsonValueType } from '../../src/utils';
 import { createUnpredictableByteStream } from '../utils';
 
-describe('NdJsonStream', () => {
+describe('streams', () => {
   const chunks = [
     { content: 'A' },
     { content: ' Nd' },
@@ -24,100 +25,138 @@ describe('NdJsonStream', () => {
     });
   });
 
-  describe('.encode', () => {
-    it('creates a special nd json formatted stream', async () => {
-      let ndjson: string[] = [];
-
-      const ndJsonStream = NdJsonStream.encode(source);
-
-      for await (const chunk of StreamToIterable(ndJsonStream)) {
-        ndjson.push(decoder.decode(chunk));
-      }
-
-      expect(ndjson).toEqual([
-        '{"type":"chunk","value":{"content":"A"}}\n',
-        '{"type":"chunk","value":{"content":" Nd"}}\n',
-        '{"type":"chunk","value":{"content":"Json"}}\n',
-        '{"type":"chunk","value":{"content":" stream"}}\n',
-      ]);
-    });
-
-    it('supports additional data prepended to the stream', async () => {
-      let ndjson: string[] = [];
-
-      const additionalData = [
-        { some: 'extra', data: 'here' },
-        { some: 'more', data: 'here' },
-      ];
-
-      const ndJsonStream = NdJsonStream.encode(source, { data: additionalData });
-
-      for await (const chunk of StreamToIterable(ndJsonStream)) {
-        ndjson.push(decoder.decode(chunk));
-      }
-
-      expect(ndjson).toEqual([
-        '{"type":"data","value":{"some":"extra","data":"here"}}\n',
-        '{"type":"data","value":{"some":"more","data":"here"}}\n',
-        '{"type":"chunk","value":{"content":"A"}}\n',
-        '{"type":"chunk","value":{"content":" Nd"}}\n',
-        '{"type":"chunk","value":{"content":"Json"}}\n',
-        '{"type":"chunk","value":{"content":" stream"}}\n',
-      ]);
-    });
-
-    it('can map the stream chunks', async () => {
-      const ndJsonStream = NdJsonStream.encode(source, {
-        map(chunk) {
-          return chunk.content;
-        },
-      });
-
-      let ndjson: string[] = [];
-
-      for await (const chunk of StreamToIterable(ndJsonStream)) {
-        ndjson.push(decoder.decode(chunk));
-      }
-
-      expect(ndjson).toEqual([
-        '{"type":"chunk","value":"A"}\n',
-        '{"type":"chunk","value":" Nd"}\n',
-        '{"type":"chunk","value":"Json"}\n',
-        '{"type":"chunk","value":" stream"}\n',
-      ]);
-    });
-
-    it('can asynchronously map the stream chunks', async () => {
-      function delay<T>(ms: number, value: T): Promise<T> {
-        return new Promise((resolve) => {
-          setTimeout(() => resolve(value), ms);
+  describe('NdJsonStream', () => {
+    describe('.encode', () => {
+      it('specifies headers', () => {
+        expect(NdJsonStream.headers).toEqual({
+          'content-type': 'application/x-ndjson; charset=utf-8',
         });
-      }
-
-      const ndJsonStream = NdJsonStream.encode(source, {
-        map(chunk) {
-          return delay(1, chunk.content);
-        },
       });
 
-      let ndjson: string[] = [];
+      it('creates a special nd json formatted stream', async () => {
+        let ndjson: string[] = [];
 
-      for await (const chunk of StreamToIterable(ndJsonStream)) {
-        ndjson.push(decoder.decode(chunk));
-      }
+        const ndJsonStream = NdJsonStream.encode(source);
 
-      expect(ndjson).toEqual([
-        '{"type":"chunk","value":"A"}\n',
-        '{"type":"chunk","value":" Nd"}\n',
-        '{"type":"chunk","value":"Json"}\n',
-        '{"type":"chunk","value":" stream"}\n',
-      ]);
+        for await (const chunk of StreamToIterable(ndJsonStream)) {
+          ndjson.push(decoder.decode(chunk));
+        }
+
+        expect(ndjson).toEqual([
+          '{"type":"chunk","value":{"content":"A"}}\n',
+          '{"type":"chunk","value":{"content":" Nd"}}\n',
+          '{"type":"chunk","value":{"content":"Json"}}\n',
+          '{"type":"chunk","value":{"content":" stream"}}\n',
+        ]);
+      });
+
+      it('supports additional data prepended to the stream', async () => {
+        let ndjson: string[] = [];
+
+        const additionalData = [
+          { some: 'extra', data: 'here' },
+          { some: 'more', data: 'here' },
+        ];
+
+        const ndJsonStream = NdJsonStream.encode(source, { data: additionalData });
+
+        for await (const chunk of StreamToIterable(ndJsonStream)) {
+          ndjson.push(decoder.decode(chunk));
+        }
+
+        expect(ndjson).toEqual([
+          '{"type":"data","value":{"some":"extra","data":"here"}}\n',
+          '{"type":"data","value":{"some":"more","data":"here"}}\n',
+          '{"type":"chunk","value":{"content":"A"}}\n',
+          '{"type":"chunk","value":{"content":" Nd"}}\n',
+          '{"type":"chunk","value":{"content":"Json"}}\n',
+          '{"type":"chunk","value":{"content":" stream"}}\n',
+        ]);
+      });
+
+      it('can map the stream chunks', async () => {
+        const ndJsonStream = NdJsonStream.encode(source, {
+          map(chunk) {
+            return chunk.content;
+          },
+        });
+
+        let ndjson: string[] = [];
+
+        for await (const chunk of StreamToIterable(ndJsonStream)) {
+          ndjson.push(decoder.decode(chunk));
+        }
+
+        expect(ndjson).toEqual([
+          '{"type":"chunk","value":"A"}\n',
+          '{"type":"chunk","value":" Nd"}\n',
+          '{"type":"chunk","value":"Json"}\n',
+          '{"type":"chunk","value":" stream"}\n',
+        ]);
+      });
+
+      it('can asynchronously map the stream chunks', async () => {
+        function delay<T>(ms: number, value: T): Promise<T> {
+          return new Promise((resolve) => {
+            setTimeout(() => resolve(value), ms);
+          });
+        }
+
+        const ndJsonStream = NdJsonStream.encode(source, {
+          map(chunk) {
+            return delay(1, chunk.content);
+          },
+        });
+
+        let ndjson: string[] = [];
+
+        for await (const chunk of StreamToIterable(ndJsonStream)) {
+          ndjson.push(decoder.decode(chunk));
+        }
+
+        expect(ndjson).toEqual([
+          '{"type":"chunk","value":"A"}\n',
+          '{"type":"chunk","value":" Nd"}\n',
+          '{"type":"chunk","value":"Json"}\n',
+          '{"type":"chunk","value":" stream"}\n',
+        ]);
+      });
+    });
+
+    describe('.decode', () => {
+      it('can decode an ndjson stream', async () => {
+        const stream = createUnpredictableByteStream(
+          [
+            '{"type":"data","value":{"some":"extra","data":"here"}}\n',
+            '{"type":"data","value":{"some":"more","data":"here"}}\n',
+            '{"type":"chunk","value":{"content":"A"}}\n',
+            '{"type":"chunk","value":{"content":" Nd"}}\n',
+            '{"type":"chunk","value":{"content":"Json"}}\n',
+            '{"type":"chunk","value":{"content":" stream"}}\n',
+          ].join(''),
+        );
+
+        const results: NdJsonValueType[] = [];
+
+        for await (const chunk of StreamToIterable(NdJsonStream.decode(stream))) {
+          results.push(chunk);
+        }
+
+        expect(results).toEqual([
+          { type: 'data', value: { some: 'extra', data: 'here' } },
+          { type: 'data', value: { some: 'more', data: 'here' } },
+          { type: 'chunk', value: { content: 'A' } },
+          { type: 'chunk', value: { content: ' Nd' } },
+          { type: 'chunk', value: { content: 'Json' } },
+          { type: 'chunk', value: { content: ' stream' } },
+        ]);
+      });
     });
   });
 
-  describe('.response', () => {
+  describe('StreamingJsonResponse', () => {
     it('can create a ndjson response', async () => {
-      const response = NdJsonStream.response(source, {
+      const response = StreamingJsonResponse(source, {
         map(chunk) {
           return chunk.content;
         },
@@ -140,39 +179,5 @@ describe('NdJsonStream', () => {
         '{"type":"chunk","value":" stream"}\n',
       ]);
     });
-  });
-
-  describe('.decode', () => {
-    it('can decode an ndjson stream', async () => {
-      const stream = createUnpredictableByteStream(
-        [
-          '{"type":"data","value":{"some":"extra","data":"here"}}\n',
-          '{"type":"data","value":{"some":"more","data":"here"}}\n',
-          '{"type":"chunk","value":{"content":"A"}}\n',
-          '{"type":"chunk","value":{"content":" Nd"}}\n',
-          '{"type":"chunk","value":{"content":"Json"}}\n',
-          '{"type":"chunk","value":{"content":" stream"}}\n',
-        ].join(''),
-      );
-
-      const results: NdJsonValueType[] = [];
-
-      for await (const chunk of StreamToIterable(NdJsonStream.decode(stream))) {
-        results.push(chunk);
-      }
-
-      expect(results).toEqual([
-        { type: 'data', value: { some: 'extra', data: 'here' } },
-        { type: 'data', value: { some: 'more', data: 'here' } },
-        { type: 'chunk', value: { content: 'A' } },
-        { type: 'chunk', value: { content: ' Nd' } },
-        { type: 'chunk', value: { content: 'Json' } },
-        { type: 'chunk', value: { content: ' stream' } },
-      ]);
-    });
-  });
-
-  it('specifies headers', () => {
-    expect(NdJsonStream.headers).toEqual({ 'content-type': 'application/x-ndjson; charset=utf-8' });
   });
 });
