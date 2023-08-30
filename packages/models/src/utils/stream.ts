@@ -57,6 +57,46 @@ export class NdJsonStream {
   static headers = Object.freeze({ 'content-type': 'application/x-ndjson; charset=utf-8' });
 
   /**
+   * Returns a streaming newline-delimited JSON `Response` object.
+   *
+   * Example:
+   *
+   *     export async function POST(request: Request) {
+   *       const req = await request.json();
+   *       const stream = await OpenAIChat.stream(req, { apiKey: process.env.OPENAI_API_KEY! });
+   *       return NdJsonStream.response(stream, {
+   *         map: (chunk) => chunk.choices[0].delta.content ?? '',
+   *       });
+   *     }
+   *
+   * @param stream A readable stream of chunks to encode as ndjson
+   * @param options
+   * @param options.status HTTP response status
+   * @param options.statusText HTTP response status text
+   * @param options.headers HTTP response headers
+   * @param options.map A function to map input chunks to output chunks. The return value must be either a JSON-serializable object or a Promise that resolves to a JSON-serializable object.
+   * @param options.data Additional data to prepend to the output stream
+   * @returns A streaming newline-delimited JSON `Response` object
+   */
+  static response<T>(
+    stream: ReadableStream<T>,
+    options?: ResponseInit & {
+      map?: (value: T) => JSONValueType | Promise<JSONValueType>;
+      data?: JSONValueType[];
+    },
+  ) {
+    options = options ?? {};
+
+    const ndjson = NdJsonStream.encode(stream, { map: options.map, data: options.data });
+
+    return new Response(ndjson, {
+      status: options.status,
+      statusText: options.statusText,
+      headers: { ...options.headers, ...NdJsonStream.headers },
+    });
+  }
+
+  /**
    * Transforms a stream of JSON-serializable objects to stream of newline-delimited JSON.
    *
    * Each object is wrapped with an object that specifies the `type` and references
@@ -90,17 +130,17 @@ export class NdJsonStream {
    *     console.log(entries); // [ "{\"type\":\"data\",\"value\":{\"extra\":\"data\"}}\n", "{\"type\":\"chunk\",\"value\":{\"key\":\"value\"}}\n" ]
    *
    *
-   * @param stream A readable stream of JSON-serializable chunks to encode as ndjson
+   * @param stream A readable stream of chunks to encode as ndjson
    * @param options
-   * @param options.map A function to map stream chunks to desired, json-serializable outputs
+   * @param options.map A function to map input chunks to output chunks. The return value must be either a JSON-serializable object or a Promise that resolves to a JSON-serializable object
    * @param options.data Additional data to prepend to the output stream
    * @returns A readable stream of newline-delimited JSON
    */
   static encode<T = any>(
     stream: ReadableStream<T>,
     options?: {
-      map?: (value: T) => JSONValueType;
-      data?: Record<string, JSONValueType>[];
+      map?: (value: T) => JSONValueType | Promise<JSONValueType>;
+      data?: JSONValueType[];
     },
   ): ReadableStream<Uint8Array> {
     options = options || {};
@@ -122,8 +162,10 @@ export class NdJsonStream {
         }
       },
 
-      transform(value, controller) {
-        controller.enqueue(serialize({ type: 'chunk', value: map(value) }));
+      async transform(chunk, controller) {
+        // Supports synchronous and asynchronous mapping
+        const value = await Promise.resolve(map(chunk));
+        controller.enqueue(serialize({ type: 'chunk', value }));
       },
     });
 
