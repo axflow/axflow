@@ -44,11 +44,16 @@ type JSONValueType =
   | { [x: string]: JSONValueType }
   | Array<JSONValueType>;
 
+export type NdJsonValueType = {
+  type: 'chunk' | 'data';
+  data: Record<string, JSONValueType>;
+};
+
 export class NdJsonStream {
-  static headers = Object.freeze({ 'content-type': 'application/x-ndjson' });
+  static headers = Object.freeze({ 'content-type': 'application/x-ndjson; charset=utf-8' });
 
   /**
-   * Converts a stream of JSON-serializable objects to newline-delimited JSON.
+   * Transforms a stream of JSON-serializable objects to stream of newline-delimited JSON.
    *
    * Each object is wrapped with an object that specifies the `type` and references
    * the `value`. The `type` is one of `chunk` or `data`. A type of `chunk` means that
@@ -61,7 +66,7 @@ export class NdJsonStream {
    *
    *     const chunk = { key: 'value' };
    *     const stream = new ReadableStream({start(con) { con.enqueue(chunk); con.close() }});
-   *     const ndJsonStream = NdJsonStream.from(stream);
+   *     const ndJsonStream = NdJsonStream.encode(stream);
    *     const entries = [];
    *     for await (const chunk of stream) {
    *       entry.push(new TextDecoder().decode(chunk));
@@ -73,7 +78,7 @@ export class NdJsonStream {
    *
    *     const chunk = { key: 'value' };
    *     const stream = new ReadableStream({start(con) { con.enqueue(chunk); con.close() }});
-   *     const ndJsonStream = NdJsonStream.from(stream, [{ extra: 'data' }]);
+   *     const ndJsonStream = NdJsonStream.encode(stream, { data: [{ extra: 'data' }] });
    *     const entries = [];
    *     for await (const chunk of stream) {
    *       entry.push(new TextDecoder().decode(chunk));
@@ -82,12 +87,15 @@ export class NdJsonStream {
    *
    *
    * @param stream A readable stream of JSON-serializable chunks to encode as ndjson
-   * @param data Optional, additional data to prepend to the output stream
+   * @param options
+   * @param options.data Additional data to prepend to the output stream
    * @returns A readable stream of newline-delimited JSON
    */
-  static from<T extends { [x: string]: JSONValueType }>(
+  static encode<T extends Record<string, JSONValueType>>(
     stream: ReadableStream<T>,
-    data?: Record<string, JSONValueType> | Record<string, JSONValueType>[],
+    options?: {
+      data?: Record<string, JSONValueType>[];
+    },
   ): ReadableStream<Uint8Array> {
     const encoder = new TextEncoder();
 
@@ -98,20 +106,55 @@ export class NdJsonStream {
 
     const ndJsonEncode = new TransformStream({
       start(controller) {
-        if (!data) {
-          return;
-        }
+        const data = options?.data || [];
 
-        for (const entry of Array.isArray(data) ? data : [data]) {
-          controller.enqueue(serialize({ type: 'data', value: entry }));
+        for (const value of data) {
+          controller.enqueue(serialize({ type: 'data', value }));
         }
       },
 
-      transform(chunk, controller) {
-        controller.enqueue(serialize({ type: 'chunk', value: chunk }));
+      transform(value, controller) {
+        controller.enqueue(serialize({ type: 'chunk', value }));
       },
     });
 
     return stream.pipeThrough(ndJsonEncode);
+  }
+
+  /**
+   * Transforms a stream of newline-delimited JSON to a stream of objects.
+   *
+   * @param stream A readable stream of newline-delimited JSON objects
+   * @returns A readable stream of objects
+   */
+  static decode(stream: ReadableStream<Uint8Array>): ReadableStream<NdJsonValueType> {
+    let buffer: string[] = [];
+    const decoder = new TextDecoder();
+
+    const parser = new TransformStream<Uint8Array, NdJsonValueType>({
+      transform(bytes, controller) {
+        const chunk = decoder.decode(bytes);
+
+        for (let i = 0, len = chunk.length; i < len; ++i) {
+          const isChunkSeparator = chunk[i] === '\n';
+
+          // Keep buffering unless we've hit the end of a data chunk
+          if (!isChunkSeparator) {
+            buffer.push(chunk[i]);
+            continue;
+          }
+
+          // ndjson supports '\r\n' as the delimiter. We did not add
+          // the \n to the buffer, but may have added the \r if present
+          const line = buffer.join('').trimEnd();
+
+          controller.enqueue(JSON.parse(line));
+
+          buffer = [];
+        }
+      },
+    });
+
+    return stream.pipeThrough(parser);
   }
 }

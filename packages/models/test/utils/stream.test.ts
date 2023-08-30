@@ -1,7 +1,8 @@
-import { StreamToIterable, NdJsonStream } from '../../src/utils';
+import { StreamToIterable, NdJsonStream, NdJsonValueType } from '../../src/utils';
+import { createUnpredictableByteStream } from '../utils';
 
 describe('NdJsonStream', () => {
-  describe('.from', () => {
+  describe('.encode', () => {
     const chunks = [
       { content: 'A' },
       { content: ' Nd' },
@@ -27,7 +28,7 @@ describe('NdJsonStream', () => {
     it('creates a special nd json formatted stream', async () => {
       let ndjson: string[] = [];
 
-      const ndJsonStream = NdJsonStream.from(source);
+      const ndJsonStream = NdJsonStream.encode(source);
 
       for await (const chunk of StreamToIterable(ndJsonStream)) {
         ndjson.push(decoder.decode(chunk));
@@ -49,7 +50,7 @@ describe('NdJsonStream', () => {
         { some: 'more', data: 'here' },
       ];
 
-      const ndJsonStream = NdJsonStream.from(source, additionalData);
+      const ndJsonStream = NdJsonStream.encode(source, { data: additionalData });
 
       for await (const chunk of StreamToIterable(ndJsonStream)) {
         ndjson.push(decoder.decode(chunk));
@@ -66,7 +67,37 @@ describe('NdJsonStream', () => {
     });
   });
 
+  describe('.decode', () => {
+    it('can decode an ndjson stream', async () => {
+      const stream = createUnpredictableByteStream(
+        [
+          '{"type":"data","value":{"some":"extra","data":"here"}}\n',
+          '{"type":"data","value":{"some":"more","data":"here"}}\n',
+          '{"type":"chunk","value":{"content":"A"}}\n',
+          '{"type":"chunk","value":{"content":" Nd"}}\n',
+          '{"type":"chunk","value":{"content":"Json"}}\n',
+          '{"type":"chunk","value":{"content":" stream"}}\n',
+        ].join(''),
+      );
+
+      const results: NdJsonValueType[] = [];
+
+      for await (const chunk of StreamToIterable(NdJsonStream.decode(stream))) {
+        results.push(chunk);
+      }
+
+      expect(results).toEqual([
+        { type: 'data', value: { some: 'extra', data: 'here' } },
+        { type: 'data', value: { some: 'more', data: 'here' } },
+        { type: 'chunk', value: { content: 'A' } },
+        { type: 'chunk', value: { content: ' Nd' } },
+        { type: 'chunk', value: { content: 'Json' } },
+        { type: 'chunk', value: { content: ' stream' } },
+      ]);
+    });
+  });
+
   it('specifies headers', () => {
-    expect(NdJsonStream.headers).toEqual({ 'content-type': 'application/x-ndjson' });
+    expect(NdJsonStream.headers).toEqual({ 'content-type': 'application/x-ndjson; charset=utf-8' });
   });
 });

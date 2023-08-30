@@ -149,7 +149,7 @@ describe('openai chat', () => {
         { apiKey: 'sk-not-real', fetch: fetchSpy as any },
       );
 
-      const stream = NdJsonStream.from(response);
+      const stream = NdJsonStream.encode(response);
 
       let firstChunk: OpenAIChatTypes.Chunk | null = null;
       let lastChunk: OpenAIChatTypes.Chunk | null = null;
