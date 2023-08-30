@@ -1,3 +1,5 @@
+import type { JSONValueType } from '@axflow/models/shared';
+
 /**
  * Convert a ReadableStream<T> to an AsyncIterable<T>.
  *
@@ -35,14 +37,6 @@ async function* createIterable<T>(stream: ReadableStream<T>): AsyncIterable<T> {
     reader.releaseLock();
   }
 }
-
-type JSONValueType =
-  | null
-  | string
-  | number
-  | boolean
-  | { [x: string]: JSONValueType }
-  | Array<JSONValueType>;
 
 export type NdJsonValueType = {
   type: 'chunk' | 'data';

@@ -3,8 +3,10 @@
   "compilerOptions": {
     "outDir": "dist",
     "baseUrl": ".",
+    "removeComments": false,
     "paths": {
-      "@axflow/models/utils": ["src/utils/index.ts"]
+      "@axflow/models/utils": ["src/utils/index.ts"],
+      "@axflow/models/shared": ["src/shared/index.ts"]
     }
   },
   "include": ["src"],

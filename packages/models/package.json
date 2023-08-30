@@ -44,11 +44,21 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.3",
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
     "jest": "^29.6.2",
     "prettier": "^3.0.2",
     "ts-jest": "^29.1.1",
     "tsup": "^7.2.0",
     "typescript": "^5.1.6"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
   },
   "typesVersions": {
     "*": {
@@ -69,6 +79,12 @@
       ],
       "cohere/embedding": [
         "./dist/cohere/embedding.d.ts"
+      ],
+      "react": [
+        "./dist/react/index.d.ts"
+      ],
+      "shared": [
+        "./dist/shared/index.d.ts"
       ],
       "utils": [
         "./dist/utils/index.d.ts"
@@ -112,6 +128,18 @@
       "import": "./dist/cohere/embedding.mjs",
       "module": "./dist/cohere/embedding.mjs",
       "require": "./dist/cohere/embedding.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "import": "./dist/react/index.mjs",
+      "module": "./dist/react/index.mjs",
+      "require": "./dist/react/index.js"
+    },
+    "./shared": {
+      "types": "./dist/shared/index.d.ts",
+      "import": "./dist/shared/index.mjs",
+      "module": "./dist/shared/index.mjs",
+      "require": "./dist/shared/index.js"
     },
     "./utils": {
       "types": "./dist/utils/index.d.ts",
