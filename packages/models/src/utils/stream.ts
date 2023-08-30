@@ -46,7 +46,7 @@ type JSONValueType =
 
 export type NdJsonValueType = {
   type: 'chunk' | 'data';
-  data: Record<string, JSONValueType>;
+  value: Record<string, JSONValueType>;
 };
 
 export class NdJsonStream {
@@ -99,7 +99,7 @@ export class NdJsonStream {
   ): ReadableStream<Uint8Array> {
     const encoder = new TextEncoder();
 
-    function serialize(obj: Record<string, JSONValueType>) {
+    function serialize(obj: NdJsonValueType) {
       const serialized = JSON.stringify(obj);
       return encoder.encode(`${serialized}\n`);
     }
