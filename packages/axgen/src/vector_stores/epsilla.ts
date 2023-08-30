@@ -12,11 +12,14 @@ export const NAME = 'epsilla' as const;
 interface EpsillaConfig {
   dbPath: string;
   collection: string;
-  dimension: number;
   protocol?: string;
   host?: string;
   port?: number;
   dbName?: string;
+}
+
+interface EpsillaSetupConfig extends EpsillaConfig {
+  dimension: number;
 }
 
 interface RecordItem {
@@ -56,7 +59,7 @@ function generateFields(dimension: number) {
 }
 
 export class Epsilla implements IVectorStore {
-  static async prepare(options: EpsillaConfig) {
+  static async prepare(options: EpsillaSetupConfig) {
     const config = {
       protocol: options?.protocol || 'http',
       host: options?.host || 'localhost',
@@ -93,7 +96,6 @@ export class Epsilla implements IVectorStore {
 
   private client: EpsillaDB;
   private collection: string;
-  private dimension: number;
 
   constructor(options: EpsillaConfig) {
     const config = {
@@ -106,7 +108,6 @@ export class Epsilla implements IVectorStore {
     this.client.loadDB(options.dbPath, dbName);
     this.client.useDB(dbName);
     this.collection = options.collection;
-    this.dimension = options.dimension;
   }
 
   async add(chunks: ChunkWithEmbeddings[], options?: {  }): Promise<string[]> {

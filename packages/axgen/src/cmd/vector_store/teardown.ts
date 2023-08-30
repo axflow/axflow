@@ -6,6 +6,7 @@ import { Pinecone } from '../../vector_stores/pinecone';
 import { Qdrant } from '../../vector_stores/qdrant';
 import { PgVector } from '../../vector_stores/pgvector';
 import { SUPPORTED_VECTOR_STORES, type SupportedVectorStores } from '../../vector_stores';
+import { Epsilla } from 'src/vector_stores/epsilla';
 
 const argv = yargs(hideBin(process.argv))
   .option('store', {
@@ -35,6 +36,15 @@ async function teardown(store: SupportedVectorStores) {
       return await PgVector.teardown({
         tableName: getEnvOrThrow('PG_TABLE_NAME'),
         dsn: getEnvOrThrow('PG_DSN'),
+      });
+    case 'epsilla':
+      return await Epsilla.teardown({
+        dbPath: getEnvOrThrow('EPSILLA_DB_PATH'),
+        collection: getEnvOrThrow('EPSILLA_COLLECTION'),
+        protocol: getEnv('EPSILLA_PROTOCOL'),
+        host: getEnv('EPSILLA_HOST'),
+        port: Number(getEnv('EPSILLA_PORT')),
+        dbName: getEnv('EPSILLA_DB_NAME')
       });
     default:
       throw new Error(`Unrecognized store "${store}"`);

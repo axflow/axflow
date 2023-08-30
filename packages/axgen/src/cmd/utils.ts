@@ -1,5 +1,5 @@
 import { FileSystem, Wikipedia } from '../sources';
-import { Pinecone, PgVector, Qdrant } from '../vector_stores';
+import { Pinecone, PgVector, Qdrant, Epsilla } from '../vector_stores';
 import { OpenAIEmbedder, VertexAIEmbedder, CohereEmbedder } from '../embedders';
 import { CSVSplitter, MarkdownSplitter, TextSplitter } from '../splitters';
 import { getEnv, getEnvOrThrow } from '../config';
@@ -28,6 +28,15 @@ export function getVectorStore(store: SupportedVectorStores): IVectorStore {
       return new PgVector({
         dsn: getEnvOrThrow('PG_DSN'),
         tableName: getEnvOrThrow('PG_TABLE_NAME'),
+      });
+    case 'epsilla':
+      return new Epsilla({
+        dbPath: getEnvOrThrow('EPSILLA_DB_PATH'),
+        collection: getEnvOrThrow('EPSILLA_COLLECTION'),
+        protocol: getEnv('EPSILLA_PROTOCOL'),
+        host: getEnv('EPSILLA_HOST'),
+        port: Number(getEnv('EPSILLA_PORT')),
+        dbName: getEnv('EPSILLA_DB_NAME')
       });
     default:
       throw new Error(`Unrecognized vector store "${store}"`);
