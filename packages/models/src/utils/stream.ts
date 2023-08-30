@@ -46,8 +46,12 @@ type JSONValueType =
 
 export type NdJsonValueType = {
   type: 'chunk' | 'data';
-  value: Record<string, JSONValueType>;
+  value: JSONValueType;
 };
+
+function identity<T>(value: T) {
+  return value;
+}
 
 export class NdJsonStream {
   static headers = Object.freeze({ 'content-type': 'application/x-ndjson; charset=utf-8' });
@@ -88,15 +92,22 @@ export class NdJsonStream {
    *
    * @param stream A readable stream of JSON-serializable chunks to encode as ndjson
    * @param options
+   * @param options.map A function to map stream chunks to desired, json-serializable outputs
    * @param options.data Additional data to prepend to the output stream
    * @returns A readable stream of newline-delimited JSON
    */
-  static encode<T extends Record<string, JSONValueType>>(
+  static encode<T = any>(
     stream: ReadableStream<T>,
     options?: {
+      map?: (value: T) => JSONValueType;
       data?: Record<string, JSONValueType>[];
     },
   ): ReadableStream<Uint8Array> {
+    options = options || {};
+
+    const map = options.map || identity;
+    const data = options.data || [];
+
     const encoder = new TextEncoder();
 
     function serialize(obj: NdJsonValueType) {
@@ -106,15 +117,13 @@ export class NdJsonStream {
 
     const ndJsonEncode = new TransformStream({
       start(controller) {
-        const data = options?.data || [];
-
         for (const value of data) {
           controller.enqueue(serialize({ type: 'data', value }));
         }
       },
 
       transform(value, controller) {
-        controller.enqueue(serialize({ type: 'chunk', value }));
+        controller.enqueue(serialize({ type: 'chunk', value: map(value) }));
       },
     });
 

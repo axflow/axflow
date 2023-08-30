@@ -52,16 +52,3 @@ export function createUnpredictableByteStream(blob: string) {
     },
   });
 }
-
-export function NdJsonStreamToParsedObjects(stream: ReadableStream<Uint8Array>) {
-  const decoder = new TextDecoder();
-
-  const parser = new TransformStream({
-    transform(chunk, controller) {
-      const serialized = decoder.decode(chunk).trimEnd();
-      controller.enqueue(JSON.parse(serialized));
-    },
-  });
-
-  return stream.pipeThrough(parser);
-}

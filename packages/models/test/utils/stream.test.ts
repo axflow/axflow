@@ -65,6 +65,27 @@ describe('NdJsonStream', () => {
         '{"type":"chunk","value":{"content":" stream"}}\n',
       ]);
     });
+
+    it('can map the stream chunks', async () => {
+      let ndjson: string[] = [];
+
+      const ndJsonStream = NdJsonStream.encode(source, {
+        map(chunk) {
+          return chunk.content;
+        },
+      });
+
+      for await (const chunk of StreamToIterable(ndJsonStream)) {
+        ndjson.push(decoder.decode(chunk));
+      }
+
+      expect(ndjson).toEqual([
+        '{"type":"chunk","value":"A"}\n',
+        '{"type":"chunk","value":" Nd"}\n',
+        '{"type":"chunk","value":"Json"}\n',
+        '{"type":"chunk","value":" stream"}\n',
+      ]);
+    });
   });
 
   describe('.decode', () => {

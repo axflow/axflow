@@ -1,13 +1,9 @@
 import fs from 'node:fs/promises';
 import Path from 'node:path';
 
-import {
-  createFakeFetch,
-  createUnpredictableByteStream,
-  NdJsonStreamToParsedObjects,
-} from '../utils';
-import { OpenAIChat, OpenAIChatTypes } from '../../src/openai/chat';
-import { StreamToIterable, NdJsonStream } from '../../src/utils/stream';
+import { createFakeFetch, createUnpredictableByteStream } from '../utils';
+import { OpenAIChat } from '../../src/openai/chat';
+import { StreamToIterable, NdJsonStream, type NdJsonValueType } from '../../src/utils';
 
 describe('openai chat', () => {
   let streamingChatResponse: string;
@@ -149,54 +145,52 @@ describe('openai chat', () => {
         { apiKey: 'sk-not-real', fetch: fetchSpy as any },
       );
 
-      const stream = NdJsonStream.encode(response);
+      const stream = NdJsonStream.encode(response, {
+        map(chunk) {
+          return chunk.choices[0].delta.content || '';
+        },
+        data: [{ auxiliary: 'data' }],
+      });
 
-      let firstChunk: OpenAIChatTypes.Chunk | null = null;
-      let lastChunk: OpenAIChatTypes.Chunk | null = null;
+      const chunks: NdJsonValueType[] = [];
 
-      for await (const entry of StreamToIterable(NdJsonStreamToParsedObjects(stream))) {
-        if (!firstChunk) {
-          firstChunk = entry.value as OpenAIChatTypes.Chunk;
-        }
-
-        lastChunk = entry.value as OpenAIChatTypes.Chunk;
-
-        expect(entry).toMatchObject({
-          type: 'chunk',
-          value: expect.any(Object),
-        });
+      for await (const chunk of StreamToIterable(NdJsonStream.decode(stream))) {
+        chunks.push(chunk);
       }
 
-      expect(firstChunk).toEqual({
-        choices: [
-          {
-            delta: {
-              content: '',
-              role: 'assistant',
-            },
-            finish_reason: null,
-            index: 0,
-          },
-        ],
-        created: 1692681841,
-        id: 'chatcmpl-7qE9x0hLViEWfRzBOTJDU7itwkPJn',
-        model: 'gpt-4-0613',
-        object: 'chat.completion.chunk',
-      });
-
-      expect(lastChunk).toEqual({
-        choices: [
-          {
-            delta: {},
-            finish_reason: 'stop',
-            index: 0,
-          },
-        ],
-        created: 1692681841,
-        id: 'chatcmpl-7qE9x0hLViEWfRzBOTJDU7itwkPJn',
-        model: 'gpt-4-0613',
-        object: 'chat.completion.chunk',
-      });
+      expect(chunks).toEqual([
+        { type: 'data', value: { auxiliary: 'data' } },
+        { type: 'chunk', value: '' },
+        { type: 'chunk', value: 'The' },
+        { type: 'chunk', value: ' E' },
+        { type: 'chunk', value: 'iff' },
+        { type: 'chunk', value: 'el' },
+        { type: 'chunk', value: ' Tower' },
+        { type: 'chunk', value: ' is' },
+        { type: 'chunk', value: ' a' },
+        { type: 'chunk', value: ' renowned' },
+        { type: 'chunk', value: ' wrought' },
+        { type: 'chunk', value: '-' },
+        { type: 'chunk', value: 'iron' },
+        { type: 'chunk', value: ' landmark' },
+        { type: 'chunk', value: ' located' },
+        { type: 'chunk', value: ' in' },
+        { type: 'chunk', value: ' Paris' },
+        { type: 'chunk', value: ',' },
+        { type: 'chunk', value: ' France' },
+        { type: 'chunk', value: ',' },
+        { type: 'chunk', value: ' known' },
+        { type: 'chunk', value: ' globally' },
+        { type: 'chunk', value: ' as' },
+        { type: 'chunk', value: ' a' },
+        { type: 'chunk', value: ' symbol' },
+        { type: 'chunk', value: ' of' },
+        { type: 'chunk', value: ' romance' },
+        { type: 'chunk', value: ' and' },
+        { type: 'chunk', value: ' elegance' },
+        { type: 'chunk', value: '.' },
+        { type: 'chunk', value: '' },
+      ]);
     });
   });
 });
