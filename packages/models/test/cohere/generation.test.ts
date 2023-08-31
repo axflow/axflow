@@ -3,7 +3,7 @@ import Path from 'node:path';
 
 import { createFakeFetch, createUnpredictableByteStream } from '../utils';
 import { CohereGeneration } from '../../src/cohere/generation';
-import { StreamToIterable } from '../../src/utils/stream';
+import { StreamToIterable } from '../../src/shared';
 
 describe('cohere generation', () => {
   let streamingGenerationResponse: string;

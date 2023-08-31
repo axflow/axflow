@@ -29,7 +29,7 @@ npm i @axflow/models
 ```ts
 import {OpenAIChat} from '@axflow/models/openai/chat';
 import {CohereGenerate} from '@axflow/models/cohere/generate';
-import {StreamToIterable} from '@axflow/models/utils';
+import {StreamToIterable} from '@axflow/models/shared';
 
 const gpt4Stream = OpenAIChat.stream(
   {
@@ -93,7 +93,7 @@ On the client, we can use `OpenAIChat.stream` with a custom `apiUrl` in place of
 
 ```ts
 import { OpenAIChat } from '@axflow/models/openai/chat';
-import { StreamToIterable } from '@axflow/models/utils';
+import { StreamToIterable } from '@axflow/models/shared';
 
 const stream = await OpenAIChat.stream(
   {
@@ -174,9 +174,9 @@ AnthropicCompletion.stream(/* args */)
 AnthropicCompletion.streamBytes(/* args */)
 ```
 
-### @axflow/models/utils
+### @axflow/models/shared
 
 ```ts
-import {StreamToIterable, NdJsonStream, StreamingJsonResponse, HttpError, isHttpError} from '@axflow/models/utils';
-import type {NdJsonValueType} from '@axflow/models/utils';
+import {StreamToIterable, NdJsonStream, StreamingJsonResponse, HttpError, isHttpError} from '@axflow/models/shared';
+import type {NdJsonValueType, JSONValueType, MessageType} from '@axflow/models/shared';
 ```

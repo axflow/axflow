@@ -1,7 +1,6 @@
 import { useRef, useCallback, useState, type MutableRefObject } from 'react';
 
-import { POST, StreamToIterable, NdJsonStream } from '@axflow/models/utils';
-import { uuid } from '@axflow/models/shared';
+import { POST, StreamToIterable, NdJsonStream } from '@axflow/models/shared';
 import type { MessageType, JSONValueType } from '@axflow/models/shared';
 
 interface AccessorType<T = any> {
@@ -11,6 +10,10 @@ interface AccessorType<T = any> {
 type BodyType =
   | Record<string, JSONValueType>
   | ((message: MessageType, history: MessageType[]) => JSONValueType);
+
+function uuid() {
+  return crypto.randomUUID();
+}
 
 async function stableAppend(
   message: MessageType,

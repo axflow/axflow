@@ -3,7 +3,7 @@ import Path from 'node:path';
 
 import { createFakeFetch, createUnpredictableByteStream } from '../utils';
 import { OpenAICompletion } from '../../src/openai/completion';
-import { StreamToIterable } from '../../src/utils/stream';
+import { StreamToIterable } from '../../src/shared';
 
 describe('openai chat', () => {
   let streamingChatResponse: string;

@@ -3,7 +3,8 @@ import Path from 'node:path';
 
 import { createFakeFetch, createUnpredictableByteStream } from '../utils';
 import { OpenAIChat } from '../../src/openai/chat';
-import { StreamToIterable, NdJsonStream, type NdJsonValueType } from '../../src/utils';
+import { StreamToIterable, NdJsonStream, StreamingJsonResponse } from '../../src/shared';
+import type { NdJsonValueType } from '../../src/shared';
 
 describe('openai chat', () => {
   let streamingChatResponse: string;
@@ -130,7 +131,7 @@ describe('openai chat', () => {
       });
     });
 
-    it('can transform to ndjson', async () => {
+    it('can create a streaming json response', async () => {
       const fetchSpy = createFakeFetch({
         body: createUnpredictableByteStream(streamingChatResponse),
       });
@@ -145,16 +146,14 @@ describe('openai chat', () => {
         { apiKey: 'sk-not-real', fetch: fetchSpy as any },
       );
 
-      const stream = NdJsonStream.encode(response, {
-        map(chunk) {
-          return chunk.choices[0].delta.content || '';
-        },
+      const stream = StreamingJsonResponse(response, {
         data: [{ auxiliary: 'data' }],
+        map: (chunk) => chunk.choices[0].delta.content || '',
       });
 
       const chunks: NdJsonValueType[] = [];
 
-      for await (const chunk of StreamToIterable(NdJsonStream.decode(stream))) {
+      for await (const chunk of StreamToIterable(NdJsonStream.decode(stream.body!))) {
         chunks.push(chunk);
       }
 

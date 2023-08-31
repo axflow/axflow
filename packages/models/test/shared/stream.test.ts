@@ -1,5 +1,5 @@
-import { StreamToIterable, NdJsonStream, StreamingJsonResponse } from '../../src/utils';
-import type { NdJsonValueType } from '../../src/utils';
+import { StreamToIterable, NdJsonStream, StreamingJsonResponse } from '../../src/shared';
+import type { NdJsonValueType } from '../../src/shared';
 import { createUnpredictableByteStream } from '../utils';
 
 describe('streams', () => {

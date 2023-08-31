@@ -1,4 +1,4 @@
-import type { JSONValueType } from '@axflow/models/shared';
+import type { JSONValueType } from './types';
 
 /**
  * Convert a ReadableStream<T> to an AsyncIterable<T>.

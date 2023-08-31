@@ -1,4 +1,4 @@
-import { POST, HttpError } from '@axflow/models/utils';
+import { POST, HttpError } from '@axflow/models/shared';
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/complete';
 

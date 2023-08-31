@@ -1,4 +1,4 @@
-import { POST, HttpError } from '@axflow/models/utils';
+import { POST, HttpError } from '@axflow/models/shared';
 import { headers } from './shared';
 import type { SharedRequestOptions } from './shared';
 

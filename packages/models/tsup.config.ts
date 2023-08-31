@@ -57,11 +57,4 @@ export default defineConfig([
     external: [/^@axflow\/models\//],
     dts: true,
   },
-  {
-    entry: ['src/utils/index.ts'],
-    format: ['cjs', 'esm'],
-    outDir: 'dist/utils',
-    external: [/^@axflow\/models\//],
-    dts: true,
-  },
 ]);

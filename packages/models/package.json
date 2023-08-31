@@ -85,9 +85,6 @@
       ],
       "shared": [
         "./dist/shared/index.d.ts"
-      ],
-      "utils": [
-        "./dist/utils/index.d.ts"
       ]
     }
   },
@@ -140,12 +137,6 @@
       "import": "./dist/shared/index.mjs",
       "module": "./dist/shared/index.mjs",
       "require": "./dist/shared/index.js"
-    },
-    "./utils": {
-      "types": "./dist/utils/index.d.ts",
-      "import": "./dist/utils/index.mjs",
-      "module": "./dist/utils/index.mjs",
-      "require": "./dist/utils/index.js"
     }
   }
 }

@@ -3,7 +3,7 @@ import Path from 'node:path';
 
 import { createFakeFetch, createUnpredictableByteStream } from '../utils';
 import { AnthropicCompletion } from '../../src/anthropic/completion';
-import { StreamToIterable } from '../../src/utils/stream';
+import { StreamToIterable } from '../../src/shared';
 
 describe('anthropic completion', () => {
   let streamingCompletionResponse: string;
