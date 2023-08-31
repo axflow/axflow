@@ -103,16 +103,110 @@ const DEFAULT_ACCESSOR = (value: string) => value;
 const DEFAULT_BODY = (message: MessageType, history: MessageType[]) => ({ message, history });
 const DEFAULT_HEADERS = {};
 
+/**
+ * The options supplied to the useChat hook.
+ */
 export type UseChatOptionsType = {
+  /**
+   * The API endpoint to call when submitting a new message.
+   *
+   * Defaults to `/api/chat`.
+   */
   url?: string;
+
+  /**
+   * Customize the request body sent to the API using this value. It accepts
+   * either a function or object.
+   *
+   * If given a function, the return value of the function will become the body
+   * of the request. The function will be passed the new message as its first
+   * argument and the history (an array of previous messages) as its second argument.
+   *
+   * If given an object, the object will be merged into the request body with the
+   * new message and the message history, e.g., `{...body, message, history }`.
+   *
+   * By default, the request body is `{ message, history }`.
+   */
   body?: BodyType;
+
+  /**
+   * Additional headers to send along with the request to the API.
+   */
   headers?: Record<string, string>;
-  accessor?: AccessorType;
+
+  /**
+   * An accessor used to pluck out the message text. The response body or response
+   * stream can send back arbitrary values. If the value sent back is not the message
+   * text, then this component needs a way to access the message text. This function
+   * is given the value from the API as its input and should return the message text
+   * as its output.
+   *
+   * By default, it assumes the value from the API is the message text itself.
+   */
+  accessor?: (value: any) => string;
+
+  /**
+   * Initial message input. Defaults to empty string.
+   */
+  initialInput?: string;
+
+  /**
+   * Initial message history. Defaults to an empty list.
+   */
+  initialMessages?: MessageType[];
 };
 
-export function useChat(options?: UseChatOptionsType) {
-  const [input, setInput] = useState<string>('');
-  const [messages, _setMessages] = useState<MessageType[]>([]);
+/**
+ * The result of invoking the useChat hook.
+ */
+export type UseChatResultType = {
+  /**
+   * Current user's message input.
+   */
+  input: string;
+
+  /**
+   * The history of messages so far in this chat.
+   */
+  messages: MessageType[];
+
+  /**
+   * A handler to change the user's message input.
+   *
+   * @param e Either a form field change event or the string representing the changed user input.
+   */
+  onChange: (
+    e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement> | string,
+  ) => void;
+
+  /**
+   * A handler to trigger submission to the API.
+   *
+   * @param e Optional `React.FormEvent<HTMLFormElement>` if this value is used with a Form.
+   */
+  onSubmit: (e?: React.FormEvent<HTMLFormElement>) => void;
+};
+
+/**
+ * A React hook to power LLM chat applications.
+ *
+ * This hook supports streaming and non-streaming responses. If streaming, the API
+ * response must have a content-type header set to `application/x-ndjson; charset=utf-8`.
+ * Additionally, it must send its JSON chunks using the following format:
+ *
+ *     { type: 'data' | 'chunk', value: <any valid JSON value> }
+ *
+ * When `type` is `chunk`, `value` represents a chunk of the source stream. When `type`
+ * is `data`, `value` represents any additional data sent along with the source stream.
+ *
+ * @param options UseChatOptionsType
+ * @returns UseChatResultType
+ */
+export function useChat(options?: UseChatOptionsType): UseChatResultType {
+  options = options ?? {};
+
+  const [input, setInput] = useState<string>(options.initialInput ?? '');
+  const [messages, _setMessages] = useState<MessageType[]>(options.initialMessages ?? []);
 
   const messagesRef = useRef<MessageType[]>([]);
 
@@ -123,8 +217,6 @@ export function useChat(options?: UseChatOptionsType) {
     },
     [messagesRef, _setMessages],
   );
-
-  options = options || {};
 
   const url = options.url || DEFAULT_URL;
   const accessor = options.accessor || DEFAULT_ACCESSOR;
@@ -160,5 +252,5 @@ export function useChat(options?: UseChatOptionsType) {
     setInput('');
   }
 
-  return { input, onChange, onSubmit, messages: messages };
+  return { input, onChange, onSubmit, messages };
 }
