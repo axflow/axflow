@@ -113,10 +113,10 @@ export class NdJsonStream {
       data?: JSONValueType[];
     },
   ): ReadableStream<Uint8Array> {
-    options = options || {};
+    options ??= {};
 
-    const map = options.map || identity;
-    const data = options.data || [];
+    const map = options.map ?? identity;
+    const data = options.data ?? [];
 
     const encoder = new TextEncoder();
 
@@ -183,43 +183,51 @@ export class NdJsonStream {
 }
 
 /**
- * Returns a `Response` object that streams newline-delimited JSON objects.
- *
- * Example
- *
- *      export async function POST(request: Request) {
- *       const req = await request.json();
- *       const stream = await OpenAIChat.stream(req, { apiKey: OPENAI_API_KEY });
- *       return StreamingJsonResponse(stream, {
- *         map: (chunk) => chunk.choices[0].delta.content ?? ''
- *       });
- *     }
- *
- * @see http://ndjson.org
- *
- * @param stream A readable stream of chunks to encode as newline-delimited JSON.
- * @param options
- * @param options.status HTTP response status.
- * @param options.statusText HTTP response status text.
- * @param options.headers HTTP response headers.
- * @param options.map A function to map input chunks to output chunks. The return value must be either a JSON-serializable object or a Promise that resolves to a JSON-serializable object.
- * @param options.data Additional data to prepend to the output stream.
- * @returns A `Response` object that streams newline-delimited JSON objects.
+ * A subclass of `Response` that streams newline-delimited JSON.
  */
-export function StreamingJsonResponse<T>(
-  stream: ReadableStream<T>,
-  options?: ResponseInit & {
-    map?: (value: T) => JSONValueType | Promise<JSONValueType>;
-    data?: JSONValueType[];
-  },
-) {
-  options = options ?? {};
+export class StreamingJsonResponse<T> extends Response {
+  /**
+   * Create a `Response` object that streams newline-delimited JSON objects.
+   *
+   * Example
+   *
+   *      export async function POST(request: Request) {
+   *       const req = await request.json();
+   *       const stream = await OpenAIChat.stream(req, { apiKey: OPENAI_API_KEY });
+   *       return new StreamingJsonResponse(stream, {
+   *         map: (chunk) => chunk.choices[0].delta.content ?? ''
+   *         data: [{ stream: "additional" }, { data: "here" }]
+   *       });
+   *     }
+   *
+   * @see http://ndjson.org
+   *
+   * @param stream A readable stream of chunks to encode as newline-delimited JSON.
+   * @param options
+   * @param options.status HTTP response status.
+   * @param options.statusText HTTP response status text.
+   * @param options.headers HTTP response headers.
+   * @param options.map A function to map input chunks to output chunks. The return value must be either a JSON-serializable object or a Promise that resolves to a JSON-serializable object.
+   * @param options.data Additional data to prepend to the output stream.
+   */
+  constructor(
+    stream: ReadableStream<T>,
+    options?: ResponseInit & {
+      map?: (value: T) => JSONValueType | Promise<JSONValueType>;
+      data?: JSONValueType[];
+    },
+  ) {
+    options ??= {};
 
-  const ndjson = NdJsonStream.encode(stream, { map: options.map, data: options.data });
+    const ndjson = NdJsonStream.encode(stream, {
+      map: options.map,
+      data: options.data,
+    });
 
-  return new Response(ndjson, {
-    status: options.status,
-    statusText: options.statusText,
-    headers: { ...options.headers, ...NdJsonStream.headers },
-  });
+    super(ndjson, {
+      status: options.status,
+      statusText: options.statusText,
+      headers: { ...options.headers, ...NdJsonStream.headers },
+    });
+  }
 }

@@ -146,7 +146,7 @@ describe('openai chat', () => {
         { apiKey: 'sk-not-real', fetch: fetchSpy as any },
       );
 
-      const stream = StreamingJsonResponse(response, {
+      const stream = new StreamingJsonResponse(response, {
         data: [{ auxiliary: 'data' }],
         map: (chunk) => chunk.choices[0].delta.content || '',
       });

@@ -100,7 +100,9 @@ async function stableAppend(
 
 const DEFAULT_URL = '/api/chat';
 const DEFAULT_ACCESSOR = (value: string) => value;
-const DEFAULT_BODY = (message: MessageType, history: MessageType[]) => ({ message, history });
+const DEFAULT_BODY = (message: MessageType, history: MessageType[]) => ({
+  messages: [...history, message],
+});
 const DEFAULT_HEADERS = {};
 
 /**
@@ -123,9 +125,9 @@ export type UseChatOptionsType = {
    * argument and the history (an array of previous messages) as its second argument.
    *
    * If given an object, the object will be merged into the request body with the
-   * new message and the message history, e.g., `{...body, message, history }`.
+   * full set of messages, i.e., `{...body, messages }`.
    *
-   * By default, the request body is `{ message, history }`.
+   * By default, the request body is `{ messages }`.
    */
   body?: BodyType;
 
@@ -203,7 +205,7 @@ export type UseChatResultType = {
  * @returns UseChatResultType
  */
 export function useChat(options?: UseChatOptionsType): UseChatResultType {
-  options = options ?? {};
+  options ??= {};
 
   const [input, setInput] = useState<string>(options.initialInput ?? '');
   const [messages, _setMessages] = useState<MessageType[]>(options.initialMessages ?? []);
@@ -218,10 +220,10 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
     [messagesRef, _setMessages],
   );
 
-  const url = options.url || DEFAULT_URL;
-  const accessor = options.accessor || DEFAULT_ACCESSOR;
-  const body = options.body || DEFAULT_BODY;
-  const headers = options.headers || DEFAULT_HEADERS;
+  const url = options.url ?? DEFAULT_URL;
+  const accessor = options.accessor ?? DEFAULT_ACCESSOR;
+  const body = options.body ?? DEFAULT_BODY;
+  const headers = options.headers ?? DEFAULT_HEADERS;
 
   function append(message: MessageType) {
     stableAppend(message, messagesRef, setMessages, url, headers, body, accessor);
