@@ -38,10 +38,6 @@ async function* createIterable<T>(stream: ReadableStream<T>): AsyncIterable<T> {
   }
 }
 
-function identity<T>(value: T): T {
-  return value;
-}
-
 export type NdJsonValueType = {
   type: 'chunk' | 'data';
   value: JSONValueType;
@@ -102,21 +98,14 @@ export class NdJsonStream {
    *
    * @param stream A readable stream of chunks to encode as newline-delimited JSON.
    * @param options
-   * @param options.map A function to map input chunks to output chunks. The return value must be either a JSON-serializable object or a Promise that resolves to a JSON-serializable object.
    * @param options.data Additional data to prepend to the output stream.
    * @returns A readable stream of newline-delimited JSON.
    */
   static encode<T = any>(
     stream: ReadableStream<T>,
-    options?: {
-      map?: (value: T) => JSONValueType | Promise<JSONValueType>;
-      data?: JSONValueType[];
-    },
+    options?: { data?: JSONValueType[] },
   ): ReadableStream<Uint8Array> {
-    options ??= {};
-
-    const map = options.map ?? identity;
-    const data = options.data ?? [];
+    const data = options?.data ?? [];
 
     const encoder = new TextEncoder();
 
@@ -132,9 +121,7 @@ export class NdJsonStream {
         }
       },
 
-      async transform(chunk, controller) {
-        // Supports synchronous and asynchronous mapping
-        const value = await Promise.resolve(map(chunk));
+      async transform(value, controller) {
         controller.enqueue(serialize({ type: 'chunk', value }));
       },
     });
@@ -207,20 +194,12 @@ export class StreamingJsonResponse<T> extends Response {
    * @param options.status HTTP response status.
    * @param options.statusText HTTP response status text.
    * @param options.headers HTTP response headers.
-   * @param options.map A function to map input chunks to output chunks. The return value must be either a JSON-serializable object or a Promise that resolves to a JSON-serializable object.
    * @param options.data Additional data to prepend to the output stream.
    */
-  constructor(
-    stream: ReadableStream<T>,
-    options?: ResponseInit & {
-      map?: (value: T) => JSONValueType | Promise<JSONValueType>;
-      data?: JSONValueType[];
-    },
-  ) {
+  constructor(stream: ReadableStream<T>, options?: ResponseInit & { data?: JSONValueType[] }) {
     options ??= {};
 
     const ndjson = NdJsonStream.encode(stream, {
-      map: options.map,
       data: options.data,
     });
 
