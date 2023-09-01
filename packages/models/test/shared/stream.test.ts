@@ -73,54 +73,6 @@ describe('streams', () => {
           '{"type":"chunk","value":{"content":" stream"}}\n',
         ]);
       });
-
-      it('can map the stream chunks', async () => {
-        const ndJsonStream = NdJsonStream.encode(source, {
-          map(chunk) {
-            return chunk.content;
-          },
-        });
-
-        let ndjson: string[] = [];
-
-        for await (const chunk of StreamToIterable(ndJsonStream)) {
-          ndjson.push(decoder.decode(chunk));
-        }
-
-        expect(ndjson).toEqual([
-          '{"type":"chunk","value":"A"}\n',
-          '{"type":"chunk","value":" Nd"}\n',
-          '{"type":"chunk","value":"Json"}\n',
-          '{"type":"chunk","value":" stream"}\n',
-        ]);
-      });
-
-      it('can asynchronously map the stream chunks', async () => {
-        function delay<T>(ms: number, value: T): Promise<T> {
-          return new Promise((resolve) => {
-            setTimeout(() => resolve(value), ms);
-          });
-        }
-
-        const ndJsonStream = NdJsonStream.encode(source, {
-          map(chunk) {
-            return delay(1, chunk.content);
-          },
-        });
-
-        let ndjson: string[] = [];
-
-        for await (const chunk of StreamToIterable(ndJsonStream)) {
-          ndjson.push(decoder.decode(chunk));
-        }
-
-        expect(ndjson).toEqual([
-          '{"type":"chunk","value":"A"}\n',
-          '{"type":"chunk","value":" Nd"}\n',
-          '{"type":"chunk","value":"Json"}\n',
-          '{"type":"chunk","value":" stream"}\n',
-        ]);
-      });
     });
 
     describe('.decode', () => {
@@ -156,10 +108,13 @@ describe('streams', () => {
 
   describe('StreamingJsonResponse', () => {
     it('can create a ndjson response', async () => {
+      const additionalData = [
+        { some: 'extra', data: 'here' },
+        { some: 'more', data: 'here' },
+      ];
+
       const response = new StreamingJsonResponse(source, {
-        map(chunk) {
-          return chunk.content;
-        },
+        data: additionalData,
       });
 
       expect(response.ok).toBe(true);
@@ -173,10 +128,12 @@ describe('streams', () => {
       }
 
       expect(ndjson).toEqual([
-        '{"type":"chunk","value":"A"}\n',
-        '{"type":"chunk","value":" Nd"}\n',
-        '{"type":"chunk","value":"Json"}\n',
-        '{"type":"chunk","value":" stream"}\n',
+        '{"type":"data","value":{"some":"extra","data":"here"}}\n',
+        '{"type":"data","value":{"some":"more","data":"here"}}\n',
+        '{"type":"chunk","value":{"content":"A"}}\n',
+        '{"type":"chunk","value":{"content":" Nd"}}\n',
+        '{"type":"chunk","value":{"content":"Json"}}\n',
+        '{"type":"chunk","value":{"content":" stream"}}\n',
       ]);
     });
   });

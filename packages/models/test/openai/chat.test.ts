@@ -3,8 +3,7 @@ import Path from 'node:path';
 
 import { createFakeFetch, createUnpredictableByteStream } from '../utils';
 import { OpenAIChat } from '../../src/openai/chat';
-import { StreamToIterable, NdJsonStream, StreamingJsonResponse } from '../../src/shared';
-import type { NdJsonValueType } from '../../src/shared';
+import { StreamToIterable } from '../../src/shared';
 
 describe('openai chat', () => {
   let streamingChatResponse: string;
@@ -129,67 +128,6 @@ describe('openai chat', () => {
         ],
         stream: true,
       });
-    });
-
-    it('can create a streaming json response', async () => {
-      const fetchSpy = createFakeFetch({
-        body: createUnpredictableByteStream(streamingChatResponse),
-      });
-
-      const response = await OpenAIChat.stream(
-        {
-          model: 'gpt-4',
-          messages: [
-            { role: 'user', content: 'Using no more than 20 words, what is the Eiffel tower?' },
-          ],
-        },
-        { apiKey: 'sk-not-real', fetch: fetchSpy as any },
-      );
-
-      const stream = new StreamingJsonResponse(response, {
-        data: [{ auxiliary: 'data' }],
-        map: (chunk) => chunk.choices[0].delta.content || '',
-      });
-
-      const chunks: NdJsonValueType[] = [];
-
-      for await (const chunk of StreamToIterable(NdJsonStream.decode(stream.body!))) {
-        chunks.push(chunk);
-      }
-
-      expect(chunks).toEqual([
-        { type: 'data', value: { auxiliary: 'data' } },
-        { type: 'chunk', value: '' },
-        { type: 'chunk', value: 'The' },
-        { type: 'chunk', value: ' E' },
-        { type: 'chunk', value: 'iff' },
-        { type: 'chunk', value: 'el' },
-        { type: 'chunk', value: ' Tower' },
-        { type: 'chunk', value: ' is' },
-        { type: 'chunk', value: ' a' },
-        { type: 'chunk', value: ' renowned' },
-        { type: 'chunk', value: ' wrought' },
-        { type: 'chunk', value: '-' },
-        { type: 'chunk', value: 'iron' },
-        { type: 'chunk', value: ' landmark' },
-        { type: 'chunk', value: ' located' },
-        { type: 'chunk', value: ' in' },
-        { type: 'chunk', value: ' Paris' },
-        { type: 'chunk', value: ',' },
-        { type: 'chunk', value: ' France' },
-        { type: 'chunk', value: ',' },
-        { type: 'chunk', value: ' known' },
-        { type: 'chunk', value: ' globally' },
-        { type: 'chunk', value: ' as' },
-        { type: 'chunk', value: ' a' },
-        { type: 'chunk', value: ' symbol' },
-        { type: 'chunk', value: ' of' },
-        { type: 'chunk', value: ' romance' },
-        { type: 'chunk', value: ' and' },
-        { type: 'chunk', value: ' elegance' },
-        { type: 'chunk', value: '.' },
-        { type: 'chunk', value: '' },
-      ]);
     });
   });
 
