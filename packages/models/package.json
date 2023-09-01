@@ -1,6 +1,6 @@
 {
   "name": "@axflow/models",
-  "version": "0.0.1-beta.2",
+  "version": "0.0.1-beta.3",
   "description": "Zero-dependency, modular SDK for integrating LLMs and embedding models into your application",
   "author": "Axilla (https://axilla.io)",
   "homepage": "https://github.com/axilla-io/ax/tree/main/packages/models#readme",
