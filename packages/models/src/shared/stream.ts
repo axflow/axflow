@@ -38,7 +38,7 @@ async function* createIterable<T>(stream: ReadableStream<T>): AsyncIterable<T> {
   }
 }
 
-function identity<T>(value: T) {
+function identity<T>(value: T): T {
   return value;
 }
 

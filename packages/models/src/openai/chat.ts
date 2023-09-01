@@ -113,22 +113,39 @@ async function streamBytes(
   return response.body;
 }
 
+function noop(chunk: OpenAIChatTypes.Chunk) {
+  return chunk;
+}
+
 async function stream(
   request: OpenAIChatTypes.Request,
   options: OpenAIChatTypes.RequestOptions,
 ): Promise<ReadableStream<OpenAIChatTypes.Chunk>> {
   const byteStream = await streamBytes(request, options);
-  return byteStream.pipeThrough(new OpenAIChatDecoderStream());
+  return byteStream.pipeThrough(new OpenAIChatDecoderStream(noop));
+}
+
+function chunkToToken(chunk: OpenAIChatTypes.Chunk) {
+  return chunk.choices[0].delta.content || '';
+}
+
+async function streamTokens(
+  request: OpenAIChatTypes.Request,
+  options: OpenAIChatTypes.RequestOptions,
+): Promise<ReadableStream<string>> {
+  const byteStream = await streamBytes(request, options);
+  return byteStream.pipeThrough(new OpenAIChatDecoderStream(chunkToToken));
 }
 
 export class OpenAIChat {
   static run = run;
   static stream = stream;
   static streamBytes = streamBytes;
+  static streamTokens = streamTokens;
 }
 
-export class OpenAIChatDecoderStream extends TransformStream<Uint8Array, OpenAIChatTypes.Chunk> {
-  constructor() {
-    super({ transform: streamTransformer() });
+class OpenAIChatDecoderStream<T> extends TransformStream<Uint8Array, T> {
+  constructor(map: (chunk: OpenAIChatTypes.Chunk) => T) {
+    super({ transform: streamTransformer(map) });
   }
 }

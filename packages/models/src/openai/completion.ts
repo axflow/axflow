@@ -95,25 +95,39 @@ async function streamBytes(
   return response.body;
 }
 
+function noop(chunk: OpenAICompletionTypes.Chunk) {
+  return chunk;
+}
+
 async function stream(
   request: OpenAICompletionTypes.Request,
   options: OpenAICompletionTypes.RequestOptions,
 ): Promise<ReadableStream<OpenAICompletionTypes.Chunk>> {
   const byteStream = await streamBytes(request, options);
-  return byteStream.pipeThrough(new OpenAICompletionDecoderStream());
+  return byteStream.pipeThrough(new OpenAICompletionDecoderStream(noop));
+}
+
+function chunkToToken(chunk: OpenAICompletionTypes.Chunk) {
+  return chunk.choices[0].text || '';
+}
+
+async function streamTokens(
+  request: OpenAICompletionTypes.Request,
+  options: OpenAICompletionTypes.RequestOptions,
+): Promise<ReadableStream<string>> {
+  const byteStream = await streamBytes(request, options);
+  return byteStream.pipeThrough(new OpenAICompletionDecoderStream(chunkToToken));
 }
 
 export class OpenAICompletion {
   static run = run;
   static stream = stream;
   static streamBytes = streamBytes;
+  static streamTokens = streamTokens;
 }
 
-export class OpenAICompletionDecoderStream extends TransformStream<
-  Uint8Array,
-  OpenAICompletionTypes.Chunk
-> {
-  constructor() {
-    super({ transform: streamTransformer() });
+class OpenAICompletionDecoderStream<T> extends TransformStream<Uint8Array, T> {
+  constructor(map: (chunk: OpenAICompletionTypes.Chunk) => T) {
+    super({ transform: streamTransformer(map) });
   }
 }

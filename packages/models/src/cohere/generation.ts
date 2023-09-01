@@ -96,24 +96,38 @@ async function streamBytes(
   return response.body;
 }
 
+function noop(chunk: CohereGenerationTypes.Chunk) {
+  return chunk;
+}
+
 async function stream(
   request: CohereGenerationTypes.Request,
   options: CohereGenerationTypes.RequestOptions,
 ): Promise<ReadableStream<CohereGenerationTypes.Chunk>> {
   const byteStream = await streamBytes(request, options);
-  return byteStream.pipeThrough(new CohereGenerationDecoderStream());
+  return byteStream.pipeThrough(new CohereGenerationDecoderStream(noop));
+}
+
+function chunkToToken(chunk: CohereGenerationTypes.Chunk) {
+  return chunk.text || '';
+}
+
+async function streamTokens(
+  request: CohereGenerationTypes.Request,
+  options: CohereGenerationTypes.RequestOptions,
+): Promise<ReadableStream<string>> {
+  const byteStream = await streamBytes(request, options);
+  return byteStream.pipeThrough(new CohereGenerationDecoderStream(chunkToToken));
 }
 
 export class CohereGeneration {
   static run = run;
   static stream = stream;
   static streamBytes = streamBytes;
+  static streamTokens = streamTokens;
 }
 
-export class CohereGenerationDecoderStream extends TransformStream<
-  Uint8Array,
-  CohereGenerationTypes.Chunk
-> {
+class CohereGenerationDecoderStream<T> extends TransformStream<Uint8Array, T> {
   private static parse(line: string): CohereGenerationTypes.Chunk | null {
     line = line.trim();
 
@@ -131,11 +145,11 @@ export class CohereGenerationDecoderStream extends TransformStream<
     }
   }
 
-  private static transformer() {
+  private static transformer<T>(map: (chunk: CohereGenerationTypes.Chunk) => T) {
     let buffer: string[] = [];
     const decoder = new TextDecoder();
 
-    return (bytes: Uint8Array, controller: TransformStreamDefaultController) => {
+    return (bytes: Uint8Array, controller: TransformStreamDefaultController<T>) => {
       const chunk = decoder.decode(bytes);
 
       for (let i = 0, len = chunk.length; i < len; ++i) {
@@ -151,7 +165,7 @@ export class CohereGenerationDecoderStream extends TransformStream<
         const event = CohereGenerationDecoderStream.parse(buffer.join(''));
 
         if (event) {
-          controller.enqueue(event);
+          controller.enqueue(map(event));
         }
 
         buffer = [];
@@ -159,7 +173,7 @@ export class CohereGenerationDecoderStream extends TransformStream<
     };
   }
 
-  constructor() {
-    super({ transform: CohereGenerationDecoderStream.transformer() });
+  constructor(map: (chunk: CohereGenerationTypes.Chunk) => T) {
+    super({ transform: CohereGenerationDecoderStream.transformer(map) });
   }
 }

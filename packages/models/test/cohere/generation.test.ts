@@ -122,4 +122,30 @@ describe('cohere generation', () => {
       });
     });
   });
+
+  describe('streamTokens', () => {
+    it('streams only the tokens', async () => {
+      const fetchSpy = createFakeFetch({
+        body: createUnpredictableByteStream(streamingGenerationResponse),
+      });
+
+      const response = await CohereGeneration.streamTokens(
+        {
+          prompt: 'Please explain to me how LLMs work in two sentences or less',
+          max_tokens: 80,
+        },
+        { apiKey: 'sk-not-real', fetch: fetchSpy as any },
+      );
+
+      let resultingText = '';
+
+      for await (const chunk of StreamToIterable(response)) {
+        resultingText += chunk;
+      }
+
+      expect(resultingText).toEqual(
+        ' LLMs work by using a large amount of data to train a model that can then be used to generate text. The model is trained to predict the next word in a sequence based on the words that came before it.',
+      );
+    });
+  });
 });

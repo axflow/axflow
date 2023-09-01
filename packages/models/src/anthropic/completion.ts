@@ -100,24 +100,38 @@ async function streamBytes(
   return response.body;
 }
 
+function noop(chunk: AnthropicCompletionTypes.Chunk) {
+  return chunk;
+}
+
 async function stream(
   request: AnthropicCompletionTypes.Request,
   options: AnthropicCompletionTypes.RequestOptions,
 ): Promise<ReadableStream<AnthropicCompletionTypes.Chunk>> {
   const byteStream = await streamBytes(request, options);
-  return byteStream.pipeThrough(new AnthropicCompletionDecoderStream());
+  return byteStream.pipeThrough(new AnthropicCompletionDecoderStream(noop));
+}
+
+function chunkToToken(chunk: AnthropicCompletionTypes.Chunk): string {
+  return chunk.event === 'completion' ? chunk.data.completion : '';
+}
+
+async function streamTokens(
+  request: AnthropicCompletionTypes.Request,
+  options: AnthropicCompletionTypes.RequestOptions,
+): Promise<ReadableStream<string>> {
+  const byteStream = await streamBytes(request, options);
+  return byteStream.pipeThrough(new AnthropicCompletionDecoderStream(chunkToToken));
 }
 
 export class AnthropicCompletion {
   static run = run;
   static stream = stream;
   static streamBytes = streamBytes;
+  static streamTokens = streamTokens;
 }
 
-export class AnthropicCompletionDecoderStream extends TransformStream<
-  Uint8Array,
-  AnthropicCompletionTypes.Chunk
-> {
+class AnthropicCompletionDecoderStream<T> extends TransformStream<Uint8Array, T> {
   private static EVENT_LINES_RE = /^event:\s*(\w+)\r\ndata:\s*(.+)$/;
 
   private static parse(lines: string): AnthropicCompletionTypes.Chunk | null {
@@ -143,11 +157,11 @@ export class AnthropicCompletionDecoderStream extends TransformStream<
     }
   }
 
-  private static transformer() {
+  private static transformer<T>(map: (chunk: AnthropicCompletionTypes.Chunk) => T) {
     let buffer: string[] = [];
     const decoder = new TextDecoder();
 
-    return (bytes: Uint8Array, controller: TransformStreamDefaultController) => {
+    return (bytes: Uint8Array, controller: TransformStreamDefaultController<T>) => {
       const chunk = decoder.decode(bytes);
 
       for (let i = 0, len = chunk.length; i < len; ++i) {
@@ -168,8 +182,12 @@ export class AnthropicCompletionDecoderStream extends TransformStream<
 
         const event = AnthropicCompletionDecoderStream.parse(buffer.join(''));
 
-        if (event) {
-          controller.enqueue(event);
+        // Error the stream if we encounter an error from Anthropic
+        if (event && event.event === 'error') {
+          const error = event.data.error;
+          controller.error(`${error.type}: ${error.message}`);
+        } else if (event) {
+          controller.enqueue(map(event));
         }
 
         buffer = [];
@@ -177,7 +195,7 @@ export class AnthropicCompletionDecoderStream extends TransformStream<
     };
   }
 
-  constructor() {
-    super({ transform: AnthropicCompletionDecoderStream.transformer() });
+  constructor(map: (chunk: AnthropicCompletionTypes.Chunk) => T) {
+    super({ transform: AnthropicCompletionDecoderStream.transformer(map) });
   }
 }
