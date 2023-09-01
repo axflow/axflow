@@ -20,7 +20,7 @@ As a foundational framework, Ax empowers developers to build higher-level TypeSc
 
 ## Modules
 
-- [@axflow/models](./packages/models/) &mdash; A zero-dependency, modular SDK for integrating LLMs and embedding models into your application. Includes React hooks and streaming utilities that make building AI applications a breeze.
+- [@axflow/models](https://github.com/axilla-io/ax/tree/main/packages/models) &mdash; A zero-dependency, modular SDK for integrating LLMs and embedding models into your application. Includes React hooks and streaming utilities that make building AI applications a breeze.
 - [axgen](/documentation/axgen.md): A framework for connecting your data to large language models
 - [axeval](/documentation/axeval.md): A framework for evaluating LLM output quality
 
