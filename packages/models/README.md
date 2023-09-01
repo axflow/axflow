@@ -1,6 +1,6 @@
 # @axflow/models
 
-Zero-dependency module to run, stream, and render results across the most popular LLMs and embedding models.
+Zero-dependency, modular SDK for integrating LLMs and embedding models into your application.
 
 ```
 npm i @axflow/models
@@ -89,9 +89,55 @@ for await (const token of tokenStream) {
 process.stdout.write("\n");
 ```
 
+## `useChat` hook for dead simple UI integration
+
+We've made building chat and completion UIs trivial. It doesn't get any easier than this 🚀
+
+```ts
+///////////////////
+// On the server //
+///////////////////
+import { OpenAIChat } from '@axflow/models/openai/chat';
+import { StreamingJsonResponse, type MessageType } from '@axflow/models/shared';
+
+export const runtime = 'edge';
+
+export async function POST(request: Request) {
+  const { messages } = await request.json();
+
+  const stream = await OpenAIChat.streamTokens(
+    {
+      model: 'gpt-4',
+      messages: messages.map((msg: MessageType) => ({ role: msg.role, content: msg.content })),
+    },
+    {
+      apiKey: process.env.OPENAI_API_KEY!,
+    },
+  );
+
+  return new StreamingJsonResponse(stream);
+}
+
+///////////////////
+// On the client //
+///////////////////
+import { useChat } from '@axflow/models/react';
+
+function ChatComponent() {
+  const {input, messages, onChange, onSubmit} = useChat();
+
+  return (
+    <>
+      <Messages messages={messages} />
+      <Form input={input} onChange={onChange} onSubmit={onSubmit} />
+    </>
+  );
+}
+```
+
 ## Next.js edge proxy example
 
-The server intercepts the request on the edge, adds the proper API key, and forwards the byte stream back to the client.
+Sometimes you just want to create a proxy to the underlying LLM API. In this example, the server intercepts the request on the edge, adds the proper API key, and forwards the byte stream back to the client.
 
 *Note this pattern works exactly the same with our other models that support streaming, like Cohere and Anthropic.*
 
