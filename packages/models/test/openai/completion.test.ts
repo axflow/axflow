@@ -127,4 +127,31 @@ describe('openai chat', () => {
       });
     });
   });
+
+  describe('streamTokens', () => {
+    it('streams only the tokens', async () => {
+      const fetchSpy = createFakeFetch({
+        body: createUnpredictableByteStream(streamingChatResponse),
+      });
+
+      const response = await OpenAICompletion.streamTokens(
+        {
+          model: 'text-davinci-003',
+          prompt: 'Using no more than 20 words, what is the Eiffel tower?',
+          max_tokens: 256,
+        },
+        { apiKey: 'sk-not-real', fetch: fetchSpy as any },
+      );
+
+      let resultingText = '';
+
+      for await (const chunk of StreamToIterable(response)) {
+        resultingText += chunk;
+      }
+
+      expect(resultingText).toEqual(
+        '\n\nIconic iron lattice tower in Paris, France, measuring 324 meters tall.',
+      );
+    });
+  });
 });

@@ -120,4 +120,29 @@ describe('anthropic completion', () => {
       });
     });
   });
+
+  describe('streamTokens', () => {
+    it('streams only the tokens', async () => {
+      const fetchSpy = createFakeFetch({
+        body: createUnpredictableByteStream(streamingCompletionResponse),
+      });
+
+      const response = await AnthropicCompletion.streamTokens(
+        {
+          model: 'claude-2',
+          prompt: '\n\nHuman: Hello, world!\n\nAssistant:',
+          max_tokens_to_sample: 256,
+        },
+        { apiKey: 'sk-not-real', fetch: fetchSpy as any },
+      );
+
+      let resultingText = '';
+
+      for await (const chunk of StreamToIterable(response)) {
+        resultingText += chunk;
+      }
+
+      expect(resultingText).toEqual(' Hello!');
+    });
+  });
 });

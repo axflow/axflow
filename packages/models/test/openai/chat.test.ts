@@ -146,7 +146,7 @@ describe('openai chat', () => {
         { apiKey: 'sk-not-real', fetch: fetchSpy as any },
       );
 
-      const stream = StreamingJsonResponse(response, {
+      const stream = new StreamingJsonResponse(response, {
         data: [{ auxiliary: 'data' }],
         map: (chunk) => chunk.choices[0].delta.content || '',
       });
@@ -190,6 +190,34 @@ describe('openai chat', () => {
         { type: 'chunk', value: '.' },
         { type: 'chunk', value: '' },
       ]);
+    });
+  });
+
+  describe('streamTokens', () => {
+    it('streams only the tokens', async () => {
+      const fetchSpy = createFakeFetch({
+        body: createUnpredictableByteStream(streamingChatResponse),
+      });
+
+      const response = await OpenAIChat.streamTokens(
+        {
+          model: 'gpt-4',
+          messages: [
+            { role: 'user', content: 'Using no more than 20 words, what is the Eiffel tower?' },
+          ],
+        },
+        { apiKey: 'sk-not-real', fetch: fetchSpy as any },
+      );
+
+      let resultingText = '';
+
+      for await (const chunk of StreamToIterable(response)) {
+        resultingText += chunk;
+      }
+
+      expect(resultingText).toEqual(
+        'The Eiffel Tower is a renowned wrought-iron landmark located in Paris, France, known globally as a symbol of romance and elegance.',
+      );
     });
   });
 });

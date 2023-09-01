@@ -17,11 +17,13 @@ export function headers(apiKey?: string) {
   return headers;
 }
 
-export function streamTransformer<T>() {
+export function streamTransformer<InputChunk, OutputChunk>(
+  map: (chunk: InputChunk) => OutputChunk,
+) {
   let buffer: string[] = [];
   const decoder = new TextDecoder();
 
-  return (bytes: Uint8Array, controller: TransformStreamDefaultController<T>) => {
+  return (bytes: Uint8Array, controller: TransformStreamDefaultController<OutputChunk>) => {
     const chunk = decoder.decode(bytes);
 
     for (let i = 0, len = chunk.length; i < len; ++i) {
@@ -34,10 +36,10 @@ export function streamTransformer<T>() {
         continue;
       }
 
-      const parsedChunk = parseChunk<T>(buffer.join(''));
+      const parsedChunk = parseChunk<InputChunk>(buffer.join(''));
 
       if (parsedChunk) {
-        controller.enqueue(parsedChunk);
+        controller.enqueue(map(parsedChunk));
       }
 
       buffer = [];

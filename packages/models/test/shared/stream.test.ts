@@ -156,7 +156,7 @@ describe('streams', () => {
 
   describe('StreamingJsonResponse', () => {
     it('can create a ndjson response', async () => {
-      const response = StreamingJsonResponse(source, {
+      const response = new StreamingJsonResponse(source, {
         map(chunk) {
           return chunk.content;
         },

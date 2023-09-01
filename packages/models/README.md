@@ -8,7 +8,8 @@ npm i @axflow/models
 
 ## Features
 
-* Zero-dependency, lightweight package to consume all the most popular LLMs, embedding models, and more
+* Zero-dependency, modular package to consume all the most popular LLMs, embedding models, and more
+* Comes with a set of React hooks for easily creating robust completion and chat components
 * Built exclusively on modern web standards such as `fetch` and the stream APIs
 * First-class streaming support with both low-level byte streams or higher-level JavaScript objects
 * Supports Node 18+, Next.js serverless or edge runtime, browsers, ESM, CJS, and more
@@ -60,6 +61,32 @@ for await (const chunk of StreamToIterable(gpt4Stream)) {
 for await (const chunk of StreamToIterable(cohereStream)) {
   console.log(chunk.text);
 }
+```
+
+For models that support streaming, there is a convenience method for streaming only the string tokens.
+
+```ts
+import {OpenAIChat} from '@axflow/models/openai/chat';
+
+const tokenStream = OpenAIChat.streamTokens(
+  {
+    model: 'gpt-4',
+    messages: [{ role: 'user', content: 'What is the Eiffel tower?' }],
+  },
+  {
+    apiKey: '<openai api key>',
+  },
+);
+
+// Example stdout output:
+//
+// The Eiffel Tower is a renowned wrought-iron landmark located in Paris, France, known globally as a symbol of romance and elegance.
+//
+for await (const token of tokenStream) {
+  process.stdout.write(token);
+}
+
+process.stdout.write("\n");
 ```
 
 ## Next.js edge proxy example
@@ -115,23 +142,25 @@ for await (const chunk of StreamToIterable(stream)) {
 ### @axflow/models/openai/chat
 
 ```ts
-import {OpenAIChat, OpenAIChatDecoderStream} from '@axflow/models/openai/chat';
+import {OpenAIChat} from '@axflow/models/openai/chat';
 import type {OpenAIChatTypes} from '@axflow/models/openai/chat';
 
 OpenAIChat.run(/* args */)
 OpenAIChat.stream(/* args */)
 OpenAIChat.streamBytes(/* args */)
+OpenAIChat.streamTokens(/* args */)
 ```
 
 ### @axflow/models/openai/completion
 
 ```ts
-import {OpenAICompletion, OpenAICompletionDecoderStream} from '@axflow/models/openai/completion';
+import {OpenAICompletion} from '@axflow/models/openai/completion';
 import type {OpenAICompletionTypes} from '@axflow/models/openai/completion';
 
 OpenAICompletion.run(/* args */)
 OpenAICompletion.stream(/* args */)
 OpenAICompletion.streamBytes(/* args */)
+OpenAICompletion.streamTokens(/* args */)
 ```
 
 ### @axflow/models/openai/embedding
@@ -146,12 +175,13 @@ OpenAIEmbedding.run(/* args */)
 ### @axflow/models/cohere/generation
 
 ```ts
-import {CohereGeneration, CohereGenerationDecoderStream} from '@axflow/models/cohere/generation';
+import {CohereGeneration} from '@axflow/models/cohere/generation';
 import type {CohereGenerationTypes} from '@axflow/models/cohere/generation';
 
 CohereGeneration.run(/* args */)
 CohereGeneration.stream(/* args */)
 CohereGeneration.streamBytes(/* args */)
+CohereGeneration.streamTokens(/* args */)
 ```
 
 ### @axflow/models/cohere/embedding
@@ -166,13 +196,23 @@ CohereEmbedding.run(/* args */)
 ### @axflow/models/anthropic/completion
 
 ```ts
-import {AnthropicCompletion, AnthropicCompletionDecoderStream} from '@axflow/models/anthropic/completion';
+import {AnthropicCompletion} from '@axflow/models/anthropic/completion';
 import type {AnthropicCompletionTypes} from '@axflow/models/anthropic/completion';
 
 AnthropicCompletion.run(/* args */)
 AnthropicCompletion.stream(/* args */)
 AnthropicCompletion.streamBytes(/* args */)
+AnthropicCompletion.streamTokens(/* args */)
 ```
+
+### @axflow/models/react
+
+```ts
+import {useChat} from '@axflow/models/react';
+import type {UseChatOptionsType, UseChatResultType} from '@axflow/models/shared';
+```
+
+`useChat` is a react hook that makes building chat componets a breeze.
 
 ### @axflow/models/shared
 
