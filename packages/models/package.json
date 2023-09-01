@@ -1,6 +1,6 @@
 {
   "name": "@axflow/models",
-  "version": "0.0.1-beta.1",
+  "version": "0.0.1-beta.2",
   "description": "Zero-dependency module to run, stream, and render results across the most popular LLMs and embedding models",
   "author": "Axilla (https://axilla.io)",
   "homepage": "https://github.com/axilla-io/ax/tree/main/packages/models#readme",
