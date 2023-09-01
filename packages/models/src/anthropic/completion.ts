@@ -66,6 +66,19 @@ function headers(apiKey?: string, version?: string) {
   return headers;
 }
 
+/**
+ * Run a completion against the Anthropic API.
+ *
+ * @see https://docs.anthropic.com/claude/reference/complete_post
+ *
+ * @param request The request body sent to Anthropic. See Anthropic's documentation for /v1/complete for supported parameters.
+ * @param options
+ * @param options.apiKey Anthropic API key.
+ * @param options.apiUrl The url of the Anthropic (or compatible) API. Defaults to https://api.anthropic.com/v1/complete.
+ * @param options.version The Anthropic API version. Defaults to 2023-06-01. Note that older versions are not currently supported.
+ * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @returns Anthropic completion. See Anthropic's documentation for /v1/complete.
+ */
 async function run(
   request: AnthropicCompletionTypes.Request,
   options: AnthropicCompletionTypes.RequestOptions,
@@ -81,6 +94,20 @@ async function run(
   return response.json();
 }
 
+/**
+ * Run a streaming completion against the Anthropic API. The resulting stream is the raw unmodified bytes from the API.
+ *
+ * @see https://docs.anthropic.com/claude/reference/complete_post
+ * @see https://docs.anthropic.com/claude/reference/streaming
+ *
+ * @param request The request body sent to Anthropic. See Anthropic's documentation for /v1/complete for supported parameters.
+ * @param options
+ * @param options.apiKey Anthropic API key.
+ * @param options.apiUrl The url of the Anthropic (or compatible) API. Defaults to https://api.anthropic.com/v1/complete.
+ * @param options.version The Anthropic API version. Defaults to 2023-06-01. Note that older versions are not currently supported.
+ * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @returns A stream of bytes directly from the API.
+ */
 async function streamBytes(
   request: AnthropicCompletionTypes.Request,
   options: AnthropicCompletionTypes.RequestOptions,
@@ -104,6 +131,20 @@ function noop(chunk: AnthropicCompletionTypes.Chunk) {
   return chunk;
 }
 
+/**
+ * Run a streaming completion against the Anthropic API. The resulting stream is the parsed stream data as JavaScript objects.
+ *
+ * @see https://docs.anthropic.com/claude/reference/complete_post
+ * @see https://docs.anthropic.com/claude/reference/streaming
+ *
+ * @param request The request body sent to Anthropic. See Anthropic's documentation for /v1/complete for supported parameters.
+ * @param options
+ * @param options.apiKey Anthropic API key.
+ * @param options.apiUrl The url of the Anthropic (or compatible) API. Defaults to https://api.anthropic.com/v1/complete.
+ * @param options.version The Anthropic API version. Defaults to 2023-06-01. Note that older versions are not currently supported.
+ * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @returns A stream of objects representing each chunk from the API.
+ */
 async function stream(
   request: AnthropicCompletionTypes.Request,
   options: AnthropicCompletionTypes.RequestOptions,
@@ -116,6 +157,20 @@ function chunkToToken(chunk: AnthropicCompletionTypes.Chunk): string {
   return chunk.event === 'completion' ? chunk.data.completion : '';
 }
 
+/**
+ * Run a streaming completion against the Anthropic API. The resulting stream emits only the string tokens.
+ *
+ * @see https://docs.anthropic.com/claude/reference/complete_post
+ * @see https://docs.anthropic.com/claude/reference/streaming
+ *
+ * @param request The request body sent to Anthropic. See Anthropic's documentation for /v1/complete for supported parameters.
+ * @param options
+ * @param options.apiKey Anthropic API key.
+ * @param options.apiUrl The url of the Anthropic (or compatible) API. Defaults to https://api.anthropic.com/v1/complete.
+ * @param options.version The Anthropic API version. Defaults to 2023-06-01. Note that older versions are not currently supported.
+ * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @returns A stream of tokens from the API.
+ */
 async function streamTokens(
   request: AnthropicCompletionTypes.Request,
   options: AnthropicCompletionTypes.RequestOptions,
@@ -124,6 +179,9 @@ async function streamTokens(
   return byteStream.pipeThrough(new AnthropicCompletionDecoderStream(chunkToToken));
 }
 
+/**
+ * An object that encapsulates methods for calling the Anthropic Completion API.
+ */
 export class AnthropicCompletion {
   static run = run;
   static stream = stream;
@@ -131,6 +189,11 @@ export class AnthropicCompletion {
   static streamTokens = streamTokens;
 }
 
+/**
+ * Decodes streaming events from Anthropic.
+ *
+ * @see https://docs.anthropic.com/claude/reference/streaming
+ */
 class AnthropicCompletionDecoderStream<T> extends TransformStream<Uint8Array, T> {
   private static EVENT_LINES_RE = /^event:\s*(\w+)\r\ndata:\s*(.+)$/;
 
