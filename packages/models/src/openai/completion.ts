@@ -61,6 +61,18 @@ export namespace OpenAICompletionTypes {
   };
 }
 
+/**
+ * Run a completion against the OpenAI API.
+ *
+ * @see https://platform.openai.com/docs/api-reference/completions
+ *
+ * @param request The request body sent to OpenAI. See OpenAI's documentation for /v1/completions for supported parameters.
+ * @param options
+ * @param options.apiKey OpenAI API key.
+ * @param options.apiUrl The url of the OpenAI (or compatible) API. Defaults to https://api.openai.com/v1/completions.
+ * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @returns OpenAI completion. See OpenAI's documentation for /v1/completions.
+ */
 async function run(
   request: OpenAICompletionTypes.Request,
   options: OpenAICompletionTypes.RequestOptions,
@@ -76,6 +88,18 @@ async function run(
   return response.json();
 }
 
+/**
+ * Run a streaming completion against the OpenAI API. The resulting stream is the raw unmodified bytes from the API.
+ *
+ * @see https://platform.openai.com/docs/api-reference/completions
+ *
+ * @param request The request body sent to OpenAI. See OpenAI's documentation for /v1/completions for supported parameters.
+ * @param options
+ * @param options.apiKey OpenAI API key.
+ * @param options.apiUrl The url of the OpenAI (or compatible) API. Defaults to https://api.openai.com/v1/completions.
+ * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @returns A stream of bytes directly from the API.
+ */
 async function streamBytes(
   request: OpenAICompletionTypes.Request,
   options: OpenAICompletionTypes.RequestOptions,
@@ -99,6 +123,18 @@ function noop(chunk: OpenAICompletionTypes.Chunk) {
   return chunk;
 }
 
+/**
+ * Run a streaming completion against the OpenAI API. The resulting stream is the parsed stream data as JavaScript objects.
+ *
+ * @see https://platform.openai.com/docs/api-reference/completions
+ *
+ * @param request The request body sent to OpenAI. See OpenAI's documentation for /v1/completions for supported parameters.
+ * @param options
+ * @param options.apiKey OpenAI API key.
+ * @param options.apiUrl The url of the OpenAI (or compatible) API. Defaults to https://api.openai.com/v1/completions.
+ * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @returns A stream of objects representing each chunk from the API.
+ */
 async function stream(
   request: OpenAICompletionTypes.Request,
   options: OpenAICompletionTypes.RequestOptions,
@@ -111,6 +147,18 @@ function chunkToToken(chunk: OpenAICompletionTypes.Chunk) {
   return chunk.choices[0].text || '';
 }
 
+/**
+ * Run a streaming completion against the OpenAI API. The resulting stream emits only the string tokens.
+ *
+ * @see https://platform.openai.com/docs/api-reference/completions
+ *
+ * @param request The request body sent to OpenAI. See OpenAI's documentation for /v1/completions for supported parameters.
+ * @param options
+ * @param options.apiKey OpenAI API key.
+ * @param options.apiUrl The url of the OpenAI (or compatible) API. Defaults to https://api.openai.com/v1/completions.
+ * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @returns A stream of tokens from the API.
+ */
 async function streamTokens(
   request: OpenAICompletionTypes.Request,
   options: OpenAICompletionTypes.RequestOptions,
@@ -119,6 +167,9 @@ async function streamTokens(
   return byteStream.pipeThrough(new OpenAICompletionDecoderStream(chunkToToken));
 }
 
+/**
+ * An object that encapsulates methods for calling the OpenAI Completion API.
+ */
 export class OpenAICompletion {
   static run = run;
   static stream = stream;

@@ -79,6 +79,18 @@ export namespace OpenAIChatTypes {
   };
 }
 
+/**
+ * Run a chat completion against the OpenAI API.
+ *
+ * @see https://platform.openai.com/docs/api-reference/chat
+ *
+ * @param request The request body sent to OpenAI. See OpenAI's documentation for /v1/chat/completions for supported parameters.
+ * @param options
+ * @param options.apiKey OpenAI API key.
+ * @param options.apiUrl The url of the OpenAI (or compatible) API. Defaults to https://api.openai.com/v1/chat/completions.
+ * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @returns OpenAI chat completion. See OpenAI's documentation for /v1/chat/completions.
+ */
 async function run(
   request: OpenAIChatTypes.Request,
   options: OpenAIChatTypes.RequestOptions,
@@ -94,6 +106,18 @@ async function run(
   return response.json();
 }
 
+/**
+ * Run a streaming chat completion against the OpenAI API. The resulting stream is the raw unmodified bytes from the API.
+ *
+ * @see https://platform.openai.com/docs/api-reference/chat
+ *
+ * @param request The request body sent to OpenAI. See OpenAI's documentation for /v1/chat/completions for supported parameters.
+ * @param options
+ * @param options.apiKey OpenAI API key.
+ * @param options.apiUrl The url of the OpenAI (or compatible) API. Defaults to https://api.openai.com/v1/chat/completions.
+ * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @returns A stream of bytes directly from the API.
+ */
 async function streamBytes(
   request: OpenAIChatTypes.Request,
   options: OpenAIChatTypes.RequestOptions,
@@ -117,6 +141,18 @@ function noop(chunk: OpenAIChatTypes.Chunk) {
   return chunk;
 }
 
+/**
+ * Run a streaming chat completion against the OpenAI API. The resulting stream is the parsed stream data as JavaScript objects.
+ *
+ * @see https://platform.openai.com/docs/api-reference/chat
+ *
+ * @param request The request body sent to OpenAI. See OpenAI's documentation for /v1/chat/completions for supported parameters.
+ * @param options
+ * @param options.apiKey OpenAI API key.
+ * @param options.apiUrl The url of the OpenAI (or compatible) API. Defaults to https://api.openai.com/v1/chat/completions.
+ * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @returns A stream of objects representing each chunk from the API.
+ */
 async function stream(
   request: OpenAIChatTypes.Request,
   options: OpenAIChatTypes.RequestOptions,
@@ -129,6 +165,18 @@ function chunkToToken(chunk: OpenAIChatTypes.Chunk) {
   return chunk.choices[0].delta.content || '';
 }
 
+/**
+ * Run a streaming chat completion against the OpenAI API. The resulting stream emits only the string tokens.
+ *
+ * @see https://platform.openai.com/docs/api-reference/chat
+ *
+ * @param request The request body sent to OpenAI. See OpenAI's documentation for /v1/chat/completions for supported parameters.
+ * @param options
+ * @param options.apiKey OpenAI API key.
+ * @param options.apiUrl The url of the OpenAI (or compatible) API. Defaults to https://api.openai.com/v1/chat/completions.
+ * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @returns A stream of tokens from the API.
+ */
 async function streamTokens(
   request: OpenAIChatTypes.Request,
   options: OpenAIChatTypes.RequestOptions,
@@ -137,6 +185,9 @@ async function streamTokens(
   return byteStream.pipeThrough(new OpenAIChatDecoderStream(chunkToToken));
 }
 
+/**
+ * An object that encapsulates methods for calling the OpenAI Chat Completion API.
+ */
 export class OpenAIChat {
   static run = run;
   static stream = stream;
