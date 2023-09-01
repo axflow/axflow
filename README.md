@@ -6,30 +6,22 @@
 
 ![Github CI](https://github.com/axilla-io/ax/workflows/Github%20CI/badge.svg) [![Slack](https://img.shields.io/badge/Join%20Our%20Community-Slack-blue)](https://join.slack.com/t/axilladevelopers/shared_invite/zt-212wj3ek0-NHzIFtVg1lxL1t0ViPbysA)
 
-Ax is a collection of modules designed for creating robust AI applications. These modules can be adopted incrementally, thus providing a modular and scalable end-to-end solution.
+Ax is a collection of modules for building robust natural language powered applications. These modules can be adopted incrementally, thus providing a modular and scalable end-to-end solution.
 Used together, they form an end-to-end framework for developing AI applications.
 
 # Modules
 
-- [**axgen**](./packages/axgen/): A framework for connecting your data to large language models
-- [**axeval**](./packages/axeval/): A framework for evaluating LLM output quality
+- [**@axflow/models**](./packages/models/) &mdash; A zero-dependency, modular SDK for integrating LLMs and embedding models into your application. Includes React hooks and streaming utilities that make building AI applications a breeze.
+- [**axgen**](./packages/axgen/) &mdash; A framework for connecting your data to large language models
+- [**axeval**](./packages/axeval/) &mdash; A framework for evaluating LLM output quality
 
 In addition to the above modules, we're working on the following modules:
 
-- **axextract**: A library for efficient data processing, particularly loading, transforming, and chunking documents from arbitrary sources. Most useful for applications that need to load and preprocess data for vector search.
-- **axserve**: A serving framework to run any LLM model (OSS or otherwise). It will also provide middleware options for user throttling, analytics, and logging
-- **axtune**: A library focused on fine-tuning models
+- **extract**: A library for efficient data processing, particularly loading, transforming, and chunking documents from arbitrary sources. Most useful for applications that need to load and preprocess data for vector search.
+- **serve**: A serving framework to run any LLM model (OSS or otherwise). It will also provide middleware options for user throttling, analytics, and logging
+- **finetune**: A library focused on fine-tuning models
 
 ## [Documentation](https://docs.axilla.io)
-
-# Installation
-
-The modules can be installed independently, for incremental adoption and bundle size minimization.
-
-```
-npm install axgen
-npm install axeval
-```
 
 # Goals
 
