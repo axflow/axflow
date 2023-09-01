@@ -28,6 +28,18 @@ export namespace CohereEmbeddingTypes {
   };
 }
 
+/**
+ * Calculate text embeddings using the Cohere API.
+ *
+ * @see https://docs.cohere.com/reference/embed
+ *
+ * @param request The request body sent to Cohere. See Cohere's documentation for /v1/embed for supported parameters.
+ * @param options
+ * @param options.apiKey Cohere API key.
+ * @param options.apiUrl The url of the Cohere (or compatible) API. Defaults to https://api.cohere.ai/v1/embed.
+ * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @returns An object consisting of the text embeddings and other metadata. See Cohere's documentation for /v1/embed.
+ */
 async function run(
   request: CohereEmbeddingTypes.Request,
   options: CohereEmbeddingTypes.RequestOptions,
@@ -43,6 +55,9 @@ async function run(
   return response.json();
 }
 
+/**
+ * An object that encapsulates methods for calling the Cohere Embed API.
+ */
 export class CohereEmbedding {
   static run = run;
 }

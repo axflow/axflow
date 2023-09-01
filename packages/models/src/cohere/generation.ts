@@ -62,6 +62,18 @@ export namespace CohereGenerationTypes {
   };
 }
 
+/**
+ * Run a generation against the Cohere API.
+ *
+ * @see https://docs.cohere.com/reference/generate
+ *
+ * @param request The request body sent to Cohere. See Cohere's documentation for /v1/generate for supported parameters.
+ * @param options
+ * @param options.apiKey Cohere API key.
+ * @param options.apiUrl The url of the Cohere (or compatible) API. Defaults to https://api.cohere.ai/v1/generate.
+ * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @returns Cohere completion. See Cohere's documentation for /v1/generate.
+ */
 async function run(
   request: CohereGenerationTypes.Request,
   options: CohereGenerationTypes.RequestOptions,
@@ -77,6 +89,18 @@ async function run(
   return response.json();
 }
 
+/**
+ * Run a streaming generation against the Cohere API. The resulting stream is the raw unmodified bytes from the API.
+ *
+ * @see https://docs.cohere.com/reference/generate
+ *
+ * @param request The request body sent to Cohere. See Cohere's documentation for /v1/generate for supported parameters.
+ * @param options
+ * @param options.apiKey Cohere API key.
+ * @param options.apiUrl The url of the Cohere (or compatible) API. Defaults to https://api.cohere.ai/v1/generate.
+ * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @returns A stream of bytes directly from the API.
+ */
 async function streamBytes(
   request: CohereGenerationTypes.Request,
   options: CohereGenerationTypes.RequestOptions,
@@ -100,6 +124,18 @@ function noop(chunk: CohereGenerationTypes.Chunk) {
   return chunk;
 }
 
+/**
+ * Run a streaming generation against the Cohere API. The resulting stream is the parsed stream data as JavaScript objects.
+ *
+ * @see https://docs.cohere.com/reference/generate
+ *
+ * @param request The request body sent to Cohere. See Cohere's documentation for /v1/generate for supported parameters.
+ * @param options
+ * @param options.apiKey Cohere API key.
+ * @param options.apiUrl The url of the Cohere (or compatible) API. Defaults to https://api.cohere.ai/v1/generate.
+ * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @returns A stream of objects representing each chunk from the API.
+ */
 async function stream(
   request: CohereGenerationTypes.Request,
   options: CohereGenerationTypes.RequestOptions,
@@ -112,6 +148,18 @@ function chunkToToken(chunk: CohereGenerationTypes.Chunk) {
   return chunk.text || '';
 }
 
+/**
+ * Run a streaming generation against the Cohere API. The resulting stream emits only the string tokens.
+ *
+ * @see https://docs.cohere.com/reference/generate
+ *
+ * @param request The request body sent to Cohere. See Cohere's documentation for /v1/generate for supported parameters.
+ * @param options
+ * @param options.apiKey Cohere API key.
+ * @param options.apiUrl The url of the Cohere (or compatible) API. Defaults to https://api.cohere.ai/v1/generate.
+ * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @returns A stream of tokens from the API.
+ */
 async function streamTokens(
   request: CohereGenerationTypes.Request,
   options: CohereGenerationTypes.RequestOptions,
@@ -120,6 +168,9 @@ async function streamTokens(
   return byteStream.pipeThrough(new CohereGenerationDecoderStream(chunkToToken));
 }
 
+/**
+ * An object that encapsulates methods for calling the Cohere Generate API.
+ */
 export class CohereGeneration {
   static run = run;
   static stream = stream;
