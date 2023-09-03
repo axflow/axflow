@@ -133,7 +133,14 @@ export class Epsilla implements IVectorStore {
   }
 
   async delete(ids: string | string[]): Promise<void> {
+    let primaryKeys;
+    if (typeof ids === 'string') {
+      primaryKeys = [ids];
+    } else {
+      primaryKeys = ids;
+    }
 
+    await this.client.deleteByPrimaryKeys(this.collection, primaryKeys);
   }
 
   async query(embedding: number[], options: IVectorQueryOptions): Promise<IVectorQueryResult[]> {
