@@ -6,6 +6,8 @@ We're going to build a chatGPT like chat application with `@axflow/models`, leve
 
 We'll be using `@axflow/models`, TypeScript, tailwindCSS, React, nextJS, and openAI.
 
+If you want to see the full code of this demo, you can find [here on GitHub](https://github.com/axflow/axchat-demo).
+
 ## Setup
 
 First, let's create a new nextJS project with TypeScript & Tailwind:
@@ -123,7 +125,7 @@ We'll be sending the `messages` to our `ChatBox` component, and the `input, onCh
 
 ### ChatBox component
 
-Our chat box will take an array of `MessageType` messages. Here it is as a reminder:
+Our chat box will take an array of `MessageType` messages.
 
 ```typescript
 type MessageType = {
@@ -135,9 +137,9 @@ type MessageType = {
 };
 ```
 
-Let's modify `ChatBox` to take an array of these messages and display them nicely. We add a little bit of tailwindCSS to make bubbles different depending on if the it's a user message or an assistant one.
+Let's modify `ChatBox` to take an array of these messages and display them nicely. We add a little bit of tailwind CSS to make bubbles different depending on who sent them.
 
-```typescript
+```tsx
 // app/chat-box.tsx
 
 import type { MessageType } from '@axflow/models/shared';
@@ -211,7 +213,7 @@ export default function Form({ input, onChange, onSubmit }: FormProps) {
 
 Now that we have the `API`, the `ChatBox` component, and the `Form` component, we simply need to hook them all together on our main page, and we're done!
 
-```typescript
+```tsx
 // app/page.tsx
 
 'use client';
@@ -235,6 +237,8 @@ export default function Home() {
 
 ## Conclusion
 
-That was easy! With axflow, streaming data from LLM APIs has never been easier. By the way, you could replace the openAI model with any other supported model, or even integrate your own against our `Model` interface.
+Hopefully, that was easy! With `@axflow/models`, streaming data from different LLM APIs is no longer a battle. By the way, you could replace the openAI model that we used in this guide with any other supported model, or integrate your own against our interface.
+
+Soon, using our `@axflow/models` library will also integrate with other tools to get analytics, as well as send LLM requests and their responses to the axeval package for quality monitoring.
 
 If you want to see the full code of this demo, you can find [here on GitHub](https://github.com/axflow/axchat-demo).
