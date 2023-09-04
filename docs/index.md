@@ -20,6 +20,6 @@ features:
     details: connect your data sources to , and perform RAG workflows
   - title: axeval
     details: foundational framework to continuously evaluate your LLM application's quality
-  - title: axextract
-    details: data extraction library, for streaming & chunking data
+  - title: models
+    details: A zero-dependency SDK for integrating LLMs. Includes React hooks and streaming utilities
 ---

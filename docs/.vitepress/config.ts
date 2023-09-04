@@ -34,6 +34,7 @@ export default defineConfig({
             items: [
               { text: 'Axgen', link: '/documentation/axgen' },
               { text: 'Axeval', link: '/documentation/axeval' },
+              { text: 'Models', link: '/documentation/models' },
             ],
           },
           { text: 'Guides', link: '/guides' },
