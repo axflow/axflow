@@ -12,8 +12,8 @@ hero:
       text: Documentation
       link: /documentation
     - theme: alt
-      text: Guides
-      link: /guides
+      text: Tutorials
+      link: /tutorials
 
 features:
   - title: axgen

@@ -21,7 +21,7 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Documentation', link: '/documentation' },
-      { text: 'Guides', link: '/guides' },
+      { text: 'Tutorials', link: '/tutorials' },
     ],
 
     sidebar: [
@@ -38,9 +38,9 @@ export default defineConfig({
             ],
           },
           {
-            text: 'Guides',
-            link: '/guides',
-            items: [{ text: 'Streaming chat app', link: '/guides/stream-chat-app' }],
+            text: 'Tutorials',
+            link: '/tutorials',
+            items: [{ text: 'Streaming chat app', link: '/tutorials/stream-chat-app' }],
           },
         ],
       },
