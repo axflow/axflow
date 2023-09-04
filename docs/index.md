@@ -16,10 +16,10 @@ hero:
       link: /tutorials
 
 features:
-  - title: axgen
-    details: connect your data sources to , and perform RAG workflows
-  - title: axeval
-    details: foundational framework to continuously evaluate your LLM application's quality
   - title: models
-    details: A zero-dependency SDK for integrating LLMs. Includes React hooks and streaming utilities
+    details: Zero-dependency, modular SDK for building robust natural language applications
+  - title: axgen
+    details: Connect your data to LLMs
+  - title: axeval
+    details: Framework for evaluating your LLM application's quality
 ---

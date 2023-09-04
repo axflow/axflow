@@ -1,6 +1,6 @@
 # @axflow/models
 
-Zero-dependency, modular SDK for integrating LLMs and embedding models into your application.
+Zero-dependency, modular SDK for building robust natural language applications.
 
 ```
 npm i @axflow/models
