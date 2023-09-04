@@ -98,14 +98,15 @@ export class NdJsonStream {
    *
    * @param stream A readable stream of chunks to encode as newline-delimited JSON.
    * @param options
-   * @param options.data Additional data to prepend to the output stream.
+   * @param options.data Additional data to enqueue to the output stream. If data is a `Promise`, the stream will wait for it to resolve and enqueue its resolved values before closing.
    * @returns A readable stream of newline-delimited JSON.
    */
   static encode<T = any>(
     stream: ReadableStream<T>,
-    options?: { data?: JSONValueType[] },
+    options?: { data?: JSONValueType[] | Promise<JSONValueType[]> },
   ): ReadableStream<Uint8Array> {
     const data = options?.data ?? [];
+    const dataIsPromise = data instanceof Promise;
 
     const encoder = new TextEncoder();
 
@@ -116,6 +117,16 @@ export class NdJsonStream {
 
     const ndJsonEncode = new TransformStream({
       start(controller) {
+        if (dataIsPromise) {
+          return;
+        }
+
+        if (!Array.isArray(data)) {
+          throw new Error(
+            `Expected options.data to be an array of JSON-serializable objects but it was ${typeof data}`,
+          );
+        }
+
         for (const value of data) {
           controller.enqueue(serialize({ type: 'data', value }));
         }
@@ -123,6 +134,24 @@ export class NdJsonStream {
 
       async transform(value, controller) {
         controller.enqueue(serialize({ type: 'chunk', value }));
+      },
+
+      async flush(controller) {
+        if (!dataIsPromise) {
+          return;
+        }
+
+        const result = await Promise.resolve(data);
+
+        if (!Array.isArray(result)) {
+          throw new Error(
+            `Expected options.data to resolve to an array of JSON-serializable objects but it was ${typeof result}`,
+          );
+        }
+
+        for (const value of result) {
+          controller.enqueue(serialize({ type: 'data', value }));
+        }
       },
     });
 
@@ -194,9 +223,12 @@ export class StreamingJsonResponse<T> extends Response {
    * @param options.status HTTP response status.
    * @param options.statusText HTTP response status text.
    * @param options.headers HTTP response headers.
-   * @param options.data Additional data to prepend to the output stream.
+   * @param options.data Additional data to enqueue to the output stream. If data is a `Promise`, the stream will wait for it to resolve and enqueue its resolved values before closing.
    */
-  constructor(stream: ReadableStream<T>, options?: ResponseInit & { data?: JSONValueType[] }) {
+  constructor(
+    stream: ReadableStream<T>,
+    options?: ResponseInit & { data?: JSONValueType[] | Promise<JSONValueType[]> },
+  ) {
     options ??= {};
 
     const ndjson = NdJsonStream.encode(stream, {
