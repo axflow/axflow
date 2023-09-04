@@ -1,4 +1,5 @@
-import { POST } from '@axflow/models/utils';
+import { POST } from '@axflow/models/shared';
+import { inspect } from 'util';
 
 // With Hugging Face, we need to first choose a "task" and then pick a compatible model.
 // The tasks we are using (for llama2 for instance): 'text-generation'
@@ -10,7 +11,8 @@ const HF_MODEL_API_URL = 'https://api-inference.huggingface.co/models/';
 
 function headers(accessToken?: string) {
   const headers: Record<string, string> = {
-    accept: 'application/json',
+    // accept: 'application/json',
+    // accept: 'text/event-stream',
     'content-type': 'application/json',
   };
   if (typeof accessToken === 'string') {
@@ -64,11 +66,14 @@ async function run(
   // TODO validate the model is supported
   const url = options.apiUrl || HF_MODEL_API_URL + request.model;
 
+  const headers_ = headers(options.accessToken);
+  console.log(headers_);
   const response = await POST(url, {
-    headers: headers(options.accessToken),
-    body: JSON.stringify({ ...request }),
+    headers: headers_,
+    body: JSON.stringify({ ...request, stream: true }),
     fetch: options.fetch,
   });
+  console.log(inspect(response));
 
   return response.json();
 }
