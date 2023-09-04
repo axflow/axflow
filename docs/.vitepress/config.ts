@@ -37,7 +37,11 @@ export default defineConfig({
               { text: 'Models', link: '/documentation/models' },
             ],
           },
-          { text: 'Guides', link: '/guides' },
+          {
+            text: 'Guides',
+            link: '/guides',
+            items: [{ text: 'Streaming chat app', link: '/guides/stream-chat-app' }],
+          },
         ],
       },
     ],
