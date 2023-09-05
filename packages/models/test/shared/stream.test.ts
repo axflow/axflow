@@ -1,4 +1,9 @@
-import { StreamToIterable, NdJsonStream, StreamingJsonResponse } from '../../src/shared';
+import {
+  IterableToStream,
+  StreamToIterable,
+  NdJsonStream,
+  StreamingJsonResponse,
+} from '../../src/shared';
 import type { NdJsonValueType } from '../../src/shared';
 import { createUnpredictableByteStream } from '../utils';
 
@@ -243,6 +248,33 @@ describe('streams', () => {
         '{"type":"data","value":{"some":"extra","data":"here"}}\n',
         '{"type":"data","value":{"some":"more","data":"here"}}\n',
       ]);
+    });
+  });
+
+  describe('IterableToStream', () => {
+    it('can convert an async iterable to a readable stream', async () => {
+      const iterable = (async function* () {
+        for (const chunk of chunks) {
+          yield delay(0, chunk);
+        }
+      })();
+
+      const stream = IterableToStream(iterable);
+      const reader = stream.getReader();
+
+      let contents = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+
+        if (done) {
+          break;
+        }
+
+        contents += value.content;
+      }
+
+      expect(contents).toEqual('A NdJson stream');
     });
   });
 });

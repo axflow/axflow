@@ -1,6 +1,39 @@
 import type { JSONValueType } from './types';
 
 /**
+ * Converts an AsyncIterable<T> to a ReadableStream<T>.
+ *
+ * ReadableStreams implement this natively as `ReadableStream.from` but this is
+ * hardly available in any environments as of the time this was written.
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/ReadableStream/from_static
+ *
+ * @param iterable Any async iterable object.
+ * @returns A ReadableStream over the iterable contents.
+ */
+export function IterableToStream<T>(iterable: AsyncIterable<T>): ReadableStream<T> {
+  // @ts-ignore
+  if (typeof ReadableStream.from === 'function') {
+    // @ts-ignore
+    return ReadableStream.from(iterable);
+  }
+
+  const iterator = iterable[Symbol.asyncIterator]();
+
+  return new ReadableStream<T>({
+    async pull(controller) {
+      const { done, value } = await iterator.next();
+
+      if (done) {
+        controller.close();
+      } else {
+        controller.enqueue(value);
+      }
+    },
+  });
+}
+
+/**
  * Convert a ReadableStream<T> to an AsyncIterable<T>.
  *
  * ReadableStreams implement this natively in recent node versions. Unfortunately, older
