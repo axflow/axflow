@@ -91,6 +91,7 @@ export class Epsilla implements IVectorStore {
     const client = new EpsillaDB(config);
     const dbName = options?.dbName || 'axgen_store';
     await client.loadDB(options.dbPath, dbName);
+    client.useDB(dbName);
     await client.dropTable(options.collection);
   }
 

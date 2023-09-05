@@ -5,8 +5,8 @@ import { getEnvOrThrow, getEnv } from '../../config';
 import { Pinecone } from '../../vector_stores/pinecone';
 import { Qdrant } from '../../vector_stores/qdrant';
 import { PgVector } from '../../vector_stores/pgvector';
+import { Epsilla } from '../../vector_stores/epsilla';
 import { SUPPORTED_VECTOR_STORES, type SupportedVectorStores } from '../../vector_stores';
-import { Epsilla } from 'src/vector_stores/epsilla';
 
 const argv = yargs(hideBin(process.argv))
   .option('store', {
