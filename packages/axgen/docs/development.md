@@ -26,6 +26,10 @@ CREATE TABLE IF NOT EXISTS "<table name>" (
 
 You can follow the quickstart [here](https://qdrant.tech/documentation/quick-start/). For local development, you'll want to pull the docker image and run it. The default UI is findable at http://localhost:6333/dashboard#/console
 
+### Epsilla
+
+You can follow the quickstart [here](https://epsilla-inc.gitbook.io/epsilladb/quick-start). As a prerequisite, you need to pull the Epsilla docker image and run it.
+
 ## CLI
 
 There is a CLI local to this repo that is useful for testing locally.

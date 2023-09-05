@@ -4,8 +4,9 @@ import { hideBin } from 'yargs/helpers';
 import { Pinecone } from '../../vector_stores/pinecone';
 import { Qdrant } from '../../vector_stores/qdrant';
 import { PgVector } from '../../vector_stores/pgvector';
+import { Epsilla } from '../../vector_stores/epsilla';
 import { SUPPORTED_VECTOR_STORES, type SupportedVectorStores } from '../../vector_stores';
-import { getEnvOrThrow } from '../../config';
+import { getEnv, getEnvOrThrow } from '../../config';
 
 const argv = yargs(hideBin(process.argv))
   .option('store', {
@@ -38,6 +39,16 @@ async function prepare(store: SupportedVectorStores) {
         tableName: getEnvOrThrow('PG_TABLE_NAME'),
         dimension: Number(getEnvOrThrow('PG_VECTOR_DIMENSION')),
         dsn: getEnvOrThrow('PG_DSN'),
+      });
+    case 'epsilla':
+      return await Epsilla.prepare({
+        dbPath: getEnvOrThrow('EPSILLA_DB_PATH'),
+        collection: getEnvOrThrow('EPSILLA_COLLECTION'),
+        dimension: Number(getEnvOrThrow('EPSILLA_VECTOR_DIMENSION')),
+        protocol: getEnv('EPSILLA_PROTOCOL'),
+        host: getEnv('EPSILLA_HOST'),
+        port: Number(getEnv('EPSILLA_PORT')),
+        dbName: getEnv('EPSILLA_DB_NAME'),
       });
     default:
       throw new Error(`Unrecognized store "${store}"`);
