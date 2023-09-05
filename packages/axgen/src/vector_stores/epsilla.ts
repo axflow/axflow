@@ -4,7 +4,7 @@ import {
   ChunkWithEmbeddings,
   IVectorQueryOptions,
   IVectorQueryResult,
-  IVectorStore
+  IVectorStore,
 } from '../types';
 
 export const NAME = 'epsilla' as const;
@@ -36,25 +36,25 @@ function generateFields(dimension: number) {
     {
       name: 'id',
       dataType: 'STRING',
-      primaryKey: true
+      primaryKey: true,
     },
     {
       name: 'text',
-      dataType: 'STRING'
+      dataType: 'STRING',
     },
     {
       name: 'embedding',
       dataType: 'VECTOR_FLOAT',
-      dimensions: dimension
+      dimensions: dimension,
     },
     {
       name: 'url',
-      dataType: 'STRING'
+      dataType: 'STRING',
     },
     {
       name: 'metadata',
-      dataType: 'JSON'
-    }
+      dataType: 'JSON',
+    },
   ];
 }
 
@@ -63,7 +63,7 @@ export class Epsilla implements IVectorStore {
     const config = {
       protocol: options?.protocol || 'http',
       host: options?.host || 'localhost',
-      port: options?.port || 8888
+      port: options?.port || 8888,
     };
     const client = new EpsillaDB(config);
     const dbName = options?.dbName || 'axgen_store';
@@ -79,14 +79,14 @@ export class Epsilla implements IVectorStore {
       await client.dropTable(dbName);
     }
 
-    await client.createTable(options.collection, generateFields(options.dimension))
+    await client.createTable(options.collection, generateFields(options.dimension));
   }
 
   static async teardown(options: EpsillaConfig) {
     const config = {
       protocol: options?.protocol || 'http',
       host: options?.host || 'localhost',
-      port: options?.port || 8888
+      port: options?.port || 8888,
     };
     const client = new EpsillaDB(config);
     const dbName = options?.dbName || 'axgen_store';
@@ -102,7 +102,7 @@ export class Epsilla implements IVectorStore {
     const config = {
       protocol: options?.protocol || 'http',
       host: options?.host || 'localhost',
-      port: options?.port || 8888
+      port: options?.port || 8888,
     };
     this.client = new EpsillaDB(config);
     const dbName = options?.dbName || 'axgenDB';
@@ -111,7 +111,7 @@ export class Epsilla implements IVectorStore {
     this.collection = options.collection;
   }
 
-  async add(chunks: ChunkWithEmbeddings[], options?: {  }): Promise<string[]> {
+  async add(chunks: ChunkWithEmbeddings[], options?: {}): Promise<string[]> {
     const data: RecordItem[] = [];
     const ids = [];
 
@@ -121,7 +121,7 @@ export class Epsilla implements IVectorStore {
         text: chunk.text,
         embedding: chunk.embeddings,
         url: chunk.url,
-        metadata: chunk.metadata
+        metadata: chunk.metadata,
       });
       ids.push(chunk.id);
     }
@@ -145,8 +145,14 @@ export class Epsilla implements IVectorStore {
   }
 
   async query(embedding: number[], options: IVectorQueryOptions): Promise<IVectorQueryResult[]> {
-    const response =
-      await this.client.query(this.collection, 'embedding', embedding, options.topK, [], true);
+    const response = await this.client.query(
+      this.collection,
+      'embedding',
+      embedding,
+      options.topK,
+      [],
+      true
+    );
 
     return response['result'].map((res: RecordItem) => {
       const metadata = res.metadata as Record<string, any>;

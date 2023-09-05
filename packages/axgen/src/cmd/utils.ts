@@ -36,7 +36,7 @@ export function getVectorStore(store: SupportedVectorStores): IVectorStore {
         protocol: getEnv('EPSILLA_PROTOCOL'),
         host: getEnv('EPSILLA_HOST'),
         port: Number(getEnv('EPSILLA_PORT')),
-        dbName: getEnv('EPSILLA_DB_NAME')
+        dbName: getEnv('EPSILLA_DB_NAME'),
       });
     default:
       throw new Error(`Unrecognized vector store "${store}"`);
