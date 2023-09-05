@@ -1,6 +1,6 @@
 {
   "name": "@axflow/models",
-  "version": "0.0.1-beta.3",
+  "version": "0.0.1",
   "description": "Zero-dependency, modular SDK for building robust natural language applications",
   "author": "Axilla (https://axilla.io)",
   "homepage": "https://github.com/axilla-io/ax/tree/main/packages/models#readme",
