@@ -1,6 +1,6 @@
 # @axflow/models
 
-Zero-dependency, modular SDK for integrating LLMs and embedding models into your application.
+Zero-dependency, modular SDK for building robust natural language applications.
 
 ```
 npm i @axflow/models
@@ -24,6 +24,10 @@ npm i @axflow/models
 - Azure OpenAI (coming soon)
 - Replicate (coming soon)
 - HuggingFace (coming soon)
+
+## Guides
+
+See the guides at [docs.axilla.io](https://docs.axilla.io/guides.html).
 
 ## Basic Usage
 

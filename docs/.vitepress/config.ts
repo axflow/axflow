@@ -21,6 +21,7 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Documentation', link: '/documentation' },
+      { text: 'Guides', link: '/guides' },
       { text: 'Tutorials', link: '/tutorials' },
     ],
 
@@ -35,6 +36,27 @@ export default defineConfig({
               { text: 'Axgen', link: '/documentation/axgen' },
               { text: 'Axeval', link: '/documentation/axeval' },
               { text: 'Models', link: '/documentation/models' },
+            ],
+          },
+          {
+            text: 'Guides',
+            link: '/guides',
+            items: [
+              {
+                text: 'Models',
+                items: [
+                  { text: 'Getting started', link: '/guides/models/getting-started' },
+                  { text: 'Streaming', link: '/guides/models/streaming' },
+                  {
+                    text: 'Building client applications',
+                    link: '/guides/models/building-client-applications',
+                  },
+                  {
+                    text: 'Bring your own models',
+                    link: '/guides/models/bring-your-own-models',
+                  },
+                ],
+              },
             ],
           },
           {

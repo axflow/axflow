@@ -1,6 +1,6 @@
 # @axflow/models
 
-Zero-dependency, modular SDK for integrating LLMs and embedding models into your application.
+Zero-dependency, modular SDK for building robust natural language applications.
 
 ```
 npm i @axflow/models
@@ -8,12 +8,12 @@ npm i @axflow/models
 
 ## Features
 
-- Zero-dependency, modular package to consume all the most popular LLMs, embedding models, and more
-- Comes with a set of React hooks for easily creating robust completion and chat components
-- Built exclusively on modern web standards such as `fetch` and the stream APIs
-- First-class streaming support with both low-level byte streams or higher-level JavaScript objects
-- Supports Node 18+, Next.js serverless or edge runtime, browsers, ESM, CJS, and more
-- Supports a custom `fetch` implementation for request middleware (e.g., custom headers, logging)
+* Zero-dependency, modular package to consume all the most popular LLMs, embedding models, and more
+* Comes with a set of React hooks for easily creating robust completion and chat components
+* Built exclusively on modern web standards such as `fetch` and the stream APIs
+* First-class streaming support with both low-level byte streams or higher-level JavaScript objects
+* Supports Node 18+, Next.js serverless or edge runtime, browsers, ESM, CJS, and more
+* Supports a custom `fetch` implementation for request middleware (e.g., custom headers, logging)
 
 ## Supported models
 
@@ -25,12 +25,16 @@ npm i @axflow/models
 - Replicate (coming soon)
 - HuggingFace (coming soon)
 
+## Guides
+
+See the guides at [docs.axilla.io](/guides).
+
 ## Basic Usage
 
 ```ts
-import { OpenAIChat } from '@axflow/models/openai/chat';
-import { CohereGenerate } from '@axflow/models/cohere/generate';
-import { StreamToIterable } from '@axflow/models/shared';
+import {OpenAIChat} from '@axflow/models/openai/chat';
+import {CohereGenerate} from '@axflow/models/cohere/generate';
+import {StreamToIterable} from '@axflow/models/shared';
 
 const gpt4Stream = OpenAIChat.stream(
   {
@@ -39,7 +43,7 @@ const gpt4Stream = OpenAIChat.stream(
   },
   {
     apiKey: '<openai api key>',
-  }
+  },
 );
 
 const cohereStream = CohereGenerate.stream(
@@ -49,7 +53,7 @@ const cohereStream = CohereGenerate.stream(
   },
   {
     apiKey: '<cohere api key>',
-  }
+  },
 );
 
 // StreamToIterable is optional in recent node versions as
@@ -66,7 +70,7 @@ for await (const chunk of StreamToIterable(cohereStream)) {
 For models that support streaming, there is a convenience method for streaming only the string tokens.
 
 ```ts
-import { OpenAIChat } from '@axflow/models/openai/chat';
+import {OpenAIChat} from '@axflow/models/openai/chat';
 
 const tokenStream = OpenAIChat.streamTokens(
   {
@@ -75,7 +79,7 @@ const tokenStream = OpenAIChat.streamTokens(
   },
   {
     apiKey: '<openai api key>',
-  }
+  },
 );
 
 // Example stdout output:
@@ -86,7 +90,7 @@ for await (const token of tokenStream) {
   process.stdout.write(token);
 }
 
-process.stdout.write('\n');
+process.stdout.write("\n");
 ```
 
 ## `useChat` hook for dead simple UI integration
@@ -112,7 +116,7 @@ export async function POST(request: Request) {
     },
     {
       apiKey: process.env.OPENAI_API_KEY!,
-    }
+    },
   );
 
   return new StreamingJsonResponse(stream);
@@ -124,7 +128,7 @@ export async function POST(request: Request) {
 import { useChat } from '@axflow/models/react';
 
 function ChatComponent() {
-  const { input, messages, onChange, onSubmit } = useChat();
+  const {input, messages, onChange, onSubmit} = useChat();
 
   return (
     <>
@@ -139,13 +143,13 @@ function ChatComponent() {
 
 Sometimes you just want to create a proxy to the underlying LLM API. In this example, the server intercepts the request on the edge, adds the proper API key, and forwards the byte stream back to the client.
 
-_Note this pattern works exactly the same with our other models that support streaming, like Cohere and Anthropic._
+*Note this pattern works exactly the same with our other models that support streaming, like Cohere and Anthropic.*
 
 ```ts
 import { NextRequest, NextResponse } from 'next/server';
 import { OpenAIChat } from '@axflow/models/openai/chat';
 
-export const runtime = 'edge';
+export const runtime = 'edge'
 
 // POST /api/openai/chat
 export async function POST(request: NextRequest) {
@@ -162,7 +166,7 @@ export async function POST(request: NextRequest) {
 
 On the client, we can use `OpenAIChat.stream` with a custom `apiUrl` in place of the `apiKey` that points to our Next.js edge route.
 
-_DO NOT expose api keys to your frontend._
+*DO NOT expose api keys to your frontend.*
 
 ```ts
 import { OpenAIChat } from '@axflow/models/openai/chat';
@@ -174,7 +178,7 @@ const stream = await OpenAIChat.stream(
     messages: [{ role: 'user', content: 'What is the Eiffel tower?' }],
   },
   {
-    apiUrl: '/api/openai/chat',
+    apiUrl: "/api/openai/chat",
   }
 );
 
@@ -188,74 +192,74 @@ for await (const chunk of StreamToIterable(stream)) {
 ### @axflow/models/openai/chat
 
 ```ts
-import { OpenAIChat } from '@axflow/models/openai/chat';
-import type { OpenAIChatTypes } from '@axflow/models/openai/chat';
+import {OpenAIChat} from '@axflow/models/openai/chat';
+import type {OpenAIChatTypes} from '@axflow/models/openai/chat';
 
-OpenAIChat.run(/* args */);
-OpenAIChat.stream(/* args */);
-OpenAIChat.streamBytes(/* args */);
-OpenAIChat.streamTokens(/* args */);
+OpenAIChat.run(/* args */)
+OpenAIChat.stream(/* args */)
+OpenAIChat.streamBytes(/* args */)
+OpenAIChat.streamTokens(/* args */)
 ```
 
 ### @axflow/models/openai/completion
 
 ```ts
-import { OpenAICompletion } from '@axflow/models/openai/completion';
-import type { OpenAICompletionTypes } from '@axflow/models/openai/completion';
+import {OpenAICompletion} from '@axflow/models/openai/completion';
+import type {OpenAICompletionTypes} from '@axflow/models/openai/completion';
 
-OpenAICompletion.run(/* args */);
-OpenAICompletion.stream(/* args */);
-OpenAICompletion.streamBytes(/* args */);
-OpenAICompletion.streamTokens(/* args */);
+OpenAICompletion.run(/* args */)
+OpenAICompletion.stream(/* args */)
+OpenAICompletion.streamBytes(/* args */)
+OpenAICompletion.streamTokens(/* args */)
 ```
 
 ### @axflow/models/openai/embedding
 
 ```ts
-import { OpenAIEmbedding } from '@axflow/models/openai/embedding';
-import type { OpenAIEmbeddingTypes } from '@axflow/models/openai/embedding';
+import {OpenAIEmbedding} from '@axflow/models/openai/embedding';
+import type {OpenAIEmbeddingTypes} from '@axflow/models/openai/embedding';
 
-OpenAIEmbedding.run(/* args */);
+OpenAIEmbedding.run(/* args */)
 ```
 
 ### @axflow/models/cohere/generation
 
 ```ts
-import { CohereGeneration } from '@axflow/models/cohere/generation';
-import type { CohereGenerationTypes } from '@axflow/models/cohere/generation';
+import {CohereGeneration} from '@axflow/models/cohere/generation';
+import type {CohereGenerationTypes} from '@axflow/models/cohere/generation';
 
-CohereGeneration.run(/* args */);
-CohereGeneration.stream(/* args */);
-CohereGeneration.streamBytes(/* args */);
-CohereGeneration.streamTokens(/* args */);
+CohereGeneration.run(/* args */)
+CohereGeneration.stream(/* args */)
+CohereGeneration.streamBytes(/* args */)
+CohereGeneration.streamTokens(/* args */)
 ```
 
 ### @axflow/models/cohere/embedding
 
 ```ts
-import { CohereEmbedding } from '@axflow/models/cohere/embedding';
-import type { CohereEmbeddingTypes } from '@axflow/models/cohere/embedding';
+import {CohereEmbedding} from '@axflow/models/cohere/embedding';
+import type {CohereEmbeddingTypes} from '@axflow/models/cohere/embedding';
 
-CohereEmbedding.run(/* args */);
+CohereEmbedding.run(/* args */)
 ```
 
 ### @axflow/models/anthropic/completion
 
 ```ts
-import { AnthropicCompletion } from '@axflow/models/anthropic/completion';
-import type { AnthropicCompletionTypes } from '@axflow/models/anthropic/completion';
+import {AnthropicCompletion} from '@axflow/models/anthropic/completion';
+import type {AnthropicCompletionTypes} from '@axflow/models/anthropic/completion';
 
-AnthropicCompletion.run(/* args */);
-AnthropicCompletion.stream(/* args */);
-AnthropicCompletion.streamBytes(/* args */);
-AnthropicCompletion.streamTokens(/* args */);
+AnthropicCompletion.run(/* args */)
+AnthropicCompletion.stream(/* args */)
+AnthropicCompletion.streamBytes(/* args */)
+AnthropicCompletion.streamTokens(/* args */)
 ```
 
 ### @axflow/models/react
 
 ```ts
-import { useChat } from '@axflow/models/react';
-import type { UseChatOptionsType, UseChatResultType } from '@axflow/models/shared';
+import {useChat} from '@axflow/models/react';
+import type {UseChatOptionsType, UseChatResultType} from '@axflow/models/shared';
 ```
 
 `useChat` is a react hook that makes building chat componets a breeze.
@@ -263,12 +267,6 @@ import type { UseChatOptionsType, UseChatResultType } from '@axflow/models/share
 ### @axflow/models/shared
 
 ```ts
-import {
-  StreamToIterable,
-  NdJsonStream,
-  StreamingJsonResponse,
-  HttpError,
-  isHttpError,
-} from '@axflow/models/shared';
-import type { NdJsonValueType, JSONValueType, MessageType } from '@axflow/models/shared';
+import {StreamToIterable, NdJsonStream, StreamingJsonResponse, HttpError, isHttpError} from '@axflow/models/shared';
+import type {NdJsonValueType, JSONValueType, MessageType} from '@axflow/models/shared';
 ```
