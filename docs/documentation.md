@@ -20,7 +20,7 @@ As a foundational framework, Ax empowers developers to build higher-level TypeSc
 
 ## Modules
 
-- [@axflow/models](/documentation/models.md) &mdash; Zero-dependency, modular SDK for building robust natural language applications. Includes React hooks and streaming utilities that make building AI applications a breeze.
+- [@axflow/models](/documentation/models.md): Zero-dependency, modular SDK for building robust natural language applications. Includes React hooks and streaming utilities that make building AI applications a breeze.
 - [axgen](/documentation/axgen.md): A framework for connecting your data to large language models
 - [axeval](/documentation/axeval.md): A framework for evaluating LLM output quality
 
