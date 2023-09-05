@@ -267,6 +267,13 @@ import type {UseChatOptionsType, UseChatResultType} from '@axflow/models/shared'
 ### @axflow/models/shared
 
 ```ts
-import {StreamToIterable, NdJsonStream, StreamingJsonResponse, HttpError, isHttpError} from '@axflow/models/shared';
+import {
+  IterableToStream,
+  StreamToIterable,
+  NdJsonStream,
+  StreamingJsonResponse,
+  HttpError,
+  isHttpError
+} from '@axflow/models/shared';
 import type {NdJsonValueType, JSONValueType, MessageType} from '@axflow/models/shared';
 ```
