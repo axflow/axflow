@@ -27,7 +27,7 @@ npm i @axflow/models
 
 ## Guides
 
-See the guides at [docs.axilla.io/guides](https://docs.axilla.io/guides).
+See the guides at [docs.axilla.io](/guides).
 
 ## Basic Usage
 
