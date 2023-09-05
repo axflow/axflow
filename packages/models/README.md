@@ -25,6 +25,10 @@ npm i @axflow/models
 - Replicate (coming soon)
 - HuggingFace (coming soon)
 
+## Guides
+
+See the guides at [docs.axilla.io/guides](https://docs.axilla.io/guides).
+
 ## Basic Usage
 
 ```ts
