@@ -1,6 +1,62 @@
-# Getting Started
+# Getting started
 
 @axflow/models is an SDK for building natural language powered applications. This includes basic functionality for invoking the models, but it also includes richer functionality like augmented response streaming, hooks for building client applications, and more.
+
+```shell
+npm i @axflow/modles
+```
+
+Basic example
+
+```ts
+import { OpenAIChat } from '@axflow/models/openai/chat';
+import { StreamingJsonResponse } from '@axflow/models/shared';
+
+// @axflow/models is available in edge environments
+export const runtime = 'edge';
+
+// POST /api/chat
+export async function POST(request: Request) {
+  const { query } = await request.json();
+
+  // Create a stream of tokens from OpenAI
+  const stream = await OpenAIChat.streamTokens(
+    {
+      model: 'gpt-4',
+      messages: [{ role: 'user', content: query }],
+    },
+    {
+      apiKey: process.env.OPENAI_API_KEY,
+    },
+  );
+
+  // Stream the tokens from OpenAI back to the client
+  // as newline-delimited JSON, which is easy to extend,
+  // parse, and reason about.
+  return new StreamingJsonResponse(stream);
+}
+```
+
+### Why this package?
+
+Through building LLM-powered applications, we have found ourselves repeatedly writing the same streaming utilities, client hooks, model sdk wrappers/connectors, etc.
+We occasionally had to bypass client SDKs like the openai package because it didn't yet surface the streaming functionality. Some libraries have node dependencies and are thus not usable in browsers, vscode extensions, or edge environments.
+
+We're committed to making TypeScript the best environment for building AI applications. For this to be true, we need better tooling.
+This package is a foundational layer for building AI applications. It offers clean, consistent interfaces, a modular design, and is built solely on web standards to ensure compatibility in all modern environments.
+
+### Use cases
+
+This package is useful when any of the following are true:
+
+* You want to build against one or more LLM or embedding model APIs
+* You want to Proxy the model APIs
+* You want basic and advanced streaming capabilities, including streaming custom data alongside the LLM response
+* You want client side utilities or React hooks that abstract away the underlying streaming and state-management complexities
+* You want to work with LLMs, embedding models, and streaming in client or edge environments (no Node.js dependencies)
+* You want to simplify your stack by using one package with the simplest and cleanest code to interact with model APIs, stream data, and build client applications
+
+### What's in this guide
 
 This guide covers the basics of working with models. For more information, see the following guides:
 
