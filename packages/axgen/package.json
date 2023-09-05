@@ -34,6 +34,7 @@
     "prebuild": "rm -rf ./dist",
     "build": "tsc",
     "lint": "prettier --check 'src/**/*.ts' 'test/**/*.ts'",
+    "format": "prettier --write 'src/**/*.ts' 'test/**/*.ts'",
     "vector_store:prepare": "ts-node -r ./src/cmd/config.ts ./src/cmd/vector_store/prepare.ts",
     "vector_store:upload": "ts-node -r ./src/cmd/config.ts ./src/cmd/vector_store/upload.ts",
     "vector_store:delete": "ts-node -r ./src/cmd/config.ts ./src/cmd/vector_store/delete.ts",

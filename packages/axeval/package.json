@@ -27,6 +27,7 @@
     "prebuild": "rm -rf ./dist",
     "build": "tsc",
     "lint": "prettier --check 'src/**/*.ts' 'example/**/*.ts'",
+    "format": "prettier --write 'src/**/*.ts' 'example/**/*.ts'",
     "test": "jest --passWithNoTests --testMatch \"./**/test/**/*.test.ts\"",
     "example:chat": "ts-node -r ./src/config.ts ./example/chat.ts",
     "example:completion": "ts-node -r ./src/config.ts ./example/completion.ts",

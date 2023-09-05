@@ -8,10 +8,10 @@ npm i @axflow/models
 
 ## Features
 
-* Zero-dependency, modular package to consume all the most popular LLMs, embedding models, and more
-* Comes with a set of React hooks for easily creating robust completion and chat components
+* First-class streaming support for both low-level byte streams and higher-level JavaScript object streams
+* First-class support for streaming arbitrary data in addition to the LLM response
+* Comes with a set of utilities and React hooks for easily creating robust client applications
 * Built exclusively on modern web standards such as `fetch` and the stream APIs
-* First-class streaming support with both low-level byte streams or higher-level JavaScript objects
 * Supports Node 18+, Next.js serverless or edge runtime, browsers, ESM, CJS, and more
 * Supports a custom `fetch` implementation for request middleware (e.g., custom headers, logging)
 
@@ -27,7 +27,7 @@ npm i @axflow/models
 
 ## Guides
 
-See the guides at [docs.axilla.io](/guides).
+See the [guides](/guides).
 
 ## Basic Usage
 
