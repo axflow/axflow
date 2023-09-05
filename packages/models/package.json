@@ -43,6 +43,7 @@
     "prebuild": "npm run clean",
     "build": "tsup",
     "lint": "prettier --check 'src/**/*.ts' 'test/**/*.ts'",
+    "format": "prettier --write 'src/**/*.ts' 'test/**/*.ts'",
     "test": "jest --testMatch \"./**/test/**/*.test.ts\"",
     "prepublishOnly": "npm run build"
   },
