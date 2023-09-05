@@ -53,7 +53,7 @@ export default defineConfig({
                   },
                   {
                     text: 'Bring your own models',
-                    link: '/guides/models/building-client-applications',
+                    link: '/guides/models/bring-your-own-models',
                   },
                 ],
               },
