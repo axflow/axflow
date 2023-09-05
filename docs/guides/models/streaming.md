@@ -3,7 +3,6 @@
 This guide covers streaming concepts with @axflow/models.
 
 LLM requests tend to have high latency compared to most other web requests. Streaming is important for the user experience because it reduces the perceived latency of the request by incrementally revealing the response to the user.
-With streaming, the user sees each chunk of the response as it becomes available instead of waiting for the whole response to complete.
 
 While streaming is not a new concept, it tends to be tedious to work with, particularly for more advanced use cases like streaming a mixture of LLM tokens and additional arbitrary data within a single response.
 
