@@ -147,7 +147,7 @@ export class Epsilla implements IVectorStore {
     const response =
       await this.client.query(this.collection, 'embedding', embedding, options.topK, [], true);
 
-    return response.map((res: RecordItem) => {
+    return response['result'].map((res: RecordItem) => {
       const metadata = res.metadata as Record<string, any>;
 
       return {
