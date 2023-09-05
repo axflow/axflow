@@ -40,9 +40,12 @@ export async function POST(request: Request) {
 ### Why this package?
 
 Through building LLM-powered applications, we have found ourselves repeatedly writing the same streaming utilities, client hooks, model sdk wrappers/connectors, etc.
-We occasionally had to bypass client SDKs like the openai package because it didn't yet surface the streaming functionality. Some libraries have node dependencies and are thus not usable in browsers, vscode extensions, or edge environments.
+We occasionally had to bypass the lagging JS client SDKs because they did not yet implement functionality supported by the REST API (like the openai package when it hadn't surfaced the streaming functionality).
+Some libraries have node dependencies and are thus not usable in browsers, vscode extensions, or edge environments.
 
+All this to say: the TypeScript ecosystem for building AI apps is lagging behind. And yet, we believe it is the future.
 We're committed to making TypeScript the best environment for building AI applications. For this to be true, we need better tooling.
+
 This package is a foundational layer for building AI applications. It offers clean, consistent interfaces, a modular design, and is built solely on web standards to ensure compatibility in all modern environments.
 
 ### Use cases
