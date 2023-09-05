@@ -11,7 +11,7 @@ Used together, they form an end-to-end framework for developing AI applications.
 
 # Modules
 
-- [**@axflow/models**](./packages/models/) &mdash; A zero-dependency, modular SDK for integrating LLMs and embedding models into your application. Includes React hooks and streaming utilities that make building AI applications a breeze.
+- [**@axflow/models**](./packages/models/) &mdash; A zero-dependency, modular SDK for building robust natural language applications. Includes React hooks and streaming utilities that make building AI applications a breeze.
 - [**axgen**](./packages/axgen/) &mdash; A framework for connecting your data to large language models
 - [**axeval**](./packages/axeval/) &mdash; A framework for evaluating LLM output quality
 
