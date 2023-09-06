@@ -3,7 +3,7 @@
 @axflow/models is an SDK for building natural language powered applications. This includes basic functionality for invoking the models, but it also includes richer functionality like augmented response streaming, hooks for building client applications, and more.
 
 ```shell
-npm i @axflow/modles
+npm i @axflow/models
 ```
 
 Basic example
