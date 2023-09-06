@@ -9,8 +9,18 @@
     "docs:build": "vitepress build",
     "docs:preview": "vitepress preview"
   },
+  "keywords": [
+    "docs",
+    "ax",
+    "axilla",
+    "axflow",
+    "llm",
+    "ai",
+    "documentation"
+  ],
+  "author": "axflow",
   "license": "MIT",
   "devDependencies": {
-    "vitepress": "^1.0.0-beta.7"
+    "vitepress": "^1.0.0-rc.10"
   }
 }
