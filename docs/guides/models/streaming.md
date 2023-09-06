@@ -188,7 +188,7 @@ export async function POST(request: Request) {
 
 Now, the response body will look like:
 
-```shell
+```
 {"type":"chunk","value":"<token>"}
 {"type":"chunk","value":" <token>"}
 {"type":"chunk","value":" <token>"}
@@ -196,6 +196,40 @@ Now, the response body will look like:
 {"type":"data","value":<user>}
 {"type":"data","value":<notifications>}
 ```
+
+## Arbitrary schema
+
+It's important to note that this pattern works for any data that can be serialized to JSON, not just string tokens. For example, I could stream the parsed JavaScript objects from OpenAI:
+
+```ts
+export async function POST(request: Request) {
+  const { query } = await request.json();
+
+  const objects = await OpenAIChat.stream(
+    {
+      model: 'gpt-4',
+      messages: [{ role: 'user', content: query }],
+    },
+    {
+      apiKey: process.env.OPENAI_API_KEY,
+    },
+  );
+
+  return new StreamingJsonResponse(objects);
+}
+```
+
+Now, the response body will look something like:
+
+```
+{"type":"chunk","value":{"id":"chatcmpl-6qE9x0hLViEWfRzBOTJDU7itwkPJn","object":"chat.completion.chunk","created":1692681841,"model":"gpt-4-0613","choices":[{"index":0,"delta":{"content":"Some"},"finish_reason":null}]}}
+{"type":"chunk","value":{"id":"chatcmpl-7qE9x0hLViEWfRzBOTJDU7itwkPJn","object":"chat.completion.chunk","created":1692681841,"model":"gpt-4-0613","choices":[{"index":0,"delta":{"content":" LL"},"finish_reason":null}]}}
+{"type":"chunk","value":{"id":"chatcmpl-8qE9x0hLViEWfRzBOTJDU7itwkPJn","object":"chat.completion.chunk","created":1692681841,"model":"gpt-4-0613","choices":[{"index":0,"delta":{"content":" M"},"finish_reason":null}]}}
+...
+{"type":"chunk","value":{"id":"chatcmpl-9qE9x0hLViEWfRzBOTJDU7itwkPJn","object":"chat.completion.chunk","created":1692681841,"model":"gpt-4-0613","choices":[{"index":0,"delta":{"content":" response"},"finish_reason":null}]}}
+```
+
+Here, the `value` field contains arbitrarily complex JSON. The schema is up to you!
 
 ## Consuming the stream
 
