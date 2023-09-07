@@ -25,11 +25,20 @@ npm i @axflow/models
 - Replicate (coming soon)
 - HuggingFace (coming soon)
 
-## Guides
+## Documentation
 
-See the guides at [docs.axilla.io](https://docs.axilla.io/guides.html).
+View the [Guides](https://docs.axflow.dev/guides) or the reference:
 
-## Basic Usage
+* [@axflow/models/openai/chat](https://docs.axflow.dev/documentation/models/openai-chat)
+* [@axflow/models/openai/completion](https://docs.axflow.dev/documentation/models/openai-completion)
+* [@axflow/models/openai/embedding](https://docs.axflow.dev/documentation/models/openai-embedding)
+* [@axflow/models/anthropic/completion](https://docs.axflow.dev/documentation/models/anthropic-completion)
+* [@axflow/models/cohere/generation](https://docs.axflow.dev/documentation/models/cohere-generation)
+* [@axflow/models/cohere/embedding](https://docs.axflow.dev/documentation/models/cohere-embedding)
+* [@axflow/models/react](https://docs.axflow.dev/documentation/models/react)
+* [@axflow/models/shared](https://docs.axflow.dev/documentation/models/shared)
+
+## Example Usage
 
 ```ts
 import {OpenAIChat} from '@axflow/models/openai/chat';
@@ -185,95 +194,4 @@ const stream = await OpenAIChat.stream(
 for await (const chunk of StreamToIterable(stream)) {
   console.log(chunk.choices[0].delta.content);
 }
-```
-
-## API
-
-### @axflow/models/openai/chat
-
-```ts
-import {OpenAIChat} from '@axflow/models/openai/chat';
-import type {OpenAIChatTypes} from '@axflow/models/openai/chat';
-
-OpenAIChat.run(/* args */)
-OpenAIChat.stream(/* args */)
-OpenAIChat.streamBytes(/* args */)
-OpenAIChat.streamTokens(/* args */)
-```
-
-### @axflow/models/openai/completion
-
-```ts
-import {OpenAICompletion} from '@axflow/models/openai/completion';
-import type {OpenAICompletionTypes} from '@axflow/models/openai/completion';
-
-OpenAICompletion.run(/* args */)
-OpenAICompletion.stream(/* args */)
-OpenAICompletion.streamBytes(/* args */)
-OpenAICompletion.streamTokens(/* args */)
-```
-
-### @axflow/models/openai/embedding
-
-```ts
-import {OpenAIEmbedding} from '@axflow/models/openai/embedding';
-import type {OpenAIEmbeddingTypes} from '@axflow/models/openai/embedding';
-
-OpenAIEmbedding.run(/* args */)
-```
-
-### @axflow/models/cohere/generation
-
-```ts
-import {CohereGeneration} from '@axflow/models/cohere/generation';
-import type {CohereGenerationTypes} from '@axflow/models/cohere/generation';
-
-CohereGeneration.run(/* args */)
-CohereGeneration.stream(/* args */)
-CohereGeneration.streamBytes(/* args */)
-CohereGeneration.streamTokens(/* args */)
-```
-
-### @axflow/models/cohere/embedding
-
-```ts
-import {CohereEmbedding} from '@axflow/models/cohere/embedding';
-import type {CohereEmbeddingTypes} from '@axflow/models/cohere/embedding';
-
-CohereEmbedding.run(/* args */)
-```
-
-### @axflow/models/anthropic/completion
-
-```ts
-import {AnthropicCompletion} from '@axflow/models/anthropic/completion';
-import type {AnthropicCompletionTypes} from '@axflow/models/anthropic/completion';
-
-AnthropicCompletion.run(/* args */)
-AnthropicCompletion.stream(/* args */)
-AnthropicCompletion.streamBytes(/* args */)
-AnthropicCompletion.streamTokens(/* args */)
-```
-
-### @axflow/models/react
-
-```ts
-import {useChat} from '@axflow/models/react';
-import type {UseChatOptionsType, UseChatResultType} from '@axflow/models/shared';
-```
-
-`useChat` is a react hook that makes building chat componets a breeze.
-
-### @axflow/models/shared
-
-```ts
-import {
-  IterableToStream,
-  StreamToIterable,
-  NdJsonStream,
-  StreamingJsonResponse,
-  HttpError,
-  isHttpError
-} from '@axflow/models/shared';
-import type {NdJsonValueType, JSONValueType, MessageType} from '@axflow/models/shared';
 ```
