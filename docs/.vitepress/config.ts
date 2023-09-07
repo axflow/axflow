@@ -35,7 +35,24 @@ export default defineConfig({
             items: [
               { text: 'Axgen', link: '/documentation/axgen' },
               { text: 'Axeval', link: '/documentation/axeval' },
-              { text: 'Models', link: '/documentation/models' },
+              {
+                text: 'Models',
+                collapsed: true,
+                link: '/documentation/models',
+                items: [
+                  { text: 'OpenAIChat', link: '/documentation/models/openai-chat' },
+                  { text: 'OpenAICompletion', link: '/documentation/models/openai-completion' },
+                  { text: 'OpenAIEmbedding', link: '/documentation/models/openai-embedding' },
+                  {
+                    text: 'AnthropicCompletion',
+                    link: '/documentation/models/anthropic-completion',
+                  },
+                  { text: 'CohereGeneration', link: '/documentation/models/cohere-generation' },
+                  { text: 'CohereEmbedding', link: '/documentation/models/cohere-embedding' },
+                  { text: 'React', link: '/documentation/models/react' },
+                  { text: 'Shared', link: '/documentation/models/shared' },
+                ],
+              },
             ],
           },
           {
@@ -44,6 +61,7 @@ export default defineConfig({
             items: [
               {
                 text: 'Models',
+                collapsed: true,
                 items: [
                   { text: 'Getting started', link: '/guides/models/getting-started' },
                   { text: 'Streaming', link: '/guides/models/streaming' },
