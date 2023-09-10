@@ -26,7 +26,9 @@ async function stableAppend(
 ) {
   const history = messagesRef.current;
   const requestBody =
-    typeof body === 'function' ? body(message, history) : { ...body, message, history };
+    typeof body === 'function'
+      ? body(message, history)
+      : { ...body, messages: history.concat(message) };
 
   setMessages(messagesRef.current.concat(message));
 
