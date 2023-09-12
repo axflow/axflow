@@ -113,6 +113,16 @@ function noop(chunk: HfChatTypes.Chunk) {
   return chunk;
 }
 
+// Extract the token text from a chunk. Spaces are part of the chunk, like:
+// {
+//   token: { id: 11, text: ' and', logprob: -0.00002193451, special: false },
+//   generated_text: null,
+//   details: null
+// }
+function chunkToToken(chunk: HfChatTypes.Chunk) {
+  return chunk.token.text;
+}
+
 async function stream(
   request: HfChatTypes.Request,
   options: HfChatTypes.RequestOptions,
@@ -121,10 +131,19 @@ async function stream(
   return byteStream.pipeThrough(new HfDecoderStream(noop));
 }
 
+async function streamTokens(
+  request: HfChatTypes.Request,
+  options: HfChatTypes.RequestOptions,
+): Promise<ReadableStream<string>> {
+  const byteStream = await streamBytes(request, options);
+  return byteStream.pipeThrough(new HfDecoderStream(chunkToToken));
+}
+
 export class HfGeneration {
   static run = run;
   static streamBytes = streamBytes;
   static stream = stream;
+  static streamTokens = streamTokens;
 }
 
 class HfDecoderStream<T> extends TransformStream<Uint8Array, T> {
@@ -157,6 +176,7 @@ class HfDecoderStream<T> extends TransformStream<Uint8Array, T> {
 
       for (let i = 0, len = chunk.length; i < len; ++i) {
         const bufferLength = buffer.length;
+        // HF streams separator is `\n\n` (at least with the currently tested model)
         const isSeparator = chunk[i] === '\n' && buffer[bufferLength - 1] === '\n';
 
         // Keep buffering unless we've hit the end of a data chunk
@@ -165,6 +185,7 @@ class HfDecoderStream<T> extends TransformStream<Uint8Array, T> {
           continue;
         }
 
+        // Decode the object into the expected JSON type
         const parsedChunk = HfDecoderStream.parseChunk(buffer.join(''));
         if (parsedChunk) {
           controller.enqueue(map(parsedChunk));

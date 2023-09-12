@@ -84,4 +84,29 @@ describe('huggingface', () => {
       }
     }
   });
+
+  it('executes a streamTokens() properly)', async () => {
+    try {
+      const response = await HfGeneration.streamTokens(
+        {
+          model: 'google/flan-t5-xxl',
+          inputs: 'Whats the best way to make a chicken pesto dish?',
+          parameters: {
+            temperature: 0.1,
+          },
+        },
+        // TODO mock out the calls later. This is an "integration test" for now
+        { accessToken: process.env.HF_TOKEN! },
+      );
+      for await (const chunk of StreamToIterable(response)) {
+        console.log(chunk);
+      }
+    } catch (e: unknown) {
+      if (isHttpError(e)) {
+        console.log(' We have an httperror:\n', inspect(e));
+      } else {
+        console.log('Error:\n', e);
+      }
+    }
+  });
 });
