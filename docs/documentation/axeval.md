@@ -48,7 +48,7 @@ The `Runner` is responsible for taking one or more test suites, running each tes
 
 ## Example
 
-You can find full examples in the [example directory](https://github.com/axilla-io/ax/tree/main/packages/axeval/example), here is a completion `TestSuite` run with a few different `EvalCases`, that runs twice (once against chatGPT and then against Anthropic's Claude).
+You can find full examples in the [example directory](https://github.com/axflow/axflow/tree/main/packages/axeval/example), here is a completion `TestSuite` run with a few different `EvalCases`, that runs twice (once against chatGPT and then against Anthropic's Claude).
 
 ```typescript
 import { match, includes, isValidJson, llmRubric } from '../src/evaluators';
