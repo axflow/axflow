@@ -1,5 +1,4 @@
-import { POST } from '@axflow/models/shared';
-import { inspect } from 'util';
+import { HttpError, POST } from '@axflow/models/shared';
 
 // With Hugging Face, we need to first choose a "task" and then pick a compatible model.
 // The tasks we are using (for llama2 for instance): 'text-generation'
@@ -11,8 +10,6 @@ const HF_MODEL_API_URL = 'https://api-inference.huggingface.co/models/';
 
 function headers(accessToken?: string) {
   const headers: Record<string, string> = {
-    // accept: 'application/json',
-    // accept: 'text/event-stream',
     'content-type': 'application/json',
   };
   if (typeof accessToken === 'string') {
@@ -57,35 +54,128 @@ export namespace HfChatTypes {
   };
   // https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
   export type Response = GeneratedText | GeneratedText[];
+
+  // Best documentation I could find: https://huggingface.co/docs/huggingface_hub/main/en/package_reference/inference_client#huggingface_hub.inference._text_generation.TextGenerationStreamResponse
+  // TODO: check if we also expect 'event' lines. It didn't happen with this model, but could with others?
+  export type Chunk = {
+    token: {
+      id: number;
+      text: string;
+      logprob: number;
+      special: boolean;
+    };
+    generated_text: string;
+    // Observed this but cannot find documentation
+    details: null;
+  };
 }
 
 async function run(
   request: HfChatTypes.Request,
-  options: HfChatTypes.RequestOptions
+  options: HfChatTypes.RequestOptions,
 ): Promise<HfChatTypes.Response> {
   // TODO validate the model is supported
   const url = options.apiUrl || HF_MODEL_API_URL + request.model;
 
   const headers_ = headers(options.accessToken);
-  console.log(headers_);
+  const body = JSON.stringify({ ...request, stream: false });
   const response = await POST(url, {
     headers: headers_,
-    body: JSON.stringify({ ...request, stream: true }),
+    body,
     fetch: options.fetch,
   });
-  console.log(inspect(response));
 
   return response.json();
 }
 
-// async function stream(
-//   request: HfChatTypes.Request,
-//   options: HfChatTypes.RequestOptions
-// ): Promise<ReadableStream<HfChatTypes.Response>> {
-//   return Promise.resolve();
-// }
+async function streamBytes(
+  request: HfChatTypes.Request,
+  options: HfChatTypes.RequestOptions,
+): Promise<ReadableStream<Uint8Array>> {
+  const url = options.apiUrl || HF_MODEL_API_URL + request.model;
+
+  const headers_ = headers(options.accessToken);
+  const body = JSON.stringify({ ...request, stream: true });
+  const response = await POST(url, {
+    headers: headers_,
+    body,
+    fetch: options.fetch,
+  });
+
+  if (!response.body) {
+    throw new HttpError('Expected response body to be a ReadableStream', response);
+  }
+
+  return response.body;
+}
+
+function noop(chunk: HfChatTypes.Chunk) {
+  return chunk;
+}
+
+async function stream(
+  request: HfChatTypes.Request,
+  options: HfChatTypes.RequestOptions,
+): Promise<ReadableStream<HfChatTypes.Chunk>> {
+  const byteStream = await streamBytes(request, options);
+  return byteStream.pipeThrough(new HfDecoderStream(noop));
+}
 
 export class HfGeneration {
   static run = run;
-  // static stream = stream;
+  static streamBytes = streamBytes;
+  static stream = stream;
+}
+
+class HfDecoderStream<T> extends TransformStream<Uint8Array, T> {
+  private static LINES_RE = /data:\s*(.+)/;
+
+  private static parseChunk(lines: string): HfChatTypes.Chunk | null {
+    lines = lines.trim();
+
+    // Empty lines are ignored
+    if (lines.length === 0) {
+      return null;
+    }
+
+    const match = lines.match(HfDecoderStream.LINES_RE);
+
+    try {
+      const data = match![1];
+      return JSON.parse(data);
+    } catch (e) {
+      throw new Error(`Malformed streaming data from HF: ${JSON.stringify(lines)}`);
+    }
+  }
+
+  private static transformer<T>(map: (chunk: HfChatTypes.Chunk) => T) {
+    let buffer: string[] = [];
+    const decoder = new TextDecoder();
+
+    return (bytes: Uint8Array, controller: TransformStreamDefaultController<T>) => {
+      const chunk = decoder.decode(bytes);
+
+      for (let i = 0, len = chunk.length; i < len; ++i) {
+        const bufferLength = buffer.length;
+        const isSeparator = chunk[i] === '\n' && buffer[bufferLength - 1] === '\n';
+
+        // Keep buffering unless we've hit the end of a data chunk
+        if (!isSeparator) {
+          buffer.push(chunk[i]);
+          continue;
+        }
+
+        const parsedChunk = HfDecoderStream.parseChunk(buffer.join(''));
+        if (parsedChunk) {
+          controller.enqueue(map(parsedChunk));
+        }
+
+        buffer = [];
+      }
+    };
+  }
+
+  constructor(map: (chunk: HfChatTypes.Chunk) => T) {
+    super({ transform: HfDecoderStream.transformer(map) });
+  }
 }
