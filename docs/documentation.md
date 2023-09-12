@@ -9,7 +9,7 @@ Axflow is a collection of modules for building robust natural language powered a
 Used together, they form an end-to-end framework for developing AI applications.
 
 ::: info
-@axflow/models is in beta! Try it today https://www.npmjs.com/package/@axflow/models
+@axflow/models is out of beta! Try it today https://www.npmjs.com/package/@axflow/models
 :::
 
 ## Philosophy
