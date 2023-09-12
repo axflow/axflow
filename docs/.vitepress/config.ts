@@ -2,8 +2,8 @@ import { defineConfig } from 'vitepress';
 
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
-  title: 'Axilla documentation',
-  description: 'Documentation for the Ax framework — write AI applications in TypeScript',
+  title: 'Axflow documentation',
+  description: 'The TypeScript framework for AI development',
   head: [
     [
       'script',
@@ -11,7 +11,7 @@ export default defineConfig({
         src: 'https://plausible.io/js/script.js',
         async: '',
         defer: '',
-        'data-domain': 'docs.axilla.io',
+        'data-domain': 'docs.axflow.dev',
       },
     ],
   ],
@@ -89,7 +89,7 @@ export default defineConfig({
       provider: 'local',
     },
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/axilla-io/ax' },
+      { icon: 'github', link: 'https://github.com/axflow/axflow' },
       { icon: 'twitter', link: 'https://twitter.com/axilla_io' },
       {
         icon: 'slack',

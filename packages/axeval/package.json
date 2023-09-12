@@ -14,7 +14,7 @@
     "models"
   ],
   "main": "./dist/index.js",
-  "homepage": "https://github.com/axilla-io/ax/tree/main/packages/axeval",
+  "homepage": "https://github.com/axflow/axflow/tree/main/packages/axeval",
   "files": [
     "dist",
     "docs",
@@ -33,7 +33,7 @@
     "example:completion": "ts-node -r ./src/config.ts ./example/completion.ts",
     "prepublishOnly": "npm run build"
   },
-  "author": "Axilla (https://axilla.io)",
+  "author": "Axflow (https://axflow.dev)",
   "license": "MIT",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.5.8",
@@ -48,9 +48,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/axilla-io/ax.git"
+    "url": "git+https://github.com/axflow/axflow.git"
   },
   "bugs": {
-    "url": "https://github.com/axilla-io/ax/issues"
+    "url": "https://github.com/axflow/axflow/issues"
   }
 }

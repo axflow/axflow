@@ -18,7 +18,7 @@ npx create-next-app@latest --typescript --tailwind axchat
 ✔ Would you like to use `src/` directory? … *No* / Yes
 ✔ Would you like to use App Router? (recommended) … No / *Yes*
 ✔ Would you like to customize the default import alias? … *No* / Yes
-Creating a new Next.js app in /Users/nicholascharriere/axilla/axchat.
+Creating a new Next.js app in /Users/<username>/<dir>/axchat.
 ```
 
 Second, let's install the models package:

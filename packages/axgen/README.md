@@ -1,4 +1,4 @@
-# Axgen ![Github CI](https://github.com/axilla-io/axgen/workflows/Github%20CI/badge.svg)
+# Axgen ![Github CI](https://github.com/axflow/axflow/workflows/Github%20CI/badge.svg)
 
 Axgen is a framework for connecting your data to large language models.
 
@@ -8,7 +8,7 @@ Ingest, structure, and query your data with ease using the latest vector databas
 npm i axgen
 ```
 
-We built an open source [demo UI](https://github.com/axilla-io/demo-ui) for axgen, with a [short video](https://www.loom.com/share/458f9b6679b740f0a5c78a33fffee3dc) that shows the features.
+We built an open source [demo UI](https://github.com/axflow/original-demo-ui) for axgen, with a [short video](https://www.loom.com/share/458f9b6679b740f0a5c78a33fffee3dc) that shows the features.
 
 ### Goals
 

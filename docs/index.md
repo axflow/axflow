@@ -3,7 +3,7 @@
 layout: home
 
 hero:
-  name: Axilla
+  name: Axflow
   text: A TypeScript framework for AI.
   tagline: End-to-end, open source, opinionated
   image: /logo.png

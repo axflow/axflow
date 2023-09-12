@@ -1,12 +1,10 @@
-<p align="center">
-  <img src="./assets/logo.png" />
-</p>
+![Axflow banner](./assets/banner.jpg)
 
-# Ax — A comprehensive AI framework for TypeScript
+# The TypeScript framework for AI development
 
-![Github CI](https://github.com/axilla-io/ax/workflows/Github%20CI/badge.svg) [![Slack](https://img.shields.io/badge/Join%20Our%20Community-Slack-blue)](https://join.slack.com/t/axilladevelopers/shared_invite/zt-212wj3ek0-NHzIFtVg1lxL1t0ViPbysA)
+![Github CI](https://github.com/axflow/axflow/workflows/Github%20CI/badge.svg) [![Slack](https://img.shields.io/badge/Join%20Our%20Community-Slack-blue)](https://join.slack.com/t/axilladevelopers/shared_invite/zt-212wj3ek0-NHzIFtVg1lxL1t0ViPbysA)
 
-Ax is a collection of modules for building robust natural language powered applications. These modules can be adopted incrementally, thus providing a modular and scalable end-to-end solution.
+Axflow is a collection of modules for building robust natural language powered applications. These modules can be adopted incrementally, thus providing a modular and scalable end-to-end solution.
 Used together, they form an end-to-end framework for developing AI applications.
 
 # Modules
@@ -21,17 +19,17 @@ In addition to the above modules, we're working on the following modules:
 - **serve**: A serving framework to run any LLM model (OSS or otherwise). It will also provide middleware options for user throttling, analytics, and logging
 - **finetune**: A library focused on fine-tuning models
 
-## [Documentation](https://docs.axilla.io)
+## [Documentation](https://docs.axflow.dev)
 
 # Goals
 
-Ax aspires to deconstruct the complex paradigms of working with LLMs into manageable and intuitive components.
+Axflow aspires to deconstruct the complex paradigms of working with LLMs into manageable and intuitive components.
 Our library takes a code-first approach, emphasizing the importance of flexibility and control for developers.
-As a foundational framework, Ax empowers developers to build higher-level TypeScript AI features and products seamlessly.
+As a foundational framework, Axflow empowers developers to build higher-level TypeScript AI features and products seamlessly.
 
 ## Examples
 
-Here is an example [open source UI](https://github.com/axilla-io/demo-ui) showcasing what axgen can do, with a [short video](https://www.loom.com/share/458f9b6679b740f0a5c78a33fffee3dc) walkthrough.
+Here is an example [open source UI](https://github.com/axflow/original-demo-ui) showcasing what our first module, axgen, can do, with a [short video](https://www.loom.com/share/458f9b6679b740f0a5c78a33fffee3dc) walkthrough.
 
 ## License
 

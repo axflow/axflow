@@ -2,8 +2,8 @@
   "name": "@axflow/models",
   "version": "0.0.3",
   "description": "Zero-dependency, modular SDK for building robust natural language applications",
-  "author": "Axilla (https://axilla.io)",
-  "homepage": "https://github.com/axilla-io/ax/tree/main/packages/models#readme",
+  "author": "Axilla (https://axflow.dev)",
+  "homepage": "https://github.com/axflow/axflowtree/main/packages/models#readme",
   "license": "MIT",
   "sideEffects": false,
   "keywords": [
@@ -33,10 +33,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/axilla-io/ax.git"
+    "url": "git+https://github.com/axflow/axflow.git"
   },
   "bugs": {
-    "url": "https://github.com/axilla-io/ax/issues"
+    "url": "https://github.com/axflow/axflowissues"
   },
   "scripts": {
     "clean": "rm -rf ./dist",
