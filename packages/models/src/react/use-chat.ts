@@ -170,9 +170,19 @@ export type UseChatResultType = {
   input: string;
 
   /**
+   * Manually set the input.
+   */
+  setInput: (input: string) => void;
+
+  /**
    * The history of messages so far in this chat.
    */
   messages: MessageType[];
+
+  /**
+   * Manually set the messages.
+   */
+  setMessages: (messages: MessageType[]) => void;
 
   /**
    * A handler to change the user's message input.
@@ -256,5 +266,5 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
     setInput('');
   }
 
-  return { input, onChange, onSubmit, messages };
+  return { input, setInput, messages, setMessages, onChange, onSubmit };
 }

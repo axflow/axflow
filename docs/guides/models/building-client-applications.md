@@ -44,7 +44,7 @@ function ChatComponent() {
 }
 ```
 
-For the simple case where the defaults work, that's all that's necessary!
+For simple cases, the defaults are all that are needed. See [Customizing `useChat`](#customizing-usechat) for overriding the defaults.
 
 ## Messages
 
@@ -144,15 +144,28 @@ useChat({
 
 This option takes a function which is given either a chunk (in the case of streaming) or the response body (in case of non-streaming).
 
-### Initial values
+### Message and input state
 
-You may wish to initialize the hook with pre-existing messages or user input.
+`useChat` will manage the user's input and messages for you. However, you may wish to initialize the hook with pre-existing state, or manually reset this state.
+
+To initialize this state, you can use the `initialInput` or `initialMessages` options.
 
 ```ts
 useChat({
   initialInput: savedUserInput(),
   initialMessages: savedMessageHistory(),
 })
+```
+
+To reset this state manually, you may use the `setInput` or `setMessages` functions.
+
+```tsx
+const {setInput, setMessages, /* etc */} = useChat({ /* options */ });
+
+// ...
+
+<ClearInput onClick={() => setInput('')} />
+<ClearMessageHistory onClick={() => setMessages([])} />
 ```
 
 ## Streaming vs non-streaming
