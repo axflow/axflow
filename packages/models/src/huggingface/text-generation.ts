@@ -52,6 +52,7 @@ export namespace HfChatTypes {
   export type GeneratedText = {
     generated_text: string;
   };
+
   // https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
   export type Response = GeneratedText | GeneratedText[];
 
