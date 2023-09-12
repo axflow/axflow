@@ -2,7 +2,7 @@
   "name": "@axflow/models",
   "version": "0.0.3",
   "description": "Zero-dependency, modular SDK for building robust natural language applications",
-  "author": "Axilla (https://axflow.dev)",
+  "author": "Axflow (https://axflow.dev)",
   "homepage": "https://github.com/axflow/axflowtree/main/packages/models#readme",
   "license": "MIT",
   "sideEffects": false,

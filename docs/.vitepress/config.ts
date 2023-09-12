@@ -90,7 +90,7 @@ export default defineConfig({
     },
     socialLinks: [
       { icon: 'github', link: 'https://github.com/axflow/axflow' },
-      { icon: 'twitter', link: 'https://twitter.com/axilla_io' },
+      { icon: 'twitter', link: 'https://twitter.com/axflow_dev' },
       {
         icon: 'slack',
         link: 'https://join.slack.com/t/axilladevelopers/shared_invite/zt-20j9zofkl-gA3EO3O4N1t8~PJTvv7TQg',

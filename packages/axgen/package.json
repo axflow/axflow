@@ -48,7 +48,7 @@
     "test": "jest --testMatch \"./**/test/**/*.test.ts\"",
     "prepublishOnly": "npm run build"
   },
-  "author": "Axilla (https://axflow.dev)",
+  "author": "Axflow (https://axflow.dev)",
   "license": "MIT",
   "dependencies": {
     "@pinecone-database/pinecone": "^0.1.6",
