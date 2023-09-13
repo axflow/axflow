@@ -26,7 +26,6 @@ export namespace HfChatTypes {
     parameters?: {
       top_k?: number;
       top_p?: number;
-      // Float range from 0.00 to 100.00. Default is 1.0
       temperature?: number;
       repetition_penalty?: number;
       max_new_tokens?: number;
