@@ -17,11 +17,10 @@ function headers(accessToken?: string) {
   return headers;
 }
 
-export namespace HfChatTypes {
+export namespace HfTextGenerationTypes {
   // https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
   export type Request = {
     model: string;
-    stream?: boolean;
     inputs: string;
     parameters?: {
       top_k?: number;
@@ -64,15 +63,19 @@ export namespace HfChatTypes {
       special: boolean;
     };
     generated_text: string;
-    // Observed this but cannot find documentation
-    details: null;
+    details?: {
+      // https://github.com/huggingface/huggingface_hub/blob/49cbeb78d3d87b22a40d04ef8a733855e82d17ef/src/huggingface_hub/inference/_text_generation.py#L272
+      finishReason: string;
+      generated_tokens: number;
+      seed?: number;
+    };
   };
 }
 
 async function run(
-  request: HfChatTypes.Request,
-  options: HfChatTypes.RequestOptions,
-): Promise<HfChatTypes.Response> {
+  request: HfTextGenerationTypes.Request,
+  options: HfTextGenerationTypes.RequestOptions,
+): Promise<HfTextGenerationTypes.Response> {
   const url = options.apiUrl || HF_MODEL_API_URL + request.model;
 
   const headers_ = headers(options.accessToken);
@@ -87,8 +90,8 @@ async function run(
 }
 
 async function streamBytes(
-  request: HfChatTypes.Request,
-  options: HfChatTypes.RequestOptions,
+  request: HfTextGenerationTypes.Request,
+  options: HfTextGenerationTypes.RequestOptions,
 ): Promise<ReadableStream<Uint8Array>> {
   const url = options.apiUrl || HF_MODEL_API_URL + request.model;
 
@@ -108,40 +111,47 @@ async function streamBytes(
     return response.body;
   } catch (e) {
     if (e instanceof HttpError) {
-      const body = await e.response.json();
-      if (body?.error[0]?.includes('`stream` is not supported for this model')) {
-        throw new HttpError('This model does not support streaming', e.response);
+      try {
+        const body = await e.response.json();
+        if (body?.error[0]?.includes('`stream` is not supported for this model')) {
+          throw new HttpError(`Model '${request.model}' does not support streaming`, e.response);
+        }
+      } catch {
+        // Cannot parse the response body into JSON, so throw the original error
+        throw e;
       }
     }
     throw e;
   }
 }
 
-function noop(chunk: HfChatTypes.Chunk) {
+function noop(chunk: HfTextGenerationTypes.Chunk) {
   return chunk;
 }
 
-// Extract the token text from a chunk. Spaces are part of the chunk, like:
-// {
-//   token: { id: 11, text: ' and', logprob: -0.00002193451, special: false },
-//   generated_text: null,
-//   details: null
-// }
-function chunkToToken(chunk: HfChatTypes.Chunk) {
+/*
+ * Example chunk:
+ *   {
+ *     token: { id: 11, text: ' and', logprob: -0.00002193451, special: false },
+ *     generated_text: null,
+ *     details: null
+ *   }
+ */
+function chunkToToken(chunk: HfTextGenerationTypes.Chunk) {
   return chunk.token.text;
 }
 
 async function stream(
-  request: HfChatTypes.Request,
-  options: HfChatTypes.RequestOptions,
-): Promise<ReadableStream<HfChatTypes.Chunk>> {
+  request: HfTextGenerationTypes.Request,
+  options: HfTextGenerationTypes.RequestOptions,
+): Promise<ReadableStream<HfTextGenerationTypes.Chunk>> {
   const byteStream = await streamBytes(request, options);
   return byteStream.pipeThrough(new HfDecoderStream(noop));
 }
 
 async function streamTokens(
-  request: HfChatTypes.Request,
-  options: HfChatTypes.RequestOptions,
+  request: HfTextGenerationTypes.Request,
+  options: HfTextGenerationTypes.RequestOptions,
 ): Promise<ReadableStream<string>> {
   const byteStream = await streamBytes(request, options);
   return byteStream.pipeThrough(new HfDecoderStream(chunkToToken));
@@ -157,7 +167,7 @@ export class HfGeneration {
 class HfDecoderStream<T> extends TransformStream<Uint8Array, T> {
   private static LINES_RE = /data:\s*(.+)/;
 
-  private static parseChunk(lines: string): HfChatTypes.Chunk | null {
+  private static parseChunk(lines: string): HfTextGenerationTypes.Chunk | null {
     lines = lines.trim();
 
     // Empty lines are ignored
@@ -175,7 +185,7 @@ class HfDecoderStream<T> extends TransformStream<Uint8Array, T> {
     }
   }
 
-  private static transformer<T>(map: (chunk: HfChatTypes.Chunk) => T) {
+  private static transformer<T>(map: (chunk: HfTextGenerationTypes.Chunk) => T) {
     let buffer: string[] = [];
     const decoder = new TextDecoder();
 
@@ -204,7 +214,7 @@ class HfDecoderStream<T> extends TransformStream<Uint8Array, T> {
     };
   }
 
-  constructor(map: (chunk: HfChatTypes.Chunk) => T) {
+  constructor(map: (chunk: HfTextGenerationTypes.Chunk) => T) {
     super({ transform: HfDecoderStream.transformer(map) });
   }
 }

@@ -87,7 +87,6 @@ describe('huggingface textGeneration task', () => {
             temperature: 0.1,
           },
         },
-        // TODO mock out the calls later. This is an "integration test" for now
         { accessToken: 'hf_123', fetch: fetchSpy as any },
       );
 
