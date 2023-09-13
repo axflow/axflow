@@ -1,0 +1,40 @@
+data:{"token":{"id":304,"text":" To","logprob":-0.012886047,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":7,"text":"s","logprob":-0.37695312,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":7,"text":"s","logprob":0.0,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":3,"text":" ","logprob":-0.27612305,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":9,"text":"a","logprob":-0.0035820007,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":3,"text":" ","logprob":-0.21728516,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":8861,"text":"pound","logprob":-0.00007033348,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":13,"text":" of","logprob":0.0,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":3832,"text":" chicken","logprob":-0.1274414,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":6748,"text":" breast","logprob":-9.536743e-7,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":7,"text":"s","logprob":0.0,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":28,"text":" with","logprob":-0.0000021457672,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":3,"text":" ","logprob":-0.022994995,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":9,"text":"a","logprob":0.0,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":4119,"text":" cup","logprob":-0.03366089,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":13,"text":" of","logprob":0.0,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":6256,"text":" pest","logprob":0.0,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":32,"text":"o","logprob":0.0,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":6,"text":",","logprob":-0.16491699,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":3,"text":" ","logprob":-0.09289551,"special":false},"generated_text":"Toss a pound of chicken breasts with a cup of pesto, ","details":null}
+

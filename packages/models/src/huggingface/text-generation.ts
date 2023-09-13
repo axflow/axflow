@@ -1,15 +1,14 @@
 import { HttpError, POST } from '@axflow/models/shared';
 
-// With Hugging Face, we need to first choose a "task" and then pick a compatible model.
-// The tasks we are using (for llama2 for instance): 'text-generation'
-// https://huggingface.co/models?pipeline_tag=conversational
+// HuggingFace has the concept of a task. This code supports the "textGeneration" task.
+// https://huggingface.co/models?pipeline_tag=text-generation
 
 // https://huggingface.co/docs/api-inference/quicktour#running-inference-with-api-requests
 const HF_MODEL_API_URL = 'https://api-inference.huggingface.co/models/';
-// const SUPPORTED_MODELS = ['gpt2'];
 
 function headers(accessToken?: string) {
   const headers: Record<string, string> = {
+    accept: 'application/json',
     'content-type': 'application/json',
   };
   if (typeof accessToken === 'string') {
@@ -57,7 +56,7 @@ export namespace HfChatTypes {
   export type Response = GeneratedText | GeneratedText[];
 
   // Best documentation I could find: https://huggingface.co/docs/huggingface_hub/main/en/package_reference/inference_client#huggingface_hub.inference._text_generation.TextGenerationStreamResponse
-  // TODO: check if we also expect 'event' lines. It didn't happen with this model, but could with others?
+  // I would like to find more formal documentation of their streaming API if we can.
   export type Chunk = {
     token: {
       id: number;
@@ -75,7 +74,6 @@ async function run(
   request: HfChatTypes.Request,
   options: HfChatTypes.RequestOptions,
 ): Promise<HfChatTypes.Response> {
-  // TODO validate the model is supported
   const url = options.apiUrl || HF_MODEL_API_URL + request.model;
 
   const headers_ = headers(options.accessToken);
@@ -97,17 +95,27 @@ async function streamBytes(
 
   const headers_ = headers(options.accessToken);
   const body = JSON.stringify({ ...request, stream: true });
-  const response = await POST(url, {
-    headers: headers_,
-    body,
-    fetch: options.fetch,
-  });
+  try {
+    const response = await POST(url, {
+      headers: headers_,
+      body,
+      fetch: options.fetch,
+    });
 
-  if (!response.body) {
-    throw new HttpError('Expected response body to be a ReadableStream', response);
+    if (!response.body) {
+      throw new HttpError('Expected response body to be a ReadableStream', response);
+    }
+
+    return response.body;
+  } catch (e) {
+    if (e instanceof HttpError) {
+      const body = await e.response.json();
+      if (body?.error[0]?.includes('`stream` is not supported for this model')) {
+        throw new HttpError('This model does not support streaming', e.response);
+      }
+    }
+    throw e;
   }
-
-  return response.body;
 }
 
 function noop(chunk: HfChatTypes.Chunk) {

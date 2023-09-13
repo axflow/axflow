@@ -1,11 +1,31 @@
+import fs from 'node:fs/promises';
+import Path from 'node:path';
 import { HfGeneration } from '../../src/huggingface/text-generation';
-import { inspect } from 'util';
-import { isHttpError } from '../../src/shared/http';
 import { StreamToIterable } from '../../src/shared';
+import { createFakeFetch, createUnpredictableByteStream } from '../utils';
 
-describe('huggingface', () => {
-  it('executes a run() properly)', async () => {
-    try {
+describe('huggingface textGeneration task', () => {
+  let streamingGenerationResponse: string;
+
+  beforeAll(async () => {
+    streamingGenerationResponse = await fs.readFile(
+      Path.join(__dirname, 'streaming-text-generation-response.txt'),
+      { encoding: 'utf-8' },
+    );
+  });
+
+  describe('run', () => {
+    it('executes a generation', async () => {
+      const fetchSpy = createFakeFetch({
+        json: [
+          {
+            generated_text:
+              'Whats the best way to make a chicken pesto dish?\n' +
+              '\n' +
+              "I've been making pesto for a while now, and I've always had a great time. I've always had a great time with it, and I've always had",
+          },
+        ],
+      });
       const response = await HfGeneration.run(
         {
           model: 'gpt2',
@@ -14,99 +34,140 @@ describe('huggingface', () => {
             temperature: 0.1,
           },
         },
-        // TODO mock out the calls later. This is an "integration test" for now
-        { accessToken: process.env.HF_TOKEN! },
+        { accessToken: 'hf_not-real', fetch: fetchSpy as any },
       );
-      console.log(response);
-      expect(response).toBeDefined();
-    } catch (e: unknown) {
-      if (isHttpError(e)) {
-        console.log(' We have an httperror:\n', inspect(e));
-      } else {
-        console.log('Error:\n', e);
-      }
-    }
-  });
-  // This might be normal, but the chunks are all uint8 arrays
-  it('executes a streamBytes() properly)', async () => {
-    try {
-      const response = await HfGeneration.streamBytes(
+      expect(response).toEqual([
         {
-          model: 'google/flan-t5-xxl',
-          inputs: 'Whats the best way to make a chicken pesto dish?',
-          parameters: {
-            temperature: 0.1,
-          },
+          generated_text:
+            'Whats the best way to make a chicken pesto dish?\n' +
+            '\n' +
+            "I've been making pesto for a while now, and I've always had a great time. I've always had a great time with it, and I've always had",
         },
-        // TODO mock out the calls later. This is an "integration test" for now
-        { accessToken: process.env.HF_TOKEN! },
-      );
-      let totalResp = '';
-      for await (const chunk of StreamToIterable(response)) {
-        var enc = new TextDecoder('utf-8');
+      ]);
 
-        console.log(enc.decode(chunk));
-        totalResp += enc.decode(chunk);
-      }
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledWith('https://api-inference.huggingface.co/models/gpt2', {
+        body: expect.any(String),
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          authorization: 'Bearer hf_not-real',
+          'content-type': 'application/json',
+        },
+      });
 
-      console.log(totalResp);
-      expect(response).toBeDefined();
-    } catch (e: unknown) {
-      if (isHttpError(e)) {
-        console.log(' We have an httperror:\n', inspect(e));
-      } else {
-        console.log('Error:\n', e);
-      }
-    }
+      const args = fetchSpy.mock.lastCall as any;
+      const bodyArgument = JSON.parse(args[1].body);
+
+      expect(bodyArgument).toEqual({
+        inputs: 'Whats the best way to make a chicken pesto dish?',
+        model: 'gpt2',
+        parameters: {
+          temperature: 0.1,
+        },
+        stream: false,
+      });
+    });
   });
 
-  it('executes a stream() properly)', async () => {
-    try {
+  describe('stream', () => {
+    it('executes a streaming completion)', async () => {
+      const fetchSpy = createFakeFetch({
+        body: createUnpredictableByteStream(streamingGenerationResponse),
+      });
+
       const response = await HfGeneration.stream(
         {
           model: 'google/flan-t5-xxl',
           inputs: 'Whats the best way to make a chicken pesto dish?',
+          options: {
+            wait_for_model: true,
+          },
           parameters: {
             temperature: 0.1,
           },
         },
         // TODO mock out the calls later. This is an "integration test" for now
-        { accessToken: process.env.HF_TOKEN! },
+        { accessToken: 'hf_123', fetch: fetchSpy as any },
       );
+
+      let totalResp = '';
       for await (const chunk of StreamToIterable(response)) {
-        console.log(chunk);
+        totalResp += chunk.token.text;
       }
-    } catch (e: unknown) {
-      if (isHttpError(e)) {
-        console.log(' We have an httperror:\n', inspect(e));
-      } else {
-        console.log('Error:\n', e);
-      }
-    }
+
+      expect(totalResp).toEqual(' Toss a pound of chicken breasts with a cup of pesto, ');
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledWith(
+        'https://api-inference.huggingface.co/models/google/flan-t5-xxl',
+        {
+          body: expect.any(String),
+          method: 'POST',
+          headers: {
+            accept: 'application/json',
+            authorization: 'Bearer hf_123',
+            'content-type': 'application/json',
+          },
+        },
+      );
+      const args = fetchSpy.mock.lastCall as any;
+      const bodyArgument = JSON.parse(args[1].body);
+
+      expect(bodyArgument).toEqual({
+        model: 'google/flan-t5-xxl',
+        inputs: 'Whats the best way to make a chicken pesto dish?',
+        options: {
+          wait_for_model: true,
+        },
+        parameters: {
+          temperature: 0.1,
+        },
+        stream: true,
+      });
+    });
   });
 
-  it('executes a streamTokens() properly)', async () => {
-    try {
+  describe('streamTokens', () => {
+    it('executes a stream() properly)', async () => {
+      const fetchSpy = createFakeFetch({
+        body: createUnpredictableByteStream(streamingGenerationResponse),
+      });
+
       const response = await HfGeneration.streamTokens(
         {
           model: 'google/flan-t5-xxl',
           inputs: 'Whats the best way to make a chicken pesto dish?',
-          parameters: {
-            temperature: 0.1,
+        },
+        { accessToken: 'hf_nope', fetch: fetchSpy as any },
+      );
+      let words = '';
+      for await (const chunk of StreamToIterable(response)) {
+        words += chunk;
+      }
+
+      expect(words).toEqual(' Toss a pound of chicken breasts with a cup of pesto, ');
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledWith(
+        'https://api-inference.huggingface.co/models/google/flan-t5-xxl',
+        {
+          body: expect.any(String),
+          method: 'POST',
+          headers: {
+            accept: 'application/json',
+            authorization: 'Bearer hf_nope',
+            'content-type': 'application/json',
           },
         },
-        // TODO mock out the calls later. This is an "integration test" for now
-        { accessToken: process.env.HF_TOKEN! },
       );
-      for await (const chunk of StreamToIterable(response)) {
-        console.log(chunk);
-      }
-    } catch (e: unknown) {
-      if (isHttpError(e)) {
-        console.log(' We have an httperror:\n', inspect(e));
-      } else {
-        console.log('Error:\n', e);
-      }
-    }
+      const args = fetchSpy.mock.lastCall as any;
+      const bodyArgument = JSON.parse(args[1].body);
+
+      expect(bodyArgument).toEqual({
+        model: 'google/flan-t5-xxl',
+        inputs: 'Whats the best way to make a chicken pesto dish?',
+        stream: true,
+      });
+    });
   });
 });
