@@ -12,7 +12,7 @@ npm i @axflow/models
 - First-class support for streaming arbitrary data in addition to the LLM response
 - Comes with a set of utilities and React hooks for easily creating robust client applications
 - Built exclusively on modern web standards such as `fetch` and the stream APIs
-- Supports Node 18+, Next.js serverless or edge runtime, browsers, ESM, CJS, and more
+- Supports Node 18+, Next.js serverless or edge runtime, Express.js, browsers, ESM, CJS, and more
 - Supports a custom `fetch` implementation for request middleware (e.g., custom headers, logging)
 
 ## Supported models
