@@ -51,6 +51,13 @@ export default defineConfig([
     dts: true,
   },
   {
+    entry: ['src/node/index.ts'],
+    format: ['cjs', 'esm'],
+    outDir: 'dist/node',
+    external: [/^@axflow\/models\//],
+    dts: true,
+  },
+  {
     entry: ['src/shared/index.ts'],
     format: ['cjs', 'esm'],
     outDir: 'dist/shared',
