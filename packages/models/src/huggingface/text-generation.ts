@@ -5,6 +5,7 @@ import { HttpError, POST } from '@axflow/models/shared';
 
 // https://huggingface.co/docs/api-inference/quicktour#running-inference-with-api-requests
 const HUGGING_FACE_MODEL_API_URL = 'https://api-inference.huggingface.co/models/';
+const HUGGING_FACE_STOP_TOKEN = '</s>';
 
 function headers(accessToken?: string) {
   const headers: Record<string, string> = {
@@ -154,6 +155,7 @@ function noop(chunk: HuggingFaceTextGenerationTypes.Chunk) {
 }
 
 /*
+ * Return the text from a chunk. If the chunk is a stop token, don't return it to the user.
  * Example chunk:
  *   {
  *     token: { id: 11, text: ' and', logprob: -0.00002193451, special: false },
@@ -162,6 +164,9 @@ function noop(chunk: HuggingFaceTextGenerationTypes.Chunk) {
  *   }
  */
 function chunkToToken(chunk: HuggingFaceTextGenerationTypes.Chunk) {
+  if (chunk.token.special && chunk.token.text.includes(HUGGING_FACE_STOP_TOKEN)) {
+    return '';
+  }
   return chunk.token.text;
 }
 
@@ -194,6 +199,7 @@ async function stream(
 
 /**
  * Run a streaming completion against the HF inference API. The resulting stream emits only the string tokens.
+ * Note that this will strip the STOP token '</s>' from the text.
  *
  * @see https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
  *
@@ -215,7 +221,7 @@ async function streamTokens(
 /**
  * An object that encapsulates methods for calling the HF inference API
  */
-export class HuggingFaceGeneration {
+export class HuggingFaceTextGeneration {
   static run = run;
   static streamBytes = streamBytes;
   static stream = stream;

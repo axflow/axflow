@@ -3,12 +3,12 @@
 Interface with [HuggingFace's Inference API](https://huggingface.co/docs/api-inference/quicktour) using this module.
 
 ```ts
-import { HuggingFaceGeneration } from '@axflow/models/huggingface/text-generation';
+import { HuggingFaceTextGeneration } from '@axflow/models/huggingface/text-generation';
 import type { HuggingFaceTextGenerationTypes } from '@axflow/models/huggingface/text-generation';
 ```
 
 ```ts
-declare class HuggingFaceGeneration {
+declare class HuggingFaceTextGeneration {
   static run: typeof run;
   static stream: typeof stream;
   static streamBytes: typeof streamBytes;
@@ -91,6 +91,7 @@ declare function stream(
 ```ts
 /**
  * Run a streaming completion against the HF inference API. The resulting stream emits only the string tokens.
+ * Note that this will strip the STOP token '</s>' from the text.
  *
  * @see https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
  *
@@ -110,10 +111,10 @@ declare function streamTokens(
 ## Using Inference Endpoints
 
 You might have hosted your own model through HuggingFace's Inference Endpoints product.
-This is perfectly compatible with axflow's huggingface library, simply pass in the inference URL to the `HuggingFaceGeneration` request with the `apiUrl` parameter, like below:
+This is perfectly compatible with axflow's huggingface library, simply pass in the inference URL to the `HuggingFaceTextGeneration` request with the `apiUrl` parameter, like below:
 
 ```ts
-const response = await HuggingFaceGeneration.stream(
+const response = await HuggingFaceTextGeneration.stream(
   {
     model: 'llama2-7b',
     inputs: 'Write a typescript function to add two numbers',

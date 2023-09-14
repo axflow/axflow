@@ -1,15 +1,21 @@
 import fs from 'node:fs/promises';
 import Path from 'node:path';
-import { HuggingFaceGeneration } from '../../src/huggingface/text-generation';
+import { HuggingFaceTextGeneration } from '../../src/huggingface/text-generation';
 import { StreamToIterable } from '../../src/shared';
 import { createFakeFetch, createUnpredictableByteStream } from '../utils';
 
 describe('huggingface textGeneration task', () => {
   let streamingGenerationResponse: string;
+  let streamingGenerationResponseWithEndToken: string;
 
   beforeAll(async () => {
     streamingGenerationResponse = await fs.readFile(
       Path.join(__dirname, 'streaming-text-generation-response.txt'),
+      { encoding: 'utf-8' },
+    );
+    streamingGenerationResponseWithEndToken = await fs.readFile(
+      // Path.join(__dirname, 'streaming-text-generation-response.txt'),
+      Path.join(__dirname, 'terminated-streaming-generation-response.txt'),
       { encoding: 'utf-8' },
     );
   });
@@ -26,7 +32,7 @@ describe('huggingface textGeneration task', () => {
           },
         ],
       });
-      const response = await HuggingFaceGeneration.run(
+      const response = await HuggingFaceTextGeneration.run(
         {
           model: 'gpt2',
           inputs: 'Whats the best way to make a chicken pesto dish?',
@@ -76,7 +82,7 @@ describe('huggingface textGeneration task', () => {
         body: createUnpredictableByteStream(streamingGenerationResponse),
       });
 
-      const response = await HuggingFaceGeneration.stream(
+      const response = await HuggingFaceTextGeneration.stream(
         {
           model: 'google/flan-t5-xxl',
           inputs: 'Whats the best way to make a chicken pesto dish?',
@@ -126,13 +132,66 @@ describe('huggingface textGeneration task', () => {
     });
   });
 
+  it('executes a streaming completion with a stop token </s>', async () => {
+    const fetchSpy = createFakeFetch({
+      body: createUnpredictableByteStream(streamingGenerationResponseWithEndToken),
+    });
+
+    const response = await HuggingFaceTextGeneration.stream(
+      {
+        model: 'meta/llama-7b',
+        inputs: 'Write a short haiku. Only respond with the Haiku, nothing else.',
+        options: {
+          wait_for_model: true,
+        },
+        parameters: {
+          max_new_tokens: 250,
+        },
+      },
+      { accessToken: 'hf_123', fetch: fetchSpy as any, apiUrl: 'https://custom.api.endpoint' },
+    );
+
+    let totalResp = '';
+    for await (const chunk of StreamToIterable(response)) {
+      totalResp += chunk.token.text;
+    }
+
+    expect(totalResp).toEqual(
+      '\nThe sun sets slowly\nGolden hues upon the sea\nPeaceful evening skyy</s>',
+    );
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(fetchSpy).toHaveBeenCalledWith('https://custom.api.endpoint', {
+      body: expect.any(String),
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        authorization: 'Bearer hf_123',
+        'content-type': 'application/json',
+      },
+    });
+    const args = fetchSpy.mock.lastCall as any;
+    const bodyArgument = JSON.parse(args[1].body);
+
+    expect(bodyArgument).toEqual({
+      model: 'meta/llama-7b',
+      inputs: 'Write a short haiku. Only respond with the Haiku, nothing else.',
+      options: {
+        wait_for_model: true,
+      },
+      parameters: {
+        max_new_tokens: 250,
+      },
+      stream: true,
+    });
+  });
+
   describe('streamTokens', () => {
     it('executes a stream() properly)', async () => {
       const fetchSpy = createFakeFetch({
         body: createUnpredictableByteStream(streamingGenerationResponse),
       });
 
-      const response = await HuggingFaceGeneration.streamTokens(
+      const response = await HuggingFaceTextGeneration.streamTokens(
         {
           model: 'google/flan-t5-xxl',
           inputs: 'Whats the best way to make a chicken pesto dish?',
@@ -165,6 +224,59 @@ describe('huggingface textGeneration task', () => {
       expect(bodyArgument).toEqual({
         model: 'google/flan-t5-xxl',
         inputs: 'Whats the best way to make a chicken pesto dish?',
+        stream: true,
+      });
+    });
+
+    it('executes a streamTokens() completion with a stop token </s> without passing it back', async () => {
+      const fetchSpy = createFakeFetch({
+        body: createUnpredictableByteStream(streamingGenerationResponseWithEndToken),
+      });
+
+      const response = await HuggingFaceTextGeneration.streamTokens(
+        {
+          model: 'meta/llama-7b',
+          inputs: 'Write a short haiku. Only respond with the Haiku, nothing else.',
+          options: {
+            wait_for_model: true,
+          },
+          parameters: {
+            max_new_tokens: 250,
+          },
+        },
+        { accessToken: 'hf_123', fetch: fetchSpy as any, apiUrl: 'https://custom.api.endpoint' },
+      );
+
+      let totalResp = '';
+      for await (const chunk of StreamToIterable(response)) {
+        totalResp += chunk;
+      }
+
+      expect(totalResp).toEqual(
+        '\nThe sun sets slowly\nGolden hues upon the sea\nPeaceful evening sky',
+      );
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledWith('https://custom.api.endpoint', {
+        body: expect.any(String),
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          authorization: 'Bearer hf_123',
+          'content-type': 'application/json',
+        },
+      });
+      const args = fetchSpy.mock.lastCall as any;
+      const bodyArgument = JSON.parse(args[1].body);
+
+      expect(bodyArgument).toEqual({
+        model: 'meta/llama-7b',
+        inputs: 'Write a short haiku. Only respond with the Haiku, nothing else.',
+        options: {
+          wait_for_model: true,
+        },
+        parameters: {
+          max_new_tokens: 250,
+        },
         stream: true,
       });
     });
