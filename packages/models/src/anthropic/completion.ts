@@ -19,6 +19,7 @@ export namespace AnthropicCompletionTypes {
     apiUrl?: string;
     version?: string;
     fetch?: typeof fetch;
+    headers?: Record<string, string>;
   };
 
   type Completion = {
@@ -52,10 +53,11 @@ export namespace AnthropicCompletionTypes {
   export type Events = 'completion' | 'ping' | 'error';
 }
 
-function headers(apiKey?: string, version?: string) {
+function headers(apiKey?: string, version?: string, customHeaders?: Record<string, string>) {
   const headers: Record<string, string> = {
     accept: 'application/json',
     'content-type': 'application/json',
+    ...customHeaders,
     'anthropic-version': version || '2023-06-01',
   };
 
@@ -77,6 +79,7 @@ function headers(apiKey?: string, version?: string) {
  * @param options.apiUrl The url of the Anthropic (or compatible) API. Defaults to https://api.anthropic.com/v1/complete.
  * @param options.version The Anthropic API version. Defaults to 2023-06-01. Note that older versions are not currently supported.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns Anthropic completion. See Anthropic's documentation for /v1/complete.
  */
 async function run(
@@ -86,7 +89,7 @@ async function run(
   const url = options.apiUrl || ANTHROPIC_API_URL;
 
   const response = await POST(url, {
-    headers: headers(options.apiKey, options.version),
+    headers: headers(options.apiKey, options.version, options.headers),
     body: JSON.stringify({ ...request, stream: false }),
     fetch: options.fetch,
   });
@@ -106,6 +109,7 @@ async function run(
  * @param options.apiUrl The url of the Anthropic (or compatible) API. Defaults to https://api.anthropic.com/v1/complete.
  * @param options.version The Anthropic API version. Defaults to 2023-06-01. Note that older versions are not currently supported.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of bytes directly from the API.
  */
 async function streamBytes(
@@ -115,7 +119,7 @@ async function streamBytes(
   const url = options.apiUrl || ANTHROPIC_API_URL;
 
   const response = await POST(url, {
-    headers: headers(options.apiKey, options.version),
+    headers: headers(options.apiKey, options.version, options.headers),
     body: JSON.stringify({ ...request, stream: true }),
     fetch: options.fetch,
   });
@@ -143,6 +147,7 @@ function noop(chunk: AnthropicCompletionTypes.Chunk) {
  * @param options.apiUrl The url of the Anthropic (or compatible) API. Defaults to https://api.anthropic.com/v1/complete.
  * @param options.version The Anthropic API version. Defaults to 2023-06-01. Note that older versions are not currently supported.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of objects representing each chunk from the API.
  */
 async function stream(
@@ -169,6 +174,7 @@ function chunkToToken(chunk: AnthropicCompletionTypes.Chunk): string {
  * @param options.apiUrl The url of the Anthropic (or compatible) API. Defaults to https://api.anthropic.com/v1/complete.
  * @param options.version The Anthropic API version. Defaults to 2023-06-01. Note that older versions are not currently supported.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of tokens from the API.
  */
 async function streamTokens(

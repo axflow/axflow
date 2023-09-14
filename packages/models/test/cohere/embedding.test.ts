@@ -41,5 +41,37 @@ describe('cohere embedding', () => {
 
       expect(bodyArgument).toEqual({ texts: ['How can I deploy to fly.io?'] });
     });
+
+    it('can supply custom headers', async () => {
+      const fetchSpy = createFakeFetch({
+        json: {
+          id: '2dac6b8b-2038-410d-9674-8b5e1b4eef47',
+          texts: ['How can I deploy to fly.io?'],
+          embeddings: [1, 2, 3, 4, 5, 6],
+          meta: { api_version: { version: '1' } },
+        },
+      });
+
+      await CohereEmbedding.run(
+        { texts: ['How can I deploy to fly.io?'] },
+        {
+          apiKey: 'sk-not-real',
+          fetch: fetchSpy as any,
+          headers: { 'x-my-custom-header': 'custom-value' },
+        },
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledWith('https://api.cohere.ai/v1/embed', {
+        body: expect.any(String),
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          authorization: 'Bearer sk-not-real',
+          'content-type': 'application/json',
+          'x-my-custom-header': 'custom-value',
+        },
+      });
+    });
   });
 });

@@ -41,6 +41,7 @@ export namespace OpenAIEmbeddingTypes {
  * @param options.apiKey OpenAI API key.
  * @param options.apiUrl The url of the OpenAI (or compatible) API. Defaults to https://api.openai.com/v1/embeddings.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns An object consisting of the text embeddings and other metadata. See OpenAI's documentation for /v1/embeddings.
  */
 async function run(
@@ -50,7 +51,7 @@ async function run(
   const url = options.apiUrl || OPENAI_COMPLETIONS_API_URL;
 
   const response = await POST(url, {
-    headers: headers(options.apiKey),
+    headers: headers(options.apiKey, options.headers),
     body: JSON.stringify(request),
     fetch: options.fetch,
   });
