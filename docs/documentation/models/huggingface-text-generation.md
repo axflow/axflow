@@ -106,3 +106,24 @@ declare function streamTokens(
   options: HuggingFaceTextGenerationTypes.RequestOptions
 ): Promise<ReadableStream<string>>;
 ```
+
+## Using Inference Endpoints
+
+You might have hosted your own model through HuggingFace's Inference Endpoints product.
+This is perfectly compatible with axflow's huggingface library, simply pass in the inference URL to the `HuggingFaceGeneration` request with the `apiUrl` parameter, like below:
+
+```ts
+const response = await HuggingFaceGeneration.stream(
+  {
+    model: 'llama2-7b',
+    inputs: 'Write a typescript function to add two numbers',
+    parameters: {
+      max_new_tokens: 100,
+    },
+  },
+  {
+    accessToken: process.env.HF_TOKEN!,
+    apiUrl: 'https://styuqm054heenl9w.us-east-1.aws.endpoints.huggingface.cloud',
+  }
+);
+```
