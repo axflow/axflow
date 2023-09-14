@@ -1,6 +1,6 @@
 {
   "name": "axeval",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A framework for evaluating LLM results",
   "keywords": [
     "framework",
