@@ -12,7 +12,7 @@ npm i @axflow/models
 * First-class support for streaming arbitrary data in addition to the LLM response
 * Comes with a set of utilities and React hooks for easily creating robust client applications
 * Built exclusively on modern web standards such as `fetch` and the stream APIs
-* Supports Node 18+, Next.js serverless or edge runtime, browsers, ESM, CJS, and more
+* Supports Node 18+, Next.js serverless or edge runtime, Express.js, browsers, ESM, CJS, and more
 * Supports a custom `fetch` implementation for request middleware (e.g., custom headers, logging)
 
 ## Supported models
@@ -36,6 +36,7 @@ View the [Guides](/guides) or the reference:
 * [@axflow/models/cohere/generation](/documentation/models/cohere-generation)
 * [@axflow/models/cohere/embedding](/documentation/models/cohere-embedding)
 * [@axflow/models/react](/documentation/models/react)
+* [@axflow/models/node](/documentation/models/node)
 * [@axflow/models/shared](/documentation/models/shared)
 
 ## Example Usage
@@ -195,3 +196,58 @@ for await (const chunk of StreamToIterable(stream)) {
   console.log(chunk.choices[0].delta.content);
 }
 ```
+
+## Express.js example
+
+Uses express + React hook on frontend.
+
+```ts
+///////////////////
+// On the server //
+///////////////////
+const express = require("express");
+const { OpenAIChat } = require("@axflow/models/openai/chat");
+const { streamJsonResponse } = require("@axflow/models/node");
+
+const app = express();
+app.use(express.json());
+
+app.post("/api/chat", async (req, res) => {
+  const { messages } = req.body;
+
+  const stream = await OpenAIChat.streamTokens(
+    {
+      model: "gpt-3.5-turbo",
+      messages: messages.map((msg) => ({
+        role: msg.role,
+        content: msg.content,
+      })),
+    },
+    {
+      apiKey: process.env.OPENAI_API_KEY,
+    }
+  );
+
+  return streamJsonResponse(stream, res);
+});
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
+});
+
+
+///////////////////
+// On the client //
+///////////////////
+import { useChat } from '@axflow/models/react';
+
+function ChatComponent() {
+  const {input, messages, onChange, onSubmit} = useChat();
+
+  return (
+    <>
+      <Messages messages={messages} />
+      <Form input={input} onChange={onChange} onSubmit={onSubmit} />
+    </>
+  );
+}
