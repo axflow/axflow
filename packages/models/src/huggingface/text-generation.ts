@@ -72,6 +72,18 @@ export namespace HuggingFaceTextGenerationTypes {
   };
 }
 
+/**
+ * Run a textGeneration task against the HF inference API
+ *
+ * @see https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
+ *
+ * @param request The request body sent to HF. See their documentation linked above for details
+ * @param options
+ * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
+ * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
+ * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
+ * @returns The response body from HF. See their documentation linked above for details
+ */
 async function run(
   request: HuggingFaceTextGenerationTypes.Request,
   options: HuggingFaceTextGenerationTypes.RequestOptions,
@@ -89,6 +101,18 @@ async function run(
   return response.json();
 }
 
+/**
+ * Stream a textGeneration task against the HF inference API. The resulting stream is the raw unmodified bytes from the API
+ *
+ * @see https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
+ *
+ * @param request The request body sent to HF. See their documentation linked above for details
+ * @param options
+ * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
+ * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
+ * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
+ * @returns A stream of bytes directly from the API.
+ */
 async function streamBytes(
   request: HuggingFaceTextGenerationTypes.Request,
   options: HuggingFaceTextGenerationTypes.RequestOptions,
@@ -141,6 +165,25 @@ function chunkToToken(chunk: HuggingFaceTextGenerationTypes.Chunk) {
   return chunk.token.text;
 }
 
+/**
+ * Stream a textGeneration task against the HF inference API. The resulting stream is the parsed stream data as JavaScript objects.
+ *
+ * @see https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
+ *
+ * @param request The request body sent to HF. See their documentation linked above for details
+ * @param options
+ * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
+ * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
+ * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
+ * @returns A stream of objects representing each chunk from the API
+ *
+ *   Example chunk:
+ *     {
+ *       token: { id: 11, text: ' and', logprob: -0.00002193451, special: false },
+ *       generated_text: null,
+ *       details: null
+ *     }
+ */
 async function stream(
   request: HuggingFaceTextGenerationTypes.Request,
   options: HuggingFaceTextGenerationTypes.RequestOptions,
@@ -149,6 +192,18 @@ async function stream(
   return byteStream.pipeThrough(new HuggingFaceDecoderStream(noop));
 }
 
+/**
+ * Run a streaming completion against the HF inference API. The resulting stream emits only the string tokens.
+ *
+ * @see https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
+ *
+ * @param request The request body sent to HF. See their documentation linked above for details
+ * @param options
+ * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
+ * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
+ * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
+ * @returns A stream of tokens from the API.
+ */
 async function streamTokens(
   request: HuggingFaceTextGenerationTypes.Request,
   options: HuggingFaceTextGenerationTypes.RequestOptions,
@@ -157,6 +212,9 @@ async function streamTokens(
   return byteStream.pipeThrough(new HuggingFaceDecoderStream(chunkToToken));
 }
 
+/**
+ * An object that encapsulates methods for calling the HF inference API
+ */
 export class HuggingFaceGeneration {
   static run = run;
   static streamBytes = streamBytes;
