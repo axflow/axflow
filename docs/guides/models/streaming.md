@@ -50,6 +50,10 @@ export async function POST(request: Request) {
 
 A `StreamingJsonResponse` object is returned from the handler function which will stream each token from the LLM back to the client.
 
+::: tip
+For environments that use Node.js `ServerResponse` objects, like express.js, use the [`streamJsonResponse`](/documentation/models/node.md#streamjsonresponse) function from the `@axflow/models/node` subpath export.
+:::
+
 ### Deconstructing the response
 
 `StreamingJsonResponse` converts each chunk of the stream into [newline-delimited JSON](http://ndjson.org). Newline-delimited JSON is easy to extend, parse, and reason about.

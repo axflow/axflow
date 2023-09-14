@@ -91,6 +91,9 @@
       "react": [
         "./dist/react/index.d.ts"
       ],
+      "node": [
+        "./dist/node/index.d.ts"
+      ],
       "shared": [
         "./dist/shared/index.d.ts"
       ]
@@ -139,6 +142,12 @@
       "import": "./dist/react/index.mjs",
       "module": "./dist/react/index.mjs",
       "require": "./dist/react/index.js"
+    },
+    "./node": {
+      "types": "./dist/node/index.d.ts",
+      "import": "./dist/node/index.mjs",
+      "module": "./dist/node/index.mjs",
+      "require": "./dist/node/index.js"
     },
     "./shared": {
       "types": "./dist/shared/index.d.ts",
