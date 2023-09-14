@@ -44,6 +44,13 @@ export default defineConfig([
     dts: true,
   },
   {
+    entry: ['src/huggingface/text-generation.ts'],
+    format: ['cjs', 'esm'],
+    outDir: 'dist/huggingface',
+    external: [/^@axflow\/models\//],
+    dts: true,
+  },
+  {
     entry: ['src/react/index.ts'],
     format: ['cjs', 'esm'],
     outDir: 'dist/react',

@@ -23,7 +23,9 @@
     "models",
     "useChat",
     "nextjs",
-    "react"
+    "react",
+    "hugging face",
+    "huggingface"
   ],
   "files": [
     "dist/**/*"
@@ -94,6 +96,9 @@
       "node": [
         "./dist/node/index.d.ts"
       ],
+      "huggingface": [
+        "./dist/huggingface/index.d.ts"
+      ],
       "shared": [
         "./dist/shared/index.d.ts"
       ]
@@ -136,6 +141,12 @@
       "import": "./dist/cohere/embedding.mjs",
       "module": "./dist/cohere/embedding.mjs",
       "require": "./dist/cohere/embedding.js"
+    },
+    "./huggingface/text-generation": {
+      "types": "./dist/huggingface/text-generation.d.ts",
+      "import": "./dist/huggingface/text-generationembedding.mjs",
+      "module": "./dist/huggingface/text-generationembedding.mjs",
+      "require": "./dist/huggingface/text-generationembedding.js"
     },
     "./react": {
       "types": "./dist/react/index.d.ts",
