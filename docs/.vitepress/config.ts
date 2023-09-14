@@ -47,6 +47,10 @@ export default defineConfig({
                     text: 'AnthropicCompletion',
                     link: '/documentation/models/anthropic-completion',
                   },
+                  {
+                    text: 'HuggingFaceTextGeneration',
+                    link: '/documentation/models/huggingface-text-generation',
+                  },
                   { text: 'CohereGeneration', link: '/documentation/models/cohere-generation' },
                   { text: 'CohereEmbedding', link: '/documentation/models/cohere-embedding' },
                   { text: 'React', link: '/documentation/models/react' },

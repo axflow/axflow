@@ -1,0 +1,108 @@
+# @axflow/models/huggingface/generation
+
+Interface with [HuggingFace's Inference API](https://huggingface.co/docs/api-inference/quicktour) using this module.
+
+```ts
+import { HuggingFaceGeneration } from '@axflow/models/huggingface/text-generation';
+import type { HuggingFaceTextGenerationTypes } from '@axflow/models/huggingface/text-generation';
+```
+
+```ts
+declare class HuggingFaceGeneration {
+  static run: typeof run;
+  static stream: typeof stream;
+  static streamBytes: typeof streamBytes;
+  static streamTokens: typeof streamTokens;
+}
+```
+
+## `run`
+
+```ts
+/**
+ * Run a textGeneration task against the HF inference API
+ *
+ * @see https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
+ *
+ * @param request The request body sent to HF. See their documentation linked above for details
+ * @param options
+ * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
+ * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
+ * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
+ * @returns The response body from HF. See their documentation linked above for details
+ */
+declare function run(
+  request: HuggingFaceTextGenerationTypes.Request,
+  options: HuggingFaceTextGenerationTypes.RequestOptions
+): Promise<HuggingFaceTextGenerationTypes.Response>;
+```
+
+## `streamBytes`
+
+```ts
+/**
+ * Stream a textGeneration task against the HF inference API. The resulting stream is the raw unmodified bytes from the API
+ *
+ * @see https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
+ *
+ * @param request The request body sent to HF. See their documentation linked above for details
+ * @param options
+ * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
+ * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
+ * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
+ * @returns A stream of bytes directly from the API.
+ */
+declare function streamBytes(
+  request: HuggingFaceTextGenerationTypes.Request,
+  options: HuggingFaceTextGenerationTypes.RequestOptions
+): Promise<ReadableStream<Uint8Array>>;
+```
+
+## `stream`
+
+```ts
+/**
+ * Stream a textGeneration task against the HF inference API. The resulting stream is the parsed stream data as JavaScript objects.
+ *
+ * @see https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
+ *
+ * @param request The request body sent to HF. See their documentation linked above for details
+ * @param options
+ * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
+ * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
+ * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
+ * @returns A stream of objects representing each chunk from the API
+ *
+ *   Example chunk:
+ *     {
+ *       token: { id: 11, text: ' and', logprob: -0.00002193451, special: false },
+ *       generated_text: null,
+ *       details: null
+ *     }
+ */
+declare function stream(
+  request: HuggingFaceTextGenerationTypes.Request,
+  options: HuggingFaceTextGenerationTypes.RequestOptions
+): Promise<ReadableStream<HuggingFaceTextGenerationTypes.Chunk>>;
+```
+
+## `streamTokens`
+
+```ts
+/**
+ * Run a streaming completion against the HF inference API. The resulting stream emits only the string tokens.
+ *
+ * @see https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
+ *
+ * @param request The request body sent to HF. See their documentation linked above for details
+ * @param options
+ * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
+ * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
+ * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
+ * @returns A stream of tokens from the API.
+ */
+declare function streamTokens(
+  request: HuggingFaceTextGenerationTypes.Request,
+  options: HuggingFaceTextGenerationTypes.RequestOptions
+): Promise<ReadableStream<string>>;
+```

@@ -8,43 +8,44 @@ npm i @axflow/models
 
 ## Features
 
-* First-class streaming support for both low-level byte streams and higher-level JavaScript object streams
-* First-class support for streaming arbitrary data in addition to the LLM response
-* Comes with a set of utilities and React hooks for easily creating robust client applications
-* Built exclusively on modern web standards such as `fetch` and the stream APIs
-* Supports Node 18+, Next.js serverless or edge runtime, Express.js, browsers, ESM, CJS, and more
-* Supports a custom `fetch` implementation for request middleware (e.g., custom headers, logging)
+- First-class streaming support for both low-level byte streams and higher-level JavaScript object streams
+- First-class support for streaming arbitrary data in addition to the LLM response
+- Comes with a set of utilities and React hooks for easily creating robust client applications
+- Built exclusively on modern web standards such as `fetch` and the stream APIs
+- Supports Node 18+, Next.js serverless or edge runtime, browsers, ESM, CJS, and more
+- Supports a custom `fetch` implementation for request middleware (e.g., custom headers, logging)
 
 ## Supported models
 
 - ✅ OpenAI and OpenAI-compatible Chat, Completion, and Embedding models
 - ✅ Cohere and Cohere-compatible Generation and Embedding models
 - ✅ Anthropic and Anthropic-compatible Completion models
+- ✅ HuggingFace inference API
 - Google PaLM models (coming soon)
 - Azure OpenAI (coming soon)
 - Replicate (coming soon)
-- HuggingFace (coming soon)
 
 ## Documentation
 
 View the [Guides](/guides) or the reference:
 
-* [@axflow/models/openai/chat](/documentation/models/openai-chat)
-* [@axflow/models/openai/completion](/documentation/models/openai-completion)
-* [@axflow/models/openai/embedding](/documentation/models/openai-embedding)
-* [@axflow/models/anthropic/completion](/documentation/models/anthropic-completion)
-* [@axflow/models/cohere/generation](/documentation/models/cohere-generation)
-* [@axflow/models/cohere/embedding](/documentation/models/cohere-embedding)
-* [@axflow/models/react](/documentation/models/react)
-* [@axflow/models/node](/documentation/models/node)
-* [@axflow/models/shared](/documentation/models/shared)
+- [@axflow/models/openai/chat](/documentation/models/openai-chat)
+- [@axflow/models/openai/completion](/documentation/models/openai-completion)
+- [@axflow/models/openai/embedding](/documentation/models/openai-embedding)
+- [@axflow/models/anthropic/completion](/documentation/models/anthropic-completion)
+- [@axflow/models/cohere/generation](/documentation/models/cohere-generation)
+- [@axflow/models/cohere/embedding](/documentation/models/cohere-embedding)
+- [@axflow/models/huggingface/text-generation](/documentation/models/huggingface-text-generation)
+- [@axflow/models/react](/documentation/models/react)
+- [@axflow/models/node](/documentation/models/node)
+- # [@axflow/models/shared](/documentation/models/shared)
 
 ## Example Usage
 
 ```ts
-import {OpenAIChat} from '@axflow/models/openai/chat';
-import {CohereGenerate} from '@axflow/models/cohere/generate';
-import {StreamToIterable} from '@axflow/models/shared';
+import { OpenAIChat } from '@axflow/models/openai/chat';
+import { CohereGenerate } from '@axflow/models/cohere/generate';
+import { StreamToIterable } from '@axflow/models/shared';
 
 const gpt4Stream = OpenAIChat.stream(
   {
@@ -53,7 +54,7 @@ const gpt4Stream = OpenAIChat.stream(
   },
   {
     apiKey: '<openai api key>',
-  },
+  }
 );
 
 const cohereStream = CohereGenerate.stream(
@@ -63,7 +64,7 @@ const cohereStream = CohereGenerate.stream(
   },
   {
     apiKey: '<cohere api key>',
-  },
+  }
 );
 
 // StreamToIterable is optional in recent node versions as
@@ -80,7 +81,7 @@ for await (const chunk of StreamToIterable(cohereStream)) {
 For models that support streaming, there is a convenience method for streaming only the string tokens.
 
 ```ts
-import {OpenAIChat} from '@axflow/models/openai/chat';
+import { OpenAIChat } from '@axflow/models/openai/chat';
 
 const tokenStream = OpenAIChat.streamTokens(
   {
@@ -89,7 +90,7 @@ const tokenStream = OpenAIChat.streamTokens(
   },
   {
     apiKey: '<openai api key>',
-  },
+  }
 );
 
 // Example stdout output:
@@ -100,7 +101,7 @@ for await (const token of tokenStream) {
   process.stdout.write(token);
 }
 
-process.stdout.write("\n");
+process.stdout.write('\n');
 ```
 
 ## `useChat` hook for dead simple UI integration
@@ -126,7 +127,7 @@ export async function POST(request: Request) {
     },
     {
       apiKey: process.env.OPENAI_API_KEY!,
-    },
+    }
   );
 
   return new StreamingJsonResponse(stream);
@@ -138,7 +139,7 @@ export async function POST(request: Request) {
 import { useChat } from '@axflow/models/react';
 
 function ChatComponent() {
-  const {input, messages, onChange, onSubmit} = useChat();
+  const { input, messages, onChange, onSubmit } = useChat();
 
   return (
     <>
@@ -153,13 +154,13 @@ function ChatComponent() {
 
 Sometimes you just want to create a proxy to the underlying LLM API. In this example, the server intercepts the request on the edge, adds the proper API key, and forwards the byte stream back to the client.
 
-*Note this pattern works exactly the same with our other models that support streaming, like Cohere and Anthropic.*
+_Note this pattern works exactly the same with our other models that support streaming, like Cohere and Anthropic._
 
 ```ts
 import { NextRequest, NextResponse } from 'next/server';
 import { OpenAIChat } from '@axflow/models/openai/chat';
 
-export const runtime = 'edge'
+export const runtime = 'edge';
 
 // POST /api/openai/chat
 export async function POST(request: NextRequest) {
@@ -176,7 +177,7 @@ export async function POST(request: NextRequest) {
 
 On the client, we can use `OpenAIChat.stream` with a custom `apiUrl` in place of the `apiKey` that points to our Next.js edge route.
 
-*DO NOT expose api keys to your frontend.*
+_DO NOT expose api keys to your frontend._
 
 ```ts
 import { OpenAIChat } from '@axflow/models/openai/chat';
@@ -188,7 +189,7 @@ const stream = await OpenAIChat.stream(
     messages: [{ role: 'user', content: 'What is the Eiffel tower?' }],
   },
   {
-    apiUrl: "/api/openai/chat",
+    apiUrl: '/api/openai/chat',
   }
 );
 
@@ -205,19 +206,19 @@ Uses express + React hook on frontend.
 ///////////////////
 // On the server //
 ///////////////////
-const express = require("express");
-const { OpenAIChat } = require("@axflow/models/openai/chat");
-const { streamJsonResponse } = require("@axflow/models/node");
+const express = require('express');
+const { OpenAIChat } = require('@axflow/models/openai/chat');
+const { streamJsonResponse } = require('@axflow/models/node');
 
 const app = express();
 app.use(express.json());
 
-app.post("/api/chat", async (req, res) => {
+app.post('/api/chat', async (req, res) => {
   const { messages } = req.body;
 
   const stream = await OpenAIChat.streamTokens(
     {
-      model: "gpt-3.5-turbo",
+      model: 'gpt-3.5-turbo',
       messages: messages.map((msg) => ({
         role: msg.role,
         content: msg.content,
@@ -235,14 +236,13 @@ app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
 
-
 ///////////////////
 // On the client //
 ///////////////////
 import { useChat } from '@axflow/models/react';
 
 function ChatComponent() {
-  const {input, messages, onChange, onSubmit} = useChat();
+  const { input, messages, onChange, onSubmit } = useChat();
 
   return (
     <>
@@ -251,3 +251,4 @@ function ChatComponent() {
     </>
   );
 }
+```
