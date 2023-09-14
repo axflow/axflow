@@ -33,7 +33,7 @@ async function stableAppend(
   setMessages(messagesRef.current.concat(message));
 
   const response = await POST(url, {
-    headers: headers,
+    headers: { ...headers, 'content-type': 'application/json; charset=utf-8' },
     body: JSON.stringify(requestBody),
   });
 
