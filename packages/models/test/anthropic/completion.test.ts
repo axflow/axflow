@@ -68,6 +68,44 @@ describe('anthropic completion', () => {
         stream: false,
       });
     });
+
+    it('can supply custom headers', async () => {
+      const fetchSpy = createFakeFetch({
+        json: {
+          completion: ' Hello!',
+          stop_reason: 'stop_sequence',
+          model: 'claude-2.0',
+          stop: '\n\nHuman:',
+          log_id: 'bfd6321f190b5c6f55ca91cf2956f8b956654b7491af118ba18559d7c24a4684',
+        },
+      });
+
+      await AnthropicCompletion.run(
+        {
+          model: 'claude-2',
+          prompt: '\n\nHuman: Hello, world!\n\nAssistant:',
+          max_tokens_to_sample: 256,
+        },
+        {
+          apiKey: 'sk-not-real',
+          fetch: fetchSpy as any,
+          headers: { 'x-my-custom-header': 'custom-value' },
+        },
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledWith('https://api.anthropic.com/v1/complete', {
+        body: expect.any(String),
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          'x-api-key': 'sk-not-real',
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+          'x-my-custom-header': 'custom-value',
+        },
+      });
+    });
   });
 
   describe('stream', () => {
@@ -117,6 +155,38 @@ describe('anthropic completion', () => {
         prompt: '\n\nHuman: Hello, world!\n\nAssistant:',
         max_tokens_to_sample: 256,
         stream: true,
+      });
+    });
+
+    it('can supply custom headers', async () => {
+      const fetchSpy = createFakeFetch({
+        body: createUnpredictableByteStream(streamingCompletionResponse),
+      });
+
+      await AnthropicCompletion.stream(
+        {
+          model: 'claude-2',
+          prompt: '\n\nHuman: Hello, world!\n\nAssistant:',
+          max_tokens_to_sample: 256,
+        },
+        {
+          apiKey: 'sk-not-real',
+          fetch: fetchSpy as any,
+          headers: { 'x-my-custom-header': 'custom-value' },
+        },
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledWith('https://api.anthropic.com/v1/complete', {
+        body: expect.any(String),
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          'x-api-key': 'sk-not-real',
+          'anthropic-version': '2023-06-01',
+          'content-type': 'application/json',
+          'x-my-custom-header': 'custom-value',
+        },
       });
     });
   });

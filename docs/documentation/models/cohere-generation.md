@@ -29,6 +29,7 @@ declare class CohereGeneration {
  * @param options.apiKey Cohere API key.
  * @param options.apiUrl The url of the Cohere (or compatible) API. Defaults to https://api.cohere.ai/v1/generate.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns Cohere completion. See Cohere's documentation for /v1/generate.
  */
 declare function run(
@@ -50,6 +51,7 @@ declare function run(
  * @param options.apiKey Cohere API key.
  * @param options.apiUrl The url of the Cohere (or compatible) API. Defaults to https://api.cohere.ai/v1/generate.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of bytes directly from the API.
  */
 declare function streamBytes(
@@ -71,6 +73,7 @@ declare function streamBytes(
  * @param options.apiKey Cohere API key.
  * @param options.apiUrl The url of the Cohere (or compatible) API. Defaults to https://api.cohere.ai/v1/generate.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of objects representing each chunk from the API.
  */
 declare function stream(
@@ -92,6 +95,7 @@ declare function stream(
  * @param options.apiKey Cohere API key.
  * @param options.apiUrl The url of the Cohere (or compatible) API. Defaults to https://api.cohere.ai/v1/generate.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of tokens from the API.
  */
 declare function streamTokens(

@@ -72,6 +72,7 @@ export namespace CohereGenerationTypes {
  * @param options.apiKey Cohere API key.
  * @param options.apiUrl The url of the Cohere (or compatible) API. Defaults to https://api.cohere.ai/v1/generate.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns Cohere completion. See Cohere's documentation for /v1/generate.
  */
 async function run(
@@ -81,7 +82,7 @@ async function run(
   const url = options.apiUrl || COHERE_API_URL;
 
   const response = await POST(url, {
-    headers: headers(options.apiKey),
+    headers: headers(options.apiKey, options.headers),
     body: JSON.stringify({ ...request, stream: false }),
     fetch: options.fetch,
   });
@@ -99,6 +100,7 @@ async function run(
  * @param options.apiKey Cohere API key.
  * @param options.apiUrl The url of the Cohere (or compatible) API. Defaults to https://api.cohere.ai/v1/generate.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of bytes directly from the API.
  */
 async function streamBytes(
@@ -108,7 +110,7 @@ async function streamBytes(
   const url = options.apiUrl || COHERE_API_URL;
 
   const response = await POST(url, {
-    headers: headers(options.apiKey),
+    headers: headers(options.apiKey, options.headers),
     body: JSON.stringify({ ...request, stream: true }),
     fetch: options.fetch,
   });
@@ -134,6 +136,7 @@ function noop(chunk: CohereGenerationTypes.Chunk) {
  * @param options.apiKey Cohere API key.
  * @param options.apiUrl The url of the Cohere (or compatible) API. Defaults to https://api.cohere.ai/v1/generate.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of objects representing each chunk from the API.
  */
 async function stream(
@@ -158,6 +161,7 @@ function chunkToToken(chunk: CohereGenerationTypes.Chunk) {
  * @param options.apiKey Cohere API key.
  * @param options.apiUrl The url of the Cohere (or compatible) API. Defaults to https://api.cohere.ai/v1/generate.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of tokens from the API.
  */
 async function streamTokens(

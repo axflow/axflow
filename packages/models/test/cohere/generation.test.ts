@@ -73,6 +73,46 @@ describe('cohere generation', () => {
         stream: false,
       });
     });
+
+    it('can supply custom headers', async () => {
+      const fetchSpy = createFakeFetch({
+        json: {
+          id: 'a427751b-776f-49a8-b078-3b36acd206d1',
+          generations: [
+            {
+              id: '9286db4a-c632-4a43-b9c0-c236bb3a82d5',
+              text: ' LLMs, or large language models, are artificial intelligence models that are designed to perform language-based tasks such as generating text, answering questions, and performing language-related analyses. They are trained on massive amounts of text data, which helps them learn to understand and generate language in a way that is similar to how humans do it.',
+            },
+          ],
+          prompt: 'Please explain to me how LLMs work in two sentences or less',
+          meta: { api_version: { version: '1' } },
+        },
+      });
+
+      await CohereGeneration.run(
+        {
+          prompt: 'Please explain to me how LLMs work in two sentences or less',
+          max_tokens: 80,
+        },
+        {
+          apiKey: 'sk-not-real',
+          fetch: fetchSpy as any,
+          headers: { 'x-my-custom-header': 'custom-value' },
+        },
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledWith('https://api.cohere.ai/v1/generate', {
+        body: expect.any(String),
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          authorization: 'Bearer sk-not-real',
+          'content-type': 'application/json',
+          'x-my-custom-header': 'custom-value',
+        },
+      });
+    });
   });
 
   describe('stream', () => {
@@ -119,6 +159,36 @@ describe('cohere generation', () => {
         prompt: 'Please explain to me how LLMs work in two sentences or less',
         max_tokens: 80,
         stream: true,
+      });
+    });
+
+    it('can supply custom headers', async () => {
+      const fetchSpy = createFakeFetch({
+        body: createUnpredictableByteStream(streamingGenerationResponse),
+      });
+
+      await CohereGeneration.stream(
+        {
+          prompt: 'Please explain to me how LLMs work in two sentences or less',
+          max_tokens: 80,
+        },
+        {
+          apiKey: 'sk-not-real',
+          fetch: fetchSpy as any,
+          headers: { 'x-my-custom-header': 'custom-value' },
+        },
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledWith('https://api.cohere.ai/v1/generate', {
+        body: expect.any(String),
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          authorization: 'Bearer sk-not-real',
+          'content-type': 'application/json',
+          'x-my-custom-header': 'custom-value',
+        },
       });
     });
   });

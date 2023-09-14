@@ -74,6 +74,51 @@ describe('openai chat', () => {
         stream: false,
       });
     });
+
+    it('can supply custom headers', async () => {
+      const fetchSpy = createFakeFetch({
+        json: {
+          id: 'cmpl-7qQ4UuIH02BRy3yAN71b8KeHxN19p',
+          object: 'text_completion',
+          created: 1692727630,
+          model: 'text-davinci-003',
+          choices: [
+            {
+              text: '\n\nTall wrought iron lattice tower in Paris, France, built by Gustave Eiffel in 1889.',
+              index: 0,
+              logprobs: null,
+              finish_reason: 'stop',
+            },
+          ],
+          usage: { prompt_tokens: 15, completion_tokens: 24, total_tokens: 39 },
+        },
+      });
+
+      await OpenAICompletion.run(
+        {
+          model: 'text-davinci-003',
+          prompt: 'Using no more than 20 words, what is the Eiffel tower?',
+          max_tokens: 256,
+        },
+        {
+          apiKey: 'sk-not-real',
+          fetch: fetchSpy as any,
+          headers: { 'x-my-custom-header': 'custom-value' },
+        },
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledWith('https://api.openai.com/v1/completions', {
+        body: expect.any(String),
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          authorization: 'Bearer sk-not-real',
+          'content-type': 'application/json',
+          'x-my-custom-header': 'custom-value',
+        },
+      });
+    });
   });
 
   describe('stream', () => {
@@ -124,6 +169,37 @@ describe('openai chat', () => {
         prompt: 'Using no more than 20 words, what is the Eiffel tower?',
         max_tokens: 256,
         stream: true,
+      });
+    });
+
+    it('can supply custom headers', async () => {
+      const fetchSpy = createFakeFetch({
+        body: createUnpredictableByteStream(streamingChatResponse),
+      });
+
+      await OpenAICompletion.stream(
+        {
+          model: 'text-davinci-003',
+          prompt: 'Using no more than 20 words, what is the Eiffel tower?',
+          max_tokens: 256,
+        },
+        {
+          apiKey: 'sk-not-real',
+          fetch: fetchSpy as any,
+          headers: { 'x-my-custom-header': 'custom-value' },
+        },
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledWith('https://api.openai.com/v1/completions', {
+        body: expect.any(String),
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          authorization: 'Bearer sk-not-real',
+          'content-type': 'application/json',
+          'x-my-custom-header': 'custom-value',
+        },
       });
     });
   });

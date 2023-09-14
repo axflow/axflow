@@ -30,6 +30,7 @@ declare class AnthropicCompletion {
  * @param options.apiUrl The url of the Anthropic (or compatible) API. Defaults to https://api.anthropic.com/v1/complete.
  * @param options.version The Anthropic API version. Defaults to 2023-06-01. Note that older versions are not currently supported.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns Anthropic completion. See Anthropic's documentation for /v1/complete.
  */
 declare function run(
@@ -53,6 +54,7 @@ declare function run(
  * @param options.apiUrl The url of the Anthropic (or compatible) API. Defaults to https://api.anthropic.com/v1/complete.
  * @param options.version The Anthropic API version. Defaults to 2023-06-01. Note that older versions are not currently supported.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of bytes directly from the API.
  */
 declare function streamBytes(
@@ -76,6 +78,7 @@ declare function streamBytes(
  * @param options.apiUrl The url of the Anthropic (or compatible) API. Defaults to https://api.anthropic.com/v1/complete.
  * @param options.version The Anthropic API version. Defaults to 2023-06-01. Note that older versions are not currently supported.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of objects representing each chunk from the API.
  */
 declare function stream(
@@ -99,6 +102,7 @@ declare function stream(
  * @param options.apiUrl The url of the Anthropic (or compatible) API. Defaults to https://api.anthropic.com/v1/complete.
  * @param options.version The Anthropic API version. Defaults to 2023-06-01. Note that older versions are not currently supported.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of tokens from the API.
  */
 declare function streamTokens(

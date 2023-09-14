@@ -75,6 +75,55 @@ describe('openai chat', () => {
         stream: false,
       });
     });
+
+    it('can supply custom headers', async () => {
+      const fetchSpy = createFakeFetch({
+        json: {
+          id: 'chatcmpl-7q9iFa9eplmD2n3hGPwJ6iBLlUQkY',
+          object: 'chat.completion',
+          created: 1692664747,
+          model: 'gpt-4-0613',
+          choices: [
+            {
+              index: 0,
+              message: {
+                role: 'assistant',
+                content:
+                  'The Eiffel Tower is a wrought-iron lattice tower located in Paris, France and is a globally recognised symbol.',
+              },
+              finish_reason: 'stop',
+            },
+          ],
+          usage: { prompt_tokens: 23, completion_tokens: 24, total_tokens: 47 },
+        },
+      });
+
+      await OpenAIChat.run(
+        {
+          model: 'gpt-4',
+          messages: [
+            { role: 'user', content: 'Using no more than 20 words, what is the Eiffel tower?' },
+          ],
+        },
+        {
+          apiKey: 'sk-not-real',
+          fetch: fetchSpy as any,
+          headers: { 'x-my-custom-header': 'custom-value' },
+        },
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledWith('https://api.openai.com/v1/chat/completions', {
+        body: expect.any(String),
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          authorization: 'Bearer sk-not-real',
+          'content-type': 'application/json',
+          'x-my-custom-header': 'custom-value',
+        },
+      });
+    });
   });
 
   describe('stream', () => {
@@ -127,6 +176,38 @@ describe('openai chat', () => {
           { role: 'user', content: 'Using no more than 20 words, what is the Eiffel tower?' },
         ],
         stream: true,
+      });
+    });
+
+    it('can supply custom headers', async () => {
+      const fetchSpy = createFakeFetch({
+        body: createUnpredictableByteStream(streamingChatResponse),
+      });
+
+      await OpenAIChat.stream(
+        {
+          model: 'gpt-4',
+          messages: [
+            { role: 'user', content: 'Using no more than 20 words, what is the Eiffel tower?' },
+          ],
+        },
+        {
+          apiKey: 'sk-not-real',
+          fetch: fetchSpy as any,
+          headers: { 'x-my-custom-header': 'custom-value' },
+        },
+      );
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(fetchSpy).toHaveBeenCalledWith('https://api.openai.com/v1/chat/completions', {
+        body: expect.any(String),
+        method: 'POST',
+        headers: {
+          accept: 'application/json',
+          authorization: 'Bearer sk-not-real',
+          'content-type': 'application/json',
+          'x-my-custom-header': 'custom-value',
+        },
       });
     });
   });
