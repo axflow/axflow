@@ -8,7 +8,7 @@ import {streamJsonResponse} from '@axflow/models/node';
 
 ## `streamJsonResponse`
 
-This function enables pipeing chunks from a `ReadableStream` to a Node.js `ServerResponse` object. This is the Node.js equivalent of the [`StreamingJsonResponse`](/documentation/models/shared.md#streamingjsonresponse).
+This function enables pipeing chunks from a `ReadableStream` to a Node.js `ServerResponse` object. This is the Node.js standard library equivalent of [`StreamingJsonResponse`](/documentation/models/shared.md#streamingjsonresponse).
 
 ```ts
 /**
