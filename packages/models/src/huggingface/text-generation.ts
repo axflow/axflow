@@ -4,7 +4,7 @@ import { HttpError, POST } from '@axflow/models/shared';
 // https://huggingface.co/models?pipeline_tag=text-generation
 
 // https://huggingface.co/docs/api-inference/quicktour#running-inference-with-api-requests
-const HF_MODEL_API_URL = 'https://api-inference.huggingface.co/models/';
+const HUGGING_FACE_MODEL_API_URL = 'https://api-inference.huggingface.co/models/';
 
 function headers(accessToken?: string) {
   const headers: Record<string, string> = {
@@ -17,7 +17,7 @@ function headers(accessToken?: string) {
   return headers;
 }
 
-export namespace HfTextGenerationTypes {
+export namespace HuggingFaceTextGenerationTypes {
   // https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
   export type Request = {
     model: string;
@@ -73,10 +73,10 @@ export namespace HfTextGenerationTypes {
 }
 
 async function run(
-  request: HfTextGenerationTypes.Request,
-  options: HfTextGenerationTypes.RequestOptions,
-): Promise<HfTextGenerationTypes.Response> {
-  const url = options.apiUrl || HF_MODEL_API_URL + request.model;
+  request: HuggingFaceTextGenerationTypes.Request,
+  options: HuggingFaceTextGenerationTypes.RequestOptions,
+): Promise<HuggingFaceTextGenerationTypes.Response> {
+  const url = options.apiUrl || HUGGING_FACE_MODEL_API_URL + request.model;
 
   const headers_ = headers(options.accessToken);
   const body = JSON.stringify({ ...request, stream: false });
@@ -90,10 +90,10 @@ async function run(
 }
 
 async function streamBytes(
-  request: HfTextGenerationTypes.Request,
-  options: HfTextGenerationTypes.RequestOptions,
+  request: HuggingFaceTextGenerationTypes.Request,
+  options: HuggingFaceTextGenerationTypes.RequestOptions,
 ): Promise<ReadableStream<Uint8Array>> {
-  const url = options.apiUrl || HF_MODEL_API_URL + request.model;
+  const url = options.apiUrl || HUGGING_FACE_MODEL_API_URL + request.model;
 
   const headers_ = headers(options.accessToken);
   const body = JSON.stringify({ ...request, stream: true });
@@ -125,7 +125,7 @@ async function streamBytes(
   }
 }
 
-function noop(chunk: HfTextGenerationTypes.Chunk) {
+function noop(chunk: HuggingFaceTextGenerationTypes.Chunk) {
   return chunk;
 }
 
@@ -137,37 +137,37 @@ function noop(chunk: HfTextGenerationTypes.Chunk) {
  *     details: null
  *   }
  */
-function chunkToToken(chunk: HfTextGenerationTypes.Chunk) {
+function chunkToToken(chunk: HuggingFaceTextGenerationTypes.Chunk) {
   return chunk.token.text;
 }
 
 async function stream(
-  request: HfTextGenerationTypes.Request,
-  options: HfTextGenerationTypes.RequestOptions,
-): Promise<ReadableStream<HfTextGenerationTypes.Chunk>> {
+  request: HuggingFaceTextGenerationTypes.Request,
+  options: HuggingFaceTextGenerationTypes.RequestOptions,
+): Promise<ReadableStream<HuggingFaceTextGenerationTypes.Chunk>> {
   const byteStream = await streamBytes(request, options);
-  return byteStream.pipeThrough(new HfDecoderStream(noop));
+  return byteStream.pipeThrough(new HuggingFaceDecoderStream(noop));
 }
 
 async function streamTokens(
-  request: HfTextGenerationTypes.Request,
-  options: HfTextGenerationTypes.RequestOptions,
+  request: HuggingFaceTextGenerationTypes.Request,
+  options: HuggingFaceTextGenerationTypes.RequestOptions,
 ): Promise<ReadableStream<string>> {
   const byteStream = await streamBytes(request, options);
-  return byteStream.pipeThrough(new HfDecoderStream(chunkToToken));
+  return byteStream.pipeThrough(new HuggingFaceDecoderStream(chunkToToken));
 }
 
-export class HfGeneration {
+export class HuggingFaceGeneration {
   static run = run;
   static streamBytes = streamBytes;
   static stream = stream;
   static streamTokens = streamTokens;
 }
 
-class HfDecoderStream<T> extends TransformStream<Uint8Array, T> {
+class HuggingFaceDecoderStream<T> extends TransformStream<Uint8Array, T> {
   private static LINES_RE = /data:\s*(.+)/;
 
-  private static parseChunk(lines: string): HfTextGenerationTypes.Chunk | null {
+  private static parseChunk(lines: string): HuggingFaceTextGenerationTypes.Chunk | null {
     lines = lines.trim();
 
     // Empty lines are ignored
@@ -175,17 +175,17 @@ class HfDecoderStream<T> extends TransformStream<Uint8Array, T> {
       return null;
     }
 
-    const match = lines.match(HfDecoderStream.LINES_RE);
+    const match = lines.match(HuggingFaceDecoderStream.LINES_RE);
 
     try {
       const data = match![1];
       return JSON.parse(data);
     } catch (e) {
-      throw new Error(`Malformed streaming data from HF: ${JSON.stringify(lines)}`);
+      throw new Error(`Malformed streaming data from HuggingFace: ${JSON.stringify(lines)}`);
     }
   }
 
-  private static transformer<T>(map: (chunk: HfTextGenerationTypes.Chunk) => T) {
+  private static transformer<T>(map: (chunk: HuggingFaceTextGenerationTypes.Chunk) => T) {
     let buffer: string[] = [];
     const decoder = new TextDecoder();
 
@@ -204,7 +204,7 @@ class HfDecoderStream<T> extends TransformStream<Uint8Array, T> {
         }
 
         // Decode the object into the expected JSON type
-        const parsedChunk = HfDecoderStream.parseChunk(buffer.join(''));
+        const parsedChunk = HuggingFaceDecoderStream.parseChunk(buffer.join(''));
         if (parsedChunk) {
           controller.enqueue(map(parsedChunk));
         }
@@ -214,7 +214,7 @@ class HfDecoderStream<T> extends TransformStream<Uint8Array, T> {
     };
   }
 
-  constructor(map: (chunk: HfTextGenerationTypes.Chunk) => T) {
-    super({ transform: HfDecoderStream.transformer(map) });
+  constructor(map: (chunk: HuggingFaceTextGenerationTypes.Chunk) => T) {
+    super({ transform: HuggingFaceDecoderStream.transformer(map) });
   }
 }

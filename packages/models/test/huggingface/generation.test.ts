@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
 import Path from 'node:path';
-import { HfGeneration } from '../../src/huggingface/text-generation';
+import { HuggingFaceGeneration } from '../../src/huggingface/text-generation';
 import { StreamToIterable } from '../../src/shared';
 import { createFakeFetch, createUnpredictableByteStream } from '../utils';
 
@@ -26,7 +26,7 @@ describe('huggingface textGeneration task', () => {
           },
         ],
       });
-      const response = await HfGeneration.run(
+      const response = await HuggingFaceGeneration.run(
         {
           model: 'gpt2',
           inputs: 'Whats the best way to make a chicken pesto dish?',
@@ -76,7 +76,7 @@ describe('huggingface textGeneration task', () => {
         body: createUnpredictableByteStream(streamingGenerationResponse),
       });
 
-      const response = await HfGeneration.stream(
+      const response = await HuggingFaceGeneration.stream(
         {
           model: 'google/flan-t5-xxl',
           inputs: 'Whats the best way to make a chicken pesto dish?',
@@ -132,7 +132,7 @@ describe('huggingface textGeneration task', () => {
         body: createUnpredictableByteStream(streamingGenerationResponse),
       });
 
-      const response = await HfGeneration.streamTokens(
+      const response = await HuggingFaceGeneration.streamTokens(
         {
           model: 'google/flan-t5-xxl',
           inputs: 'Whats the best way to make a chicken pesto dish?',
