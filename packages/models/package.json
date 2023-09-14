@@ -1,6 +1,6 @@
 {
   "name": "@axflow/models",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Zero-dependency, modular SDK for building robust natural language applications",
   "author": "Axflow (https://axflow.dev)",
   "homepage": "https://github.com/axflow/axflowtree/main/packages/models#readme",
