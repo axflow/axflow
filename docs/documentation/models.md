@@ -20,7 +20,7 @@ npm i @axflow/models
 - ✅ OpenAI and OpenAI-compatible Chat, Completion, and Embedding models
 - ✅ Cohere and Cohere-compatible Generation and Embedding models
 - ✅ Anthropic and Anthropic-compatible Completion models
-- ✅ HuggingFace inference API or Inference Endpoints
+- ✅ HuggingFace text generation inference API and Inference Endpoints
 - Google PaLM models (coming soon)
 - Azure OpenAI (coming soon)
 - Replicate (coming soon)

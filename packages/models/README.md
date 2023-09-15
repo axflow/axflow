@@ -20,10 +20,11 @@ npm i @axflow/models
 - ✅ OpenAI and OpenAI-compatible Chat, Completion, and Embedding models
 - ✅ Cohere and Cohere-compatible Generation and Embedding models
 - ✅ Anthropic and Anthropic-compatible Completion models
+- ✅ HuggingFace text generation inference API and Inference Endpoints
+- HuggingFace (coming soon)
 - Google PaLM models (coming soon)
 - Azure OpenAI (coming soon)
 - Replicate (coming soon)
-- HuggingFace (coming soon)
 
 ## Documentation
 
@@ -35,6 +36,7 @@ View the [Guides](https://docs.axflow.dev/guides) or the reference:
 - [@axflow/models/anthropic/completion](https://docs.axflow.dev/documentation/models/anthropic-completion.html)
 - [@axflow/models/cohere/generation](https://docs.axflow.dev/documentation/models/cohere-generation.html)
 - [@axflow/models/cohere/embedding](https://docs.axflow.dev/documentation/models/cohere-embedding.html)
+- [@axflow/models/huggingface/text-generation](https://docs.axflow.dev/documentation/models/huggingface-text-generation.html)
 - [@axflow/models/react](https://docs.axflow.dev/documentation/models/react.html)
 - [@axflow/models/node](https://docs.axflow.dev/documentation/models/node.html)
 - [@axflow/models/shared](https://docs.axflow.dev/documentation/models/shared.html)
