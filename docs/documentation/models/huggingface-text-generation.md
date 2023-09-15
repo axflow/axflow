@@ -26,10 +26,11 @@ declare class HuggingFaceTextGeneration {
  *
  * @param request The request body sent to HF. See their documentation linked above for details
  * @param options
- * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
+ * @param options.apiKey The HuggingFace access token. If not provided, requests will be throttled
  * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
  * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
  * @param options.headers Optionally add additional HTTP headers to the request.
+ * @param options.signal An AbortSignal that can be used to abort the fetch request.
  * @returns The response body from HF. See their documentation linked above for details
  */
 declare function run(
@@ -48,10 +49,11 @@ declare function run(
  *
  * @param request The request body sent to HF. See their documentation linked above for details
  * @param options
- * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
+ * @param options.apiKey The HuggingFace access token. If not provided, requests will be throttled
  * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
  * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
  * @param options.headers Optionally add additional HTTP headers to the request.
+ * @param options.signal An AbortSignal that can be used to abort the fetch request.
  * @returns A stream of bytes directly from the API.
  */
 declare function streamBytes(
@@ -76,10 +78,11 @@ declare function streamBytes(
  *
  * @param request The request body sent to HF. See their documentation linked above for details
  * @param options
- * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
+ * @param options.apiKey The HuggingFace access token. If not provided, requests will be throttled
  * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
  * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
  * @param options.headers Optionally add additional HTTP headers to the request.
+ * @param options.signal An AbortSignal that can be used to abort the fetch request.
  * @returns A stream of objects representing each chunk from the API
  */
 declare function stream(
@@ -99,10 +102,11 @@ declare function stream(
  *
  * @param request The request body sent to HF. See their documentation linked above for details
  * @param options
- * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
+ * @param options.apiKey The HuggingFace access token. If not provided, requests will be throttled
  * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
  * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
  * @param options.headers Optionally add additional HTTP headers to the request.
+ * @param options.signal An AbortSignal that can be used to abort the fetch request.
  * @returns A stream of tokens from the API.
  */
 declare function streamTokens(
@@ -126,7 +130,7 @@ const response = await HuggingFaceTextGeneration.stream(
     },
   },
   {
-    accessToken: process.env.HF_TOKEN!,
+    apiKey: process.env.HUGGINGFACE_ACCESS_TOKEN!,
     apiUrl: 'https://styuqm054heenl9w.us-east-1.aws.endpoints.huggingface.cloud',
   }
 );

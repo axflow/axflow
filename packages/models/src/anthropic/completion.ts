@@ -20,6 +20,7 @@ export namespace AnthropicCompletionTypes {
     version?: string;
     fetch?: typeof fetch;
     headers?: Record<string, string>;
+    signal?: AbortSignal;
   };
 
   type Completion = {
@@ -80,6 +81,7 @@ function headers(apiKey?: string, version?: string, customHeaders?: Record<strin
  * @param options.version The Anthropic API version. Defaults to 2023-06-01. Note that older versions are not currently supported.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
  * @param options.headers Optionally add additional HTTP headers to the request.
+ * @param options.signal An AbortSignal that can be used to abort the fetch request.
  * @returns Anthropic completion. See Anthropic's documentation for /v1/complete.
  */
 async function run(
@@ -92,6 +94,7 @@ async function run(
     headers: headers(options.apiKey, options.version, options.headers),
     body: JSON.stringify({ ...request, stream: false }),
     fetch: options.fetch,
+    signal: options.signal,
   });
 
   return response.json();
@@ -110,6 +113,7 @@ async function run(
  * @param options.version The Anthropic API version. Defaults to 2023-06-01. Note that older versions are not currently supported.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
  * @param options.headers Optionally add additional HTTP headers to the request.
+ * @param options.signal An AbortSignal that can be used to abort the fetch request.
  * @returns A stream of bytes directly from the API.
  */
 async function streamBytes(
@@ -122,6 +126,7 @@ async function streamBytes(
     headers: headers(options.apiKey, options.version, options.headers),
     body: JSON.stringify({ ...request, stream: true }),
     fetch: options.fetch,
+    signal: options.signal,
   });
 
   if (!response.body) {
@@ -148,6 +153,7 @@ function noop(chunk: AnthropicCompletionTypes.Chunk) {
  * @param options.version The Anthropic API version. Defaults to 2023-06-01. Note that older versions are not currently supported.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
  * @param options.headers Optionally add additional HTTP headers to the request.
+ * @param options.signal An AbortSignal that can be used to abort the fetch request.
  * @returns A stream of objects representing each chunk from the API.
  */
 async function stream(
@@ -175,6 +181,7 @@ function chunkToToken(chunk: AnthropicCompletionTypes.Chunk): string {
  * @param options.version The Anthropic API version. Defaults to 2023-06-01. Note that older versions are not currently supported.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
  * @param options.headers Optionally add additional HTTP headers to the request.
+ * @param options.signal An AbortSignal that can be used to abort the fetch request.
  * @returns A stream of tokens from the API.
  */
 async function streamTokens(

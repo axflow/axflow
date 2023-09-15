@@ -30,6 +30,7 @@ declare class OpenAIChat {
  * @param options.apiUrl The url of the OpenAI (or compatible) API. Defaults to https://api.openai.com/v1/chat/completions.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
  * @param options.headers Optionally add additional HTTP headers to the request.
+ * @param options.signal An AbortSignal that can be used to abort the fetch request.
  * @returns OpenAI chat completion. See OpenAI's documentation for /v1/chat/completions.
  */
 declare function run(
@@ -52,6 +53,7 @@ declare function run(
  * @param options.apiUrl The url of the OpenAI (or compatible) API. Defaults to https://api.openai.com/v1/chat/completions.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
  * @param options.headers Optionally add additional HTTP headers to the request.
+ * @param options.signal An AbortSignal that can be used to abort the fetch request.
  * @returns A stream of bytes directly from the API.
  */
 declare function streamBytes(
@@ -74,6 +76,7 @@ declare function streamBytes(
  * @param options.apiUrl The url of the OpenAI (or compatible) API. Defaults to https://api.openai.com/v1/chat/completions.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
  * @param options.headers Optionally add additional HTTP headers to the request.
+ * @param options.signal An AbortSignal that can be used to abort the fetch request.
  * @returns A stream of objects representing each chunk from the API.
  */
 declare function stream(
@@ -96,6 +99,7 @@ declare function stream(
  * @param options.apiUrl The url of the OpenAI (or compatible) API. Defaults to https://api.openai.com/v1/chat/completions.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
  * @param options.headers Optionally add additional HTTP headers to the request.
+ * @param options.signal An AbortSignal that can be used to abort the fetch request.
  * @returns A stream of tokens from the API.
  */
 declare function streamTokens(

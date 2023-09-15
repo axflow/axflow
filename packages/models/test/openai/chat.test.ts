@@ -76,7 +76,9 @@ describe('openai chat', () => {
       });
     });
 
-    it('can supply custom headers', async () => {
+    it('can supply additional options', async () => {
+      const abortController = new AbortController();
+
       const fetchSpy = createFakeFetch({
         json: {
           id: 'chatcmpl-7q9iFa9eplmD2n3hGPwJ6iBLlUQkY',
@@ -109,6 +111,7 @@ describe('openai chat', () => {
           apiKey: 'sk-not-real',
           fetch: fetchSpy as any,
           headers: { 'x-my-custom-header': 'custom-value' },
+          signal: abortController.signal,
         },
       );
 
@@ -122,6 +125,7 @@ describe('openai chat', () => {
           'content-type': 'application/json',
           'x-my-custom-header': 'custom-value',
         },
+        signal: abortController.signal,
       });
     });
   });
@@ -179,7 +183,9 @@ describe('openai chat', () => {
       });
     });
 
-    it('can supply custom headers', async () => {
+    it('can supply additional options', async () => {
+      const abortController = new AbortController();
+
       const fetchSpy = createFakeFetch({
         body: createUnpredictableByteStream(streamingChatResponse),
       });
@@ -195,6 +201,7 @@ describe('openai chat', () => {
           apiKey: 'sk-not-real',
           fetch: fetchSpy as any,
           headers: { 'x-my-custom-header': 'custom-value' },
+          signal: abortController.signal,
         },
       );
 
@@ -208,6 +215,7 @@ describe('openai chat', () => {
           'content-type': 'application/json',
           'x-my-custom-header': 'custom-value',
         },
+        signal: abortController.signal,
       });
     });
   });

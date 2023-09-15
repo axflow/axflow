@@ -27,6 +27,7 @@ declare class CohereEmbedding {
  * @param options.apiUrl The url of the Cohere (or compatible) API. Defaults to https://api.cohere.ai/v1/embed.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
  * @param options.headers Optionally add additional HTTP headers to the request.
+ * @param options.signal An AbortSignal that can be used to abort the fetch request.
  * @returns An object consisting of the text embeddings and other metadata. See Cohere's documentation for /v1/embed.
  */
 declare function run(

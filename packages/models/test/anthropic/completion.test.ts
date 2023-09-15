@@ -69,7 +69,9 @@ describe('anthropic completion', () => {
       });
     });
 
-    it('can supply custom headers', async () => {
+    it('can supply additional options', async () => {
+      const abortController = new AbortController();
+
       const fetchSpy = createFakeFetch({
         json: {
           completion: ' Hello!',
@@ -90,6 +92,7 @@ describe('anthropic completion', () => {
           apiKey: 'sk-not-real',
           fetch: fetchSpy as any,
           headers: { 'x-my-custom-header': 'custom-value' },
+          signal: abortController.signal,
         },
       );
 
@@ -104,6 +107,7 @@ describe('anthropic completion', () => {
           'content-type': 'application/json',
           'x-my-custom-header': 'custom-value',
         },
+        signal: abortController.signal,
       });
     });
   });
@@ -158,7 +162,9 @@ describe('anthropic completion', () => {
       });
     });
 
-    it('can supply custom headers', async () => {
+    it('can supply additional options', async () => {
+      const abortController = new AbortController();
+
       const fetchSpy = createFakeFetch({
         body: createUnpredictableByteStream(streamingCompletionResponse),
       });
@@ -173,6 +179,7 @@ describe('anthropic completion', () => {
           apiKey: 'sk-not-real',
           fetch: fetchSpy as any,
           headers: { 'x-my-custom-header': 'custom-value' },
+          signal: abortController.signal,
         },
       );
 
@@ -187,6 +194,7 @@ describe('anthropic completion', () => {
           'content-type': 'application/json',
           'x-my-custom-header': 'custom-value',
         },
+        signal: abortController.signal,
       });
     });
   });
