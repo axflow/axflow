@@ -65,6 +65,12 @@ declare function streamBytes(
 ```ts
 /**
  * Stream a textGeneration task against the HF inference API. The resulting stream is the parsed stream data as JavaScript objects.
+ * Example chunk:
+ *   {
+ *     token: { id: 11, text: ' and', logprob: -0.00002193451, special: false },
+ *     generated_text: null,
+ *     details: null
+ *   }
  *
  * @see https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
  *
@@ -75,13 +81,6 @@ declare function streamBytes(
  * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
  * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of objects representing each chunk from the API
- *
- *   Example chunk:
- *     {
- *       token: { id: 11, text: ' and', logprob: -0.00002193451, special: false },
- *       generated_text: null,
- *       details: null
- *     }
  */
 declare function stream(
   request: HuggingFaceTextGenerationTypes.Request,
