@@ -40,7 +40,11 @@ describe('huggingface textGeneration task', () => {
             temperature: 0.1,
           },
         },
-        { accessToken: 'hf_not-real', fetch: fetchSpy as any },
+        {
+          accessToken: 'hf_not-real',
+          fetch: fetchSpy as any,
+          headers: { 'x-my-custom-header': 'custom-value' },
+        },
       );
       expect(response).toEqual([
         {
@@ -58,6 +62,7 @@ describe('huggingface textGeneration task', () => {
         headers: {
           accept: 'application/json',
           authorization: 'Bearer hf_not-real',
+          'x-my-custom-header': 'custom-value',
           'content-type': 'application/json',
         },
       });
@@ -148,7 +153,12 @@ describe('huggingface textGeneration task', () => {
           max_new_tokens: 250,
         },
       },
-      { accessToken: 'hf_123', fetch: fetchSpy as any, apiUrl: 'https://custom.api.endpoint' },
+      {
+        accessToken: 'hf_123',
+        fetch: fetchSpy as any,
+        apiUrl: 'https://custom.api.endpoint',
+        headers: { 'x-my-custom-header': 'custom-value' },
+      },
     );
 
     let totalResp = '';
@@ -166,6 +176,7 @@ describe('huggingface textGeneration task', () => {
       headers: {
         accept: 'application/json',
         authorization: 'Bearer hf_123',
+        'x-my-custom-header': 'custom-value',
         'content-type': 'application/json',
       },
     });

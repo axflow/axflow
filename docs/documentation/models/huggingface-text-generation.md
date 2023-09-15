@@ -29,6 +29,7 @@ declare class HuggingFaceTextGeneration {
  * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
  * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
  * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns The response body from HF. See their documentation linked above for details
  */
 declare function run(
@@ -50,6 +51,7 @@ declare function run(
  * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
  * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
  * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of bytes directly from the API.
  */
 declare function streamBytes(
@@ -71,6 +73,7 @@ declare function streamBytes(
  * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
  * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
  * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of objects representing each chunk from the API
  *
  *   Example chunk:
@@ -100,6 +103,7 @@ declare function stream(
  * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
  * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
  * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of tokens from the API.
  */
 declare function streamTokens(

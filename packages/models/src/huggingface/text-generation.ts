@@ -7,9 +7,10 @@ import { HttpError, POST } from '@axflow/models/shared';
 const HUGGING_FACE_MODEL_API_URL = 'https://api-inference.huggingface.co/models/';
 const HUGGING_FACE_STOP_TOKEN = '</s>';
 
-function headers(accessToken?: string) {
+function headers(accessToken?: string, customHeaders?: Record<string, string>) {
   const headers: Record<string, string> = {
     accept: 'application/json',
+    ...customHeaders,
     'content-type': 'application/json',
   };
   if (typeof accessToken === 'string') {
@@ -45,6 +46,7 @@ export namespace HuggingFaceTextGenerationTypes {
     accessToken?: string;
     apiUrl?: string;
     fetch?: typeof fetch;
+    headers?: Record<string, string>;
   };
 
   export type GeneratedText = {
@@ -83,6 +85,7 @@ export namespace HuggingFaceTextGenerationTypes {
  * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
  * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
  * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns The response body from HF. See their documentation linked above for details
  */
 async function run(
@@ -91,7 +94,7 @@ async function run(
 ): Promise<HuggingFaceTextGenerationTypes.Response> {
   const url = options.apiUrl || HUGGING_FACE_MODEL_API_URL + request.model;
 
-  const headers_ = headers(options.accessToken);
+  const headers_ = headers(options.accessToken, options.headers);
   const body = JSON.stringify({ ...request, stream: false });
   const response = await POST(url, {
     headers: headers_,
@@ -112,6 +115,7 @@ async function run(
  * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
  * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
  * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of bytes directly from the API.
  */
 async function streamBytes(
@@ -120,7 +124,7 @@ async function streamBytes(
 ): Promise<ReadableStream<Uint8Array>> {
   const url = options.apiUrl || HUGGING_FACE_MODEL_API_URL + request.model;
 
-  const headers_ = headers(options.accessToken);
+  const headers_ = headers(options.accessToken, options.headers);
   const body = JSON.stringify({ ...request, stream: true });
   try {
     const response = await POST(url, {
@@ -180,6 +184,7 @@ function chunkToToken(chunk: HuggingFaceTextGenerationTypes.Chunk) {
  * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
  * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
  * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of objects representing each chunk from the API
  *
  *   Example chunk:
@@ -208,6 +213,7 @@ async function stream(
  * @param options.accessToken The HuggingFace access token. If not provided, requests will be throttled
  * @param options.apiUrl The HuggingFace API URL. Defaults to https://api-inference.huggingface.co/models/
  * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
+ * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of tokens from the API.
  */
 async function streamTokens(
