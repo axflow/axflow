@@ -144,9 +144,9 @@
     },
     "./huggingface/text-generation": {
       "types": "./dist/huggingface/text-generation.d.ts",
-      "import": "./dist/huggingface/text-generationembedding.mjs",
-      "module": "./dist/huggingface/text-generationembedding.mjs",
-      "require": "./dist/huggingface/text-generationembedding.js"
+      "import": "./dist/huggingface/text-generation.mjs",
+      "module": "./dist/huggingface/text-generation.mjs",
+      "require": "./dist/huggingface/text-generation.js"
     },
     "./react": {
       "types": "./dist/react/index.d.ts",

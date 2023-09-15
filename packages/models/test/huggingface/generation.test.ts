@@ -14,7 +14,6 @@ describe('huggingface textGeneration task', () => {
       { encoding: 'utf-8' },
     );
     streamingGenerationResponseWithEndToken = await fs.readFile(
-      // Path.join(__dirname, 'streaming-text-generation-response.txt'),
       Path.join(__dirname, 'terminated-streaming-generation-response.txt'),
       { encoding: 'utf-8' },
     );
@@ -197,7 +196,7 @@ describe('huggingface textGeneration task', () => {
   });
 
   describe('streamTokens', () => {
-    it('executes a stream() properly)', async () => {
+    it('executes a streamTokens() properly)', async () => {
       const fetchSpy = createFakeFetch({
         body: createUnpredictableByteStream(streamingGenerationResponse),
       });

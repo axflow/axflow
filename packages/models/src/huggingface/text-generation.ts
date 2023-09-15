@@ -1,4 +1,4 @@
-import { HttpError, POST } from '@axflow/models/shared';
+import { HttpError, isHttpError, POST } from '@axflow/models/shared';
 
 // HuggingFace has the concept of a task. This code supports the "textGeneration" task.
 // https://huggingface.co/models?pipeline_tag=text-generation
@@ -56,8 +56,7 @@ export namespace HuggingFaceTextGenerationTypes {
   // https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
   export type Response = GeneratedText | GeneratedText[];
 
-  // Best documentation I could find: https://huggingface.co/docs/huggingface_hub/main/en/package_reference/inference_client#huggingface_hub.inference._text_generation.TextGenerationStreamResponse
-  // I would like to find more formal documentation of their streaming API if we can.
+  // Best documentation available: https://huggingface.co/docs/huggingface_hub/main/en/package_reference/inference_client#huggingface_hub.inference._text_generation.TextGenerationStreamResponse
   export type Chunk = {
     token: {
       id: number;
@@ -139,7 +138,7 @@ async function streamBytes(
 
     return response.body;
   } catch (e) {
-    if (e instanceof HttpError) {
+    if (isHttpError(e)) {
       try {
         const body = await e.response.json();
         if (body?.error[0]?.includes('`stream` is not supported for this model')) {
@@ -176,6 +175,12 @@ function chunkToToken(chunk: HuggingFaceTextGenerationTypes.Chunk) {
 
 /**
  * Stream a textGeneration task against the HF inference API. The resulting stream is the parsed stream data as JavaScript objects.
+ * Example chunk:
+ *   {
+ *     token: { id: 11, text: ' and', logprob: -0.00002193451, special: false },
+ *     generated_text: null,
+ *     details: null
+ *   }
  *
  * @see https://huggingface.co/docs/api-inference/detailed_parameters#text-generation-task
  *
@@ -186,13 +191,6 @@ function chunkToToken(chunk: HuggingFaceTextGenerationTypes.Chunk) {
  * @param options.fetch The fetch implementation to use. Defaults to globalThis.fetch
  * @param options.headers Optionally add additional HTTP headers to the request.
  * @returns A stream of objects representing each chunk from the API
- *
- *   Example chunk:
- *     {
- *       token: { id: 11, text: ' and', logprob: -0.00002193451, special: false },
- *       generated_text: null,
- *       details: null
- *     }
  */
 async function stream(
   request: HuggingFaceTextGenerationTypes.Request,
