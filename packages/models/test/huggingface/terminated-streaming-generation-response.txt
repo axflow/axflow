@@ -1,0 +1,42 @@
+data:{"token":{"id":13,"text":"\n","logprob":-0.7504883,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":1576,"text":"The","logprob":-1.8740234,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":6575,"text":" sun","logprob":-1.265625,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":6166,"text":" sets","logprob":-0.075683594,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":14205,"text":" slowly","logprob":-0.70703125,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":13,"text":"\n","logprob":-0.37646484,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":29954,"text":"G","logprob":-0.086242676,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":1025,"text":"old","logprob":-0.00007736683,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":264,"text":"en","logprob":-0.00004851818,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":298,"text":" h","logprob":-0.07861328,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":1041,"text":"ues","logprob":-0.00085544586,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":2501,"text":" upon","logprob":-0.003145218,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":278,"text":" the","logprob":-0.00012803078,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":7205,"text":" sea","logprob":-0.0038108826,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":13,"text":"\n","logprob":-0.0006041527,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":15666,"text":"Pe","logprob":-0.01184082,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":815,"text":"ace","logprob":-0.000009775162,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":1319,"text":"ful","logprob":-0.004852295,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":11005,"text":" evening","logprob":-0.0129852295,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":14744,"text":" sky","logprob":-0.0037250519,"special":false},"generated_text":null,"details":null}
+
+data:{"token":{"id":2,"text":"y</s>","logprob":-0.35229492,"special":true},"generated_text":"\nThe sun sets slowly\nGolden hues upon the sea\nPeaceful evening sky","details":null}
+
