@@ -72,6 +72,7 @@ export namespace OpenAICompletionTypes {
  * @param options.apiUrl The url of the OpenAI (or compatible) API. Defaults to https://api.openai.com/v1/completions.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
  * @param options.headers Optionally add additional HTTP headers to the request.
+ * @param options.signal An AbortSignal that can be used to abort the fetch request.
  * @returns OpenAI completion. See OpenAI's documentation for /v1/completions.
  */
 async function run(
@@ -84,6 +85,7 @@ async function run(
     headers: headers(options.apiKey, options.headers),
     body: JSON.stringify({ ...request, stream: false }),
     fetch: options.fetch,
+    signal: options.signal,
   });
 
   return response.json();
@@ -100,6 +102,7 @@ async function run(
  * @param options.apiUrl The url of the OpenAI (or compatible) API. Defaults to https://api.openai.com/v1/completions.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
  * @param options.headers Optionally add additional HTTP headers to the request.
+ * @param options.signal An AbortSignal that can be used to abort the fetch request.
  * @returns A stream of bytes directly from the API.
  */
 async function streamBytes(
@@ -112,6 +115,7 @@ async function streamBytes(
     headers: headers(options.apiKey, options.headers),
     body: JSON.stringify({ ...request, stream: true }),
     fetch: options.fetch,
+    signal: options.signal,
   });
 
   if (!response.body) {
@@ -136,6 +140,7 @@ function noop(chunk: OpenAICompletionTypes.Chunk) {
  * @param options.apiUrl The url of the OpenAI (or compatible) API. Defaults to https://api.openai.com/v1/completions.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
  * @param options.headers Optionally add additional HTTP headers to the request.
+ * @param options.signal An AbortSignal that can be used to abort the fetch request.
  * @returns A stream of objects representing each chunk from the API.
  */
 async function stream(
@@ -161,6 +166,7 @@ function chunkToToken(chunk: OpenAICompletionTypes.Chunk) {
  * @param options.apiUrl The url of the OpenAI (or compatible) API. Defaults to https://api.openai.com/v1/completions.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
  * @param options.headers Optionally add additional HTTP headers to the request.
+ * @param options.signal An AbortSignal that can be used to abort the fetch request.
  * @returns A stream of tokens from the API.
  */
 async function streamTokens(

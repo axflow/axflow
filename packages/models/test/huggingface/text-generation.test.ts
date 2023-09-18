@@ -21,6 +21,8 @@ describe('huggingface textGeneration task', () => {
 
   describe('run', () => {
     it('executes a generation', async () => {
+      const abortController = new AbortController();
+
       const fetchSpy = createFakeFetch({
         json: [
           {
@@ -40,9 +42,10 @@ describe('huggingface textGeneration task', () => {
           },
         },
         {
-          accessToken: 'hf_not-real',
+          apiKey: 'hf_not-real',
           fetch: fetchSpy as any,
           headers: { 'x-my-custom-header': 'custom-value' },
+          signal: abortController.signal,
         },
       );
       expect(response).toEqual([
@@ -64,6 +67,7 @@ describe('huggingface textGeneration task', () => {
           'x-my-custom-header': 'custom-value',
           'content-type': 'application/json',
         },
+        signal: abortController.signal,
       });
 
       const args = fetchSpy.mock.lastCall as any;
@@ -81,7 +85,9 @@ describe('huggingface textGeneration task', () => {
   });
 
   describe('stream', () => {
-    it('executes a streaming completion)', async () => {
+    it('executes a streaming completion', async () => {
+      const abortController = new AbortController();
+
       const fetchSpy = createFakeFetch({
         body: createUnpredictableByteStream(streamingGenerationResponse),
       });
@@ -97,7 +103,7 @@ describe('huggingface textGeneration task', () => {
             temperature: 0.1,
           },
         },
-        { accessToken: 'hf_123', fetch: fetchSpy as any },
+        { apiKey: 'hf_123', fetch: fetchSpy as any, signal: abortController.signal },
       );
 
       let totalResp = '';
@@ -117,6 +123,7 @@ describe('huggingface textGeneration task', () => {
             authorization: 'Bearer hf_123',
             'content-type': 'application/json',
           },
+          signal: abortController.signal,
         },
       );
       const args = fetchSpy.mock.lastCall as any;
@@ -153,7 +160,7 @@ describe('huggingface textGeneration task', () => {
         },
       },
       {
-        accessToken: 'hf_123',
+        apiKey: 'hf_123',
         fetch: fetchSpy as any,
         apiUrl: 'https://custom.api.endpoint',
         headers: { 'x-my-custom-header': 'custom-value' },
@@ -206,7 +213,7 @@ describe('huggingface textGeneration task', () => {
           model: 'google/flan-t5-xxl',
           inputs: 'Whats the best way to make a chicken pesto dish?',
         },
-        { accessToken: 'hf_nope', fetch: fetchSpy as any },
+        { apiKey: 'hf_nope', fetch: fetchSpy as any },
       );
       let words = '';
       for await (const chunk of StreamToIterable(response)) {
@@ -254,7 +261,7 @@ describe('huggingface textGeneration task', () => {
             max_new_tokens: 250,
           },
         },
-        { accessToken: 'hf_123', fetch: fetchSpy as any, apiUrl: 'https://custom.api.endpoint' },
+        { apiKey: 'hf_123', fetch: fetchSpy as any, apiUrl: 'https://custom.api.endpoint' },
       );
 
       let totalResp = '';

@@ -74,7 +74,9 @@ describe('cohere generation', () => {
       });
     });
 
-    it('can supply custom headers', async () => {
+    it('can supply additional options', async () => {
+      const abortController = new AbortController();
+
       const fetchSpy = createFakeFetch({
         json: {
           id: 'a427751b-776f-49a8-b078-3b36acd206d1',
@@ -98,6 +100,7 @@ describe('cohere generation', () => {
           apiKey: 'sk-not-real',
           fetch: fetchSpy as any,
           headers: { 'x-my-custom-header': 'custom-value' },
+          signal: abortController.signal,
         },
       );
 
@@ -111,6 +114,7 @@ describe('cohere generation', () => {
           'content-type': 'application/json',
           'x-my-custom-header': 'custom-value',
         },
+        signal: abortController.signal,
       });
     });
   });
@@ -162,7 +166,9 @@ describe('cohere generation', () => {
       });
     });
 
-    it('can supply custom headers', async () => {
+    it('can supply additional options', async () => {
+      const abortController = new AbortController();
+
       const fetchSpy = createFakeFetch({
         body: createUnpredictableByteStream(streamingGenerationResponse),
       });
@@ -176,6 +182,7 @@ describe('cohere generation', () => {
           apiKey: 'sk-not-real',
           fetch: fetchSpy as any,
           headers: { 'x-my-custom-header': 'custom-value' },
+          signal: abortController.signal,
         },
       );
 
@@ -189,6 +196,7 @@ describe('cohere generation', () => {
           'content-type': 'application/json',
           'x-my-custom-header': 'custom-value',
         },
+        signal: abortController.signal,
       });
     });
   });

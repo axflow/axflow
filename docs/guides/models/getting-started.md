@@ -213,7 +213,8 @@ The run and stream functions support overriding or customizing some behavior. Fo
 
 1. Supplying a custom `apiUrl` to point to a different API implementation, e.g., proxy or otherwise compatible API.
 2. Supplying custom request headers.
-3. Supplying a custom `fetch` implementation, which could act as a client-side proxy, add logging, or otherwise customize request behavior.
+3. Supplying an abort signal which enables aborting the underlying fetch request.
+4. Supplying a custom `fetch` implementation, which could act as a client-side proxy, add logging, or otherwise customize request behavior.
 
 For example:
 
@@ -224,7 +225,8 @@ const response = await CohereGeneration.stream({ /* ... */ }, {
   apiUrl: 'https://api.example.com/v1/generate',
   headers: {
     'x-my-custom-header': 'custom-value',
-  }
+  },
+  signal: AbortSignal.timeout(5000),
 });
 ```
 

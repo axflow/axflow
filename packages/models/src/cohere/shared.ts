@@ -3,6 +3,7 @@ export type SharedRequestOptions = {
   apiUrl?: string;
   fetch?: typeof fetch;
   headers?: Record<string, string>;
+  signal?: AbortSignal;
 };
 
 export function headers(apiKey?: string, customHeaders?: Record<string, string>) {

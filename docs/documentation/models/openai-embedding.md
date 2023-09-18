@@ -27,6 +27,7 @@ declare class OpenAIEmbedding {
  * @param options.apiUrl The url of the OpenAI (or compatible) API. Defaults to https://api.openai.com/v1/embeddings.
  * @param options.fetch A custom implementation of fetch. Defaults to globalThis.fetch.
  * @param options.headers Optionally add additional HTTP headers to the request.
+ * @param options.signal An AbortSignal that can be used to abort the fetch request.
  * @returns An object consisting of the text embeddings and other metadata. See OpenAI's documentation for /v1/embeddings.
  */
 declare function run(

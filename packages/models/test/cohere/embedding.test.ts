@@ -42,7 +42,9 @@ describe('cohere embedding', () => {
       expect(bodyArgument).toEqual({ texts: ['How can I deploy to fly.io?'] });
     });
 
-    it('can supply custom headers', async () => {
+    it('can supply additional options', async () => {
+      const abortController = new AbortController();
+
       const fetchSpy = createFakeFetch({
         json: {
           id: '2dac6b8b-2038-410d-9674-8b5e1b4eef47',
@@ -58,6 +60,7 @@ describe('cohere embedding', () => {
           apiKey: 'sk-not-real',
           fetch: fetchSpy as any,
           headers: { 'x-my-custom-header': 'custom-value' },
+          signal: abortController.signal,
         },
       );
 
@@ -71,6 +74,7 @@ describe('cohere embedding', () => {
           'content-type': 'application/json',
           'x-my-custom-header': 'custom-value',
         },
+        signal: abortController.signal,
       });
     });
   });

@@ -48,7 +48,9 @@ describe('openai embedding', () => {
       });
     });
 
-    it('can supply custom headers', async () => {
+    it('can supply additional options', async () => {
+      const abortController = new AbortController();
+
       const fetchSpy = createFakeFetch({
         json: {
           object: 'list',
@@ -67,6 +69,7 @@ describe('openai embedding', () => {
           apiKey: 'sk-not-real',
           fetch: fetchSpy as any,
           headers: { 'x-my-custom-header': 'custom-value' },
+          signal: abortController.signal,
         },
       );
 
@@ -80,6 +83,7 @@ describe('openai embedding', () => {
           'content-type': 'application/json',
           'x-my-custom-header': 'custom-value',
         },
+        signal: abortController.signal,
       });
     });
   });
