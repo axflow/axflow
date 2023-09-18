@@ -6,10 +6,6 @@ import { OllamaModelOptions } from './shared';
 
 const OLLAMA_URL = 'http://127.0.0.1:11434/api/generate';
 
-function headers(customHeaders?: Record<string, string>) {
-  return { ...customHeaders };
-}
-
 export namespace OllamaGenerationTypes {
   // Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md#parameters
   export type Request = {
@@ -64,10 +60,9 @@ async function streamBytes(
 ): Promise<ReadableStream<Uint8Array>> {
   const url = options.apiUrl || OLLAMA_URL;
 
-  const headers_ = headers(options.headers);
   const body = JSON.stringify(request);
   const response = await POST(url, {
-    headers: headers_,
+    headers: options.headers,
     body,
     fetch: options.fetch,
     signal: options.signal,
