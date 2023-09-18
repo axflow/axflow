@@ -81,9 +81,6 @@ async function streamBytes(
 
   const headers_ = headers(options.headers);
   const body = JSON.stringify(request);
-  console.log('ollama url', url);
-  console.log('ollama body', body);
-  console.log('ollama headers', headers_);
   const response = await POST(url, {
     headers: headers_,
     body,
@@ -175,19 +172,19 @@ export class OllamaGeneration {
 }
 
 class OllamaDecoderStream<T> extends TransformStream<Uint8Array, T> {
-  private static parseChunk(lines: string): OllamaGenerationTypes.Chunk | null {
+  private static parseChunk(line: string): OllamaGenerationTypes.Chunk | null {
     // We expect the Ollama chunks to be lines of parsable JSON directly.
-    lines = lines.trim();
+    line = line.trim();
 
     // Empty lines are ignored
-    if (lines.length === 0) {
+    if (line.length === 0) {
       return null;
     }
 
     try {
-      return JSON.parse(lines);
+      return JSON.parse(line);
     } catch (e) {
-      throw new Error(`Malformed streaming data from Ollama: ${JSON.stringify(lines)}`);
+      throw new Error(`Malformed streaming data from Ollama: ${JSON.stringify(line)}`);
     }
   }
 
@@ -199,7 +196,7 @@ class OllamaDecoderStream<T> extends TransformStream<Uint8Array, T> {
       const chunk = decoder.decode(bytes);
 
       for (let i = 0, len = chunk.length; i < len; ++i) {
-        // Ollama's response format is that each line is a parsable JSON object
+        // Ollama's response format is xd-ndjson: each line is a parsable JSON object
         const isSeparator = chunk[i] === '\n';
 
         // Keep buffering unless we've hit the end of a data chunk
