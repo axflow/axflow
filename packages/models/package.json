@@ -142,6 +142,18 @@
       "module": "./dist/cohere/embedding.mjs",
       "require": "./dist/cohere/embedding.js"
     },
+    "./ollama/generation": {
+      "types": "./dist/ollama/generation.d.ts",
+      "import": "./dist/ollama/generation.mjs",
+      "module": "./dist/ollama/generation.mjs",
+      "require": "./dist/ollama/generation.js"
+    },
+    "./ollama/embedding": {
+      "types": "./dist/ollama/embedding.d.ts",
+      "import": "./dist/ollama/embedding.mjs",
+      "module": "./dist/ollama/embedding.mjs",
+      "require": "./dist/ollama/embedding.js"
+    },
     "./huggingface/text-generation": {
       "types": "./dist/huggingface/text-generation.d.ts",
       "import": "./dist/huggingface/text-generation.mjs",

@@ -44,6 +44,20 @@ export default defineConfig([
     dts: true,
   },
   {
+    entry: ['src/ollama/generation.ts'],
+    format: ['cjs', 'esm'],
+    outDir: 'dist/ollama',
+    external: [/^@axflow\/models\//],
+    dts: true,
+  },
+  {
+    entry: ['src/ollama/embedding.ts'],
+    format: ['cjs', 'esm'],
+    outDir: 'dist/ollama',
+    external: [/^@axflow\/models\//],
+    dts: true,
+  },
+  {
     entry: ['src/huggingface/text-generation.ts'],
     format: ['cjs', 'esm'],
     outDir: 'dist/huggingface',
