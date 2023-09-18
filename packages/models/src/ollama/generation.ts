@@ -1,4 +1,5 @@
 import { HttpError, POST } from '@axflow/models/shared';
+import { OllamaModelOptions } from './shared';
 
 // Ollama.ai is an OSS engine to run open source models (like llama2, codellama) locally on macOS machines.
 // https://github.com/jmorganca/ollama/blob/main/docs/api.md#response
@@ -17,23 +18,7 @@ export namespace OllamaGenerationTypes {
     system?: string;
     template?: string;
     context?: string;
-    // Options docs: https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md#parameter
-    options?: {
-      top_k?: number;
-      top_p?: number;
-      stop?: string;
-      temperature?: number;
-      repeat_penalty?: number;
-      repeat_last_n?: number;
-      num_threads?: number;
-      num_gpu?: number;
-      num_gqa?: number;
-      num_ctx?: number;
-      mirostat?: number;
-      mirostat_eta?: number;
-      mirostat_tau?: number;
-      tfs_z?: number;
-    };
+    options?: OllamaModelOptions;
   };
 
   export type RequestOptions = {
