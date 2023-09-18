@@ -21,7 +21,7 @@ npm i @axflow/models
 - ✅ Cohere and Cohere-compatible Generation and Embedding models
 - ✅ Anthropic and Anthropic-compatible Completion models
 - ✅ HuggingFace text generation inference API and Inference Endpoints
-- ✅ Ollama.ai models running locally
+- ✅ Ollama.ai models running generation or embedding generation
 - Google PaLM models (coming soon)
 - Azure OpenAI (coming soon)
 - Replicate (coming soon)
@@ -38,6 +38,7 @@ View the [Guides](/guides) or the reference:
 - [@axflow/models/cohere/embedding](/documentation/models/cohere-embedding)
 - [@axflow/models/huggingface/text-generation](/documentation/models/huggingface-text-generation)
 - [@axflow/models/ollama/generation](/documentation/models/ollama-generation)
+- [@axflow/models/ollama/embedding](/documentation/models/ollama-embedding)
 - [@axflow/models/react](/documentation/models/react)
 - [@axflow/models/node](/documentation/models/node)
 - # [@axflow/models/shared](/documentation/models/shared)
