@@ -21,7 +21,7 @@ npm i @axflow/models
 - ✅ Cohere and Cohere-compatible Generation and Embedding models
 - ✅ Anthropic and Anthropic-compatible Completion models
 - ✅ HuggingFace text generation inference API and Inference Endpoints
-- HuggingFace (coming soon)
+- ✅ Ollama.ai models running locally
 - Google PaLM models (coming soon)
 - Azure OpenAI (coming soon)
 - Replicate (coming soon)

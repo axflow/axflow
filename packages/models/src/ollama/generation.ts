@@ -67,7 +67,7 @@ export namespace OllamaGenerationTypes {
  *
  * @param request the request body containing the model, prompt, and options.
  * @param options
- * @param options.apiurl the ollama serving url. defaults to http://localhost:11343
+ * @param options.apiurl the ollama serving url. defaults to http://127.0.0.1:11343
  * @param options.fetch the fetch implementation to use. defaults to globalthis.fetch
  * @param options.headers optionally add additional http headers to the request.
  * @param options.signal an abortsignal that can be used to abort the fetch request.
@@ -129,7 +129,7 @@ function chunkToToken(chunk: OllamaGenerationTypes.Chunk) {
  *
  * @param request the request body containing the model, prompt, and options.
  * @param options
- * @param options.apiurl the ollama serving url. defaults to http://localhost:11343
+ * @param options.apiurl the ollama serving url. defaults to http://127.0.0.1:11343
  * @param options.fetch the fetch implementation to use. defaults to globalthis.fetch
  * @param options.headers optionally add additional http headers to the request.
  * @param options.signal an abortsignal that can be used to abort the fetch request.
@@ -148,7 +148,7 @@ async function stream(
  *
  * @param request the request body containing the model, prompt, and options.
  * @param options
- * @param options.apiurl the ollama serving url. defaults to http://localhost:11343
+ * @param options.apiurl the ollama serving url. defaults to http://127.0.0.1:11343
  * @param options.fetch the fetch implementation to use. defaults to globalthis.fetch
  * @param options.headers optionally add additional http headers to the request.
  * @param options.signal an abortsignal that can be used to abort the fetch request.
