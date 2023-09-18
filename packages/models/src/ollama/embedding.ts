@@ -43,7 +43,7 @@ async function run(
   const url = options.apiUrl || OLLAMA_EMBEDDING_URL;
 
   const response = await POST(url, {
-    headers: options.headers,
+    headers: options.headers || {},
     body: JSON.stringify(request),
     fetch: options.fetch,
     signal: options.signal,

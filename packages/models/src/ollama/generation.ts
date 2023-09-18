@@ -62,7 +62,7 @@ async function streamBytes(
 
   const body = JSON.stringify(request);
   const response = await POST(url, {
-    headers: options.headers,
+    headers: options.headers || {},
     body,
     fetch: options.fetch,
     signal: options.signal,

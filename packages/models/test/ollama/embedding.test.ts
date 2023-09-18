@@ -29,6 +29,7 @@ describe('ollama embedding', () => {
       expect(fetchSpy).toHaveBeenCalledWith('http://127.0.0.1:11434/api/embeddings', {
         body: expect.any(String),
         method: 'POST',
+        headers: {},
       });
 
       const args = fetchSpy.mock.lastCall as any;
