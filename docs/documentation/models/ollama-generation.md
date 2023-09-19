@@ -24,13 +24,13 @@ _Note: Ollama only provides streaming APIs, so Axflow does the same._
  * Stream a generation against an ollama serving endpoint. Return a stream of bytes.
  * Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
  *
- * @param request the request body containing the model, prompt, and options.
+ * @param request The request body containing the model, prompt, and options.
  * @param options
- * @param options.apiurl the ollama serving url. defaults to http://127.0.0.1:11343
- * @param options.fetch the fetch implementation to use. defaults to globalthis.fetch
- * @param options.headers optionally add additional http headers to the request.
- * @param options.signal an abortsignal that can be used to abort the fetch request.
- * @returns a stream of bytes directly from the API
+ * @param options.apiurl The ollama serving url. defaults to http://127.0.0.1:11343.
+ * @param options.fetch The fetch implementation to use. defaults to globalthis.fetch.
+ * @param options.headers Optionally add additional http headers to the request.
+ * @param options.signal An abortsignal that can be used to abort the fetch request.
+ * @returns A stream of bytes directly from the API.
  */
 declare function streamBytes(
   request: OllamaGenerationTypes.Request,
@@ -51,13 +51,13 @@ declare function streamBytes(
  *     details: null
  *   }
  *
- * @param request the request body containing the model, prompt, and options.
+ * @param request The request body containing the model, prompt, and options.
  * @param options
- * @param options.apiurl the ollama serving url. defaults to http://127.0.0.1:11343
- * @param options.fetch the fetch implementation to use. defaults to globalthis.fetch
- * @param options.headers optionally add additional http headers to the request.
- * @param options.signal an abortsignal that can be used to abort the fetch request.
- * @returns a stream of objects representing each chunk from the api
+ * @param options.apiurl The ollama serving url. defaults to http://127.0.0.1:11343.
+ * @param options.fetch The fetch implementation to use. defaults to globalthis.fetch.
+ * @param options.headers Optionally add additional http headers to the request.
+ * @param options.signal An abortsignal that can be used to abort the fetch request.
+ * @returns A stream of objects representing each chunk from the api.
  */
 declare function stream(
   request: OllamaGenerationTypes.Request,
@@ -69,14 +69,14 @@ declare function stream(
 
 ```ts
 /**
- * Stream a generation against an ollama serving endpoint, return only the text tokens
+ * Stream a generation against an ollama serving endpoint, return only the text tokens.
  *
- * @param request the request body containing the model, prompt, and options.
+ * @param request The request body containing the model, prompt, and options.
  * @param options
- * @param options.apiurl the ollama serving url. defaults to http://127.0.0.1:11343
- * @param options.fetch the fetch implementation to use. defaults to globalthis.fetch
- * @param options.headers optionally add additional http headers to the request.
- * @param options.signal an abortsignal that can be used to abort the fetch request.
+ * @param options.apiurl The ollama serving url. defaults to http://127.0.0.1:11343.
+ * @param options.fetch The fetch implementation to use. defaults to globalthis.fetch.
+ * @param options.headers Optionally add additional http headers to the request.
+ * @param options.signal An abortsignal that can be used to abort the fetch request.
  * @returns A stream of tokens from the API.
  */
 declare function streamTokens(

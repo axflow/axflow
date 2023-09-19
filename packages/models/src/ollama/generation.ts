@@ -31,7 +31,7 @@ export namespace OllamaGenerationTypes {
     response: string;
     done: boolean;
     // Below are fields that are present only when done is true
-    // All durations are in nanoseconds, per the ollama documentation
+    // All durations are in nanoseconds, per the ollama documentation.
     context?: Array<number>;
     total_duration?: number;
     load_duration?: number;
@@ -46,13 +46,13 @@ export namespace OllamaGenerationTypes {
  * Stream a generation against an ollama serving endpoint. Return a stream of bytes.
  * Docs: https://github.com/jmorganca/ollama/blob/main/docs/api.md
  *
- * @param request the request body containing the model, prompt, and options.
+ * @param request The request body containing the model, prompt, and options.
  * @param options
- * @param options.apiurl the ollama serving url. defaults to http://127.0.0.1:11343
- * @param options.fetch the fetch implementation to use. defaults to globalthis.fetch
- * @param options.headers optionally add additional http headers to the request.
- * @param options.signal an abortsignal that can be used to abort the fetch request.
- * @returns a stream of bytes directly from the API
+ * @param options.apiurl The ollama serving url. defaults to http://127.0.0.1:11343.
+ * @param options.fetch The fetch implementation to use. defaults to globalthis.fetch.
+ * @param options.headers Optionally add additional http headers to the request.
+ * @param options.signal An abortsignal that can be used to abort the fetch request.
+ * @returns A stream of bytes directly from the API.
  */
 async function streamBytes(
   request: OllamaGenerationTypes.Request,
@@ -107,13 +107,13 @@ function chunkToToken(chunk: OllamaGenerationTypes.Chunk) {
  *     details: null
  *   }
  *
- * @param request the request body containing the model, prompt, and options.
+ * @param request The request body containing the model, prompt, and options.
  * @param options
- * @param options.apiurl the ollama serving url. defaults to http://127.0.0.1:11343
- * @param options.fetch the fetch implementation to use. defaults to globalthis.fetch
- * @param options.headers optionally add additional http headers to the request.
- * @param options.signal an abortsignal that can be used to abort the fetch request.
- * @returns a stream of objects representing each chunk from the api
+ * @param options.apiurl The ollama serving url. defaults to http://127.0.0.1:11343.
+ * @param options.fetch The fetch implementation to use. defaults to globalthis.fetch.
+ * @param options.headers Optionally add additional http headers to the request.
+ * @param options.signal An abortsignal that can be used to abort the fetch request.
+ * @returns A stream of objects representing each chunk from the api.
  */
 async function stream(
   request: OllamaGenerationTypes.Request,
@@ -124,14 +124,14 @@ async function stream(
 }
 
 /**
- * Stream a generation against an ollama serving endpoint, return only the text tokens
+ * Stream a generation against an ollama serving endpoint, return only the text tokens.
  *
- * @param request the request body containing the model, prompt, and options.
+ * @param request The request body containing the model, prompt, and options.
  * @param options
- * @param options.apiurl the ollama serving url. defaults to http://127.0.0.1:11343
- * @param options.fetch the fetch implementation to use. defaults to globalthis.fetch
- * @param options.headers optionally add additional http headers to the request.
- * @param options.signal an abortsignal that can be used to abort the fetch request.
+ * @param options.apiurl The ollama serving url. defaults to http://127.0.0.1:11343.
+ * @param options.fetch The fetch implementation to use. defaults to globalthis.fetch.
+ * @param options.headers Optionally add additional http headers to the request.
+ * @param options.signal An abortsignal that can be used to abort the fetch request.
  * @returns A stream of tokens from the API.
  */
 async function streamTokens(
@@ -143,7 +143,7 @@ async function streamTokens(
 }
 
 /**
- * An object that encapsulates methods for calling the HF inference API
+ * An object that encapsulates methods for calling the HF inference API.
  */
 export class OllamaGeneration {
   static streamBytes = streamBytes;
@@ -176,16 +176,16 @@ class OllamaDecoderStream<T> extends TransformStream<Uint8Array, T> {
       const chunk = decoder.decode(bytes);
 
       for (let i = 0, len = chunk.length; i < len; ++i) {
-        // Ollama's response format is xd-ndjson: each line is a parsable JSON object
+        // Ollama's response format is xd-ndjson: each line is a parsable JSON object.
         const isSeparator = chunk[i] === '\n';
 
-        // Keep buffering unless we've hit the end of a data chunk
+        // Keep buffering unless we've hit the end of a data chunk.
         if (!isSeparator) {
           buffer.push(chunk[i]);
           continue;
         }
 
-        // Decode the object into the expected JSON type
+        // Decode the object into the expected JSON type.
         const parsedChunk = OllamaDecoderStream.parseChunk(buffer.join(''));
         if (parsedChunk) {
           controller.enqueue(map(parsedChunk));
