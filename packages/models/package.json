@@ -15,6 +15,7 @@
     "openai",
     "anthropic",
     "cohere",
+    "ollama",
     "palm",
     "llama2",
     "embeddings",
@@ -90,6 +91,12 @@
       "cohere/embedding": [
         "./dist/cohere/embedding.d.ts"
       ],
+      "ollama/generation": [
+        "./dist/ollama/generation.d.ts"
+      ],
+      "ollama/embedding": [
+        "./dist/ollama/embedding.d.ts"
+      ],
       "react": [
         "./dist/react/index.d.ts"
       ],
@@ -141,6 +148,18 @@
       "import": "./dist/cohere/embedding.mjs",
       "module": "./dist/cohere/embedding.mjs",
       "require": "./dist/cohere/embedding.js"
+    },
+    "./ollama/generation": {
+      "types": "./dist/ollama/generation.d.ts",
+      "import": "./dist/ollama/generation.mjs",
+      "module": "./dist/ollama/generation.mjs",
+      "require": "./dist/ollama/generation.js"
+    },
+    "./ollama/embedding": {
+      "types": "./dist/ollama/embedding.d.ts",
+      "import": "./dist/ollama/embedding.mjs",
+      "module": "./dist/ollama/embedding.mjs",
+      "require": "./dist/ollama/embedding.js"
     },
     "./huggingface/text-generation": {
       "types": "./dist/huggingface/text-generation.d.ts",

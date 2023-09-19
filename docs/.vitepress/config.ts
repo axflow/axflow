@@ -53,6 +53,8 @@ export default defineConfig({
                   },
                   { text: 'CohereGeneration', link: '/documentation/models/cohere-generation' },
                   { text: 'CohereEmbedding', link: '/documentation/models/cohere-embedding' },
+                  { text: 'OllamaGeneration', link: '/documentation/models/ollama-generation' },
+                  { text: 'OllamaEmbedding', link: '/documentation/models/ollama-embedding' },
                   { text: 'React', link: '/documentation/models/react' },
                   { text: 'Node', link: '/documentation/models/node' },
                   { text: 'Shared', link: '/documentation/models/shared' },
