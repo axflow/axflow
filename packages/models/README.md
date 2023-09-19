@@ -37,6 +37,8 @@ View the [Guides](https://docs.axflow.dev/guides) or the reference:
 - [@axflow/models/cohere/generation](https://docs.axflow.dev/documentation/models/cohere-generation.html)
 - [@axflow/models/cohere/embedding](https://docs.axflow.dev/documentation/models/cohere-embedding.html)
 - [@axflow/models/huggingface/text-generation](https://docs.axflow.dev/documentation/models/huggingface-text-generation.html)
+- [@axflow/models/ollama/generation](https://docs.axflow.dev/documentation/models/ollama-generation.html)
+- [@axflow/models/ollama/embedding](https://docs.axflow.dev/documentation/models/ollama-embedding.html)
 - [@axflow/models/react](https://docs.axflow.dev/documentation/models/react.html)
 - [@axflow/models/node](https://docs.axflow.dev/documentation/models/node.html)
 - [@axflow/models/shared](https://docs.axflow.dev/documentation/models/shared.html)

@@ -15,6 +15,7 @@
     "openai",
     "anthropic",
     "cohere",
+    "ollama",
     "palm",
     "llama2",
     "embeddings",
@@ -89,6 +90,12 @@
       ],
       "cohere/embedding": [
         "./dist/cohere/embedding.d.ts"
+      ],
+      "ollama/generation": [
+        "./dist/ollama/generation.d.ts"
+      ],
+      "ollama/embedding": [
+        "./dist/ollama/embedding.d.ts"
       ],
       "react": [
         "./dist/react/index.d.ts"

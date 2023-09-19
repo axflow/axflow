@@ -15,7 +15,9 @@ declare class OllamaGeneration {
 }
 ```
 
-_Note: Ollama only provides streaming APIs, so Axflow does the same._
+::: info
+Ollama only provides streaming APIs, so Axflow does the same.
+:::
 
 ## `streamBytes`
 
