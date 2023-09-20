@@ -6,9 +6,6 @@ hero:
   name: Axflow
   text: A TypeScript framework for AI.
   tagline:
-  image:
-    light: /teal400-ax.svg
-    dark: /teal200-ax.svg
   actions:
     - theme: brand
       text: Documentation
