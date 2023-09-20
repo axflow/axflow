@@ -1,0 +1,58 @@
+/* Variable documentation: https://github.com/vuejs/vitepress/blob/main/src/client/theme-default/styles/vars.css */
+:root {
+  --vp-c-bg: #fafafa; /* shadCN zinc/50*/
+  --vp-c-brand: #2dd4bf; /* shadCN teal/400 */
+  --vp-c-brand-1: #2dd4bf; /* shadCN teal/400 */
+  --vp-c-brand-2: #14b8a6; /* shadCN teal/500 */
+  --vp-c-brand-3: #0d9488; /* shadCN teal/600 */
+  --vp-c-green-soft: rgba(45, 212, 190, 0.8);
+  --vp-home-hero-name-color: var(--vp-c-brand-1);
+  --vp-c-bg-dark: #27272a; /* shadCN zinc/800*/
+}
+
+/* Ref to tailwind colors: https://tailwindcss.com/docs/customizing-colors */
+.dark {
+  --vp-c-bg-alt: #18181b; /* shadCN zinc/900*/
+  --vp-c-bg: #27272a; /* shadCN zinc/800*/
+  --vp-c-brand: #99f6e4; /* shadCN teal/200 */
+  --vp-c-brand-1: #99f6e4; /* shadCN teal/200 */
+  --vp-c-brand-2: #2dd4bf; /* shadCN teal/400 */
+  --vp-c-brand-3: #0d9488; /* shadCN teal/600 */
+  --vp-c-green-soft: rgba(45, 212, 190, 0.8);
+  --vp-c-bg-elv: #202127;
+  --vp-c-bg-soft: #202127;
+}
+/**
+ * Component: Button
+ * -------------------------------------------------------------------------- */
+
+:root {
+  --vp-button-brand-border: transparent;
+  --vp-button-brand-text: var(--vp-c-black);
+  --vp-button-brand-bg: var(--vp-c-brand-1);
+  --vp-button-brand-hover-border: transparent;
+  --vp-button-brand-hover-text: var(--vp-c-black);
+  --vp-button-brand-hover-bg: var(--vp-c-brand-2);
+  --vp-button-brand-active-border: transparent;
+  --vp-button-brand-active-text: var(--vp-c-black);
+  --vp-button-brand-active-bg: var(--vp-c-brand-1);
+
+  --vp-button-alt-border: var(--vp-c-ba-elv);
+  --vp-button-alt-text: var(--vp-c-text-1);
+  --vp-button-alt-bg: var(--vp-c-bg-soft);
+  --vp-button-alt-hover-border: var(--vp-c-ba-soft);
+  --vp-button-alt-hover-text: var(--vp-c-text-1);
+  --vp-button-alt-hover-bg: var(--vp-c-default-2);
+  --vp-button-alt-active-text: var(--vp-c-text-1);
+  --vp-button-alt-active-bg: var(--vp-c-default-1);
+
+  --vp-button-sponsor-border: var(--vp-c-text-2);
+  --vp-button-sponsor-text: var(--vp-c-text-2);
+  --vp-button-sponsor-bg: transparent;
+  --vp-button-sponsor-hover-border: var(--vp-c-sponsor);
+  --vp-button-sponsor-hover-text: var(--vp-c-sponsor);
+  --vp-button-sponsor-hover-bg: transparent;
+  --vp-button-sponsor-active-border: var(--vp-c-sponsor);
+  --vp-button-sponsor-active-text: var(--vp-c-sponsor);
+  --vp-button-sponsor-active-bg: transparent;
+}
