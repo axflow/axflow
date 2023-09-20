@@ -5,7 +5,7 @@ layout: home
 hero:
   name: Axflow
   text: A TypeScript framework for AI.
-  tagline:
+  tagline: open source and designed for production
   actions:
     - theme: brand
       text: Documentation
