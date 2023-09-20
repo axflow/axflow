@@ -11,36 +11,34 @@ Axflow provides a React hook called `useChat` that makes integrating streaming o
 First, we assume you have some API endpoint that either returns a JSON response or streams data using `StreamingJsonResponse`:
 
 ```ts
-import { OpenAIChat } from '@axflow/models/openai/chat'
-import { StreamingJsonResponse } from '@axflow/models/shared'
+import { OpenAIChat } from '@axflow/models/openai/chat';
+import { StreamingJsonResponse } from '@axflow/models/shared';
 
 // POST /api/chat
 export async function POST(request: Request) {
-  const { query } = await request.json()
+  const { query } = await request.json();
 
-  const stream = await OpenAIChat.streamTokens(
-    // args go here
-  )
+  const stream = await OpenAIChat.streamTokens(/* args here */);
 
   // Uses a StreamingJsonResponse
-  return new StreamingJsonResponse(stream)
+  return new StreamingJsonResponse(stream);
 }
 ```
 
 Here we have an endpoint defined at `/api/chat` that uses our `StreamingJsonResponse` pattern. On the client, we can consume the streaming LLM response with the `useChat` component:
 
 ```ts
-import { useChat } from '@axflow/models/react'
+import { useChat } from '@axflow/models/react';
 
 function ChatComponent() {
-  const {input, messages, onChange, onSubmit} = useChat()
+  const { input, messages, onChange, onSubmit } = useChat();
 
   return (
     <>
       <Messages messages={messages} />
       <Form input={input} onChange={onChange} onSubmit={onSubmit} />
     </>
-  )
+  );
 }
 ```
 
@@ -51,7 +49,7 @@ For simple cases, the defaults are all that are needed. See [Customizing `useCha
 The `useChat` hook creates and manages "message" objects. These are exposed as `messages` from the hook invocation.
 
 ```ts
-const {messages} = useChat()
+const { messages } = useChat();
 ```
 
 A message has the following type
@@ -63,13 +61,13 @@ type MessageType = {
   data?: JSONValueType[];
   content: string;
   created: number;
-}
+};
 ```
 
 and can be imported using the following:
 
 ```ts
-import type {MessageType} from '@axflow/models/shared'
+import type { MessageType } from '@axflow/models/shared';
 ```
 
 ## Customizing `useChat`
@@ -82,11 +80,11 @@ The default API endpoint is `/api/chat`, but you can configure it however you'd 
 
 ```ts
 useChat({
-  url: "https://your-site.com/your/arbitrary/chat/endpoint",
+  url: 'https://your-site.com/your/arbitrary/chat/endpoint',
   headers: {
     'x-custom-header': '<custom-value>',
-  }
-})
+  },
+});
 ```
 
 ### The request body
@@ -95,16 +93,16 @@ By default, the request body sent to the endpoint is:
 
 ```ts
 type RequestBody = {
-  messages: MessageType[],
-}
+  messages: MessageType[];
+};
 ```
 
 This can be customized in two ways. First, you can easily add additional properties to be merged into the request body.
 
 ```ts
 useChat({
-  body: { user_id: user.id, stream: false }
-})
+  body: { user_id: user.id, stream: false },
+});
 ```
 
 The request will now contain the `user_id` and `stream` properties in addition to the `messages` property.
@@ -114,9 +112,9 @@ Second, you can pass a function. The return value of the function will become th
 ```ts
 useChat({
   body: (message: MessageType, messageHistory: MessageType[]) => {
-    return {message, history: messageHistory, user_id: user.id, stream: false}
-  }
-})
+    return { message, history: messageHistory, user_id: user.id, stream: false };
+  },
+});
 ```
 
 The function takes the current message being created as the first argument and all previous messages in the chat history as the second.
@@ -138,13 +136,13 @@ We need to tell the `useChat` hook that the `token` property of each chunk conta
 
 ```ts
 useChat({
-  accessor: (chunk) => chunk.token
-})
+  accessor: (chunk) => chunk.token,
+});
 ```
 
 This option takes a function which is given either a chunk (in the case of streaming) or the response body (in case of non-streaming).
 
-### Message and input state
+### Message and input states
 
 `useChat` will manage the user's input and messages for you. However, you may wish to initialize the hook with pre-existing state, or manually reset this state.
 
@@ -154,7 +152,7 @@ To initialize this state, you can use the `initialInput` or `initialMessages` op
 useChat({
   initialInput: savedUserInput(),
   initialMessages: savedMessageHistory(),
-})
+});
 ```
 
 To reset this state manually, you may use the `setInput` or `setMessages` functions.
@@ -167,6 +165,34 @@ const {setInput, setMessages, /* etc */} = useChat({ /* options */ });
 <ClearInput onClick={() => setInput('')} />
 <ClearMessageHistory onClick={() => setMessages([])} />
 ```
+
+### Loading and error states
+
+`useChat` provides loading and error states.
+
+The loading state is returned from the `useChat` hook. For streaming requests, `loading` will be `true` from the time the request is
+first sent until the stream has closed. For non-streaming requests, it is `true` until a response is received.
+
+```ts
+const {/* ... */, loading} = useChat();
+```
+
+The error state is provided in two ways:
+
+1. A state variable returned from the `useChat` hook. It is `null` when there are no errors. If a request errors, then this value will be the `Error` object. The error state is reset to `null` each time a requests is made.
+2. An `onError` callback function. `onError` will be invoked in the event of an error, receiving the `Error` object as an argument.
+
+```ts
+const {/* ... */, error} = useChat();
+
+// and/or...
+
+const {/* ... */} = useChat({
+  onError: (error) => console.error(error.message);
+});
+```
+
+The `onError` callback defaults to `console.error`.
 
 ## Streaming vs non-streaming
 
@@ -183,7 +209,7 @@ For 2, the schema is:
 type NdJsonValueType = {
   type: 'chunk' | 'data';
   value: JsonValueType; // any valid JSON value here
-}
+};
 ```
 
 If you're using `StreamingJsonResponse`, this is handled for you. See the [streaming guide](/guides/models/streaming.md) for more information on `StreamingJsonResponse` and its output.

@@ -1,6 +1,5 @@
 import { useRef, useCallback, useState, type MutableRefObject } from 'react';
-
-import { POST, StreamToIterable, NdJsonStream } from '@axflow/models/shared';
+import { POST, HttpError, StreamToIterable, NdJsonStream } from '@axflow/models/shared';
 import type { MessageType, JSONValueType } from '@axflow/models/shared';
 
 interface AccessorType<T = any> {
@@ -15,6 +14,81 @@ function uuid() {
   return crypto.randomUUID();
 }
 
+async function handleStreamingResponse(
+  response: Response,
+  messagesRef: MutableRefObject<MessageType[]>,
+  setMessages: (messages: MessageType[]) => void,
+  accessor: AccessorType,
+) {
+  const responseBody = response.body;
+
+  // This should never happen if we're here.
+  if (responseBody === null) {
+    throw new HttpError(
+      'Expected response.body to be a stream but response.body is null',
+      response,
+    );
+  }
+
+  let id: string | null = null;
+
+  for await (const chunk of StreamToIterable(NdJsonStream.decode(responseBody))) {
+    let messages = messagesRef.current;
+
+    if (chunk.type !== 'chunk') {
+      if (!id) {
+        id = uuid();
+        messages = messages.concat({
+          id: id,
+          role: 'assistant',
+          data: [chunk.value],
+          content: '',
+          created: Date.now(),
+        });
+      } else {
+        messages = messages.map((msg) => {
+          return msg.id !== id ? msg : { ...msg, data: (msg.data || []).concat(chunk.value) };
+        });
+      }
+    } else {
+      const chunkContent = accessor(chunk.value);
+
+      if (!id) {
+        id = uuid();
+        messages = messages.concat({
+          id: id,
+          role: 'assistant',
+          content: chunkContent,
+          created: Date.now(),
+        });
+      } else {
+        messages = messages.map((msg) => {
+          return msg.id !== id ? msg : { ...msg, content: msg.content + chunkContent };
+        });
+      }
+    }
+
+    setMessages(messages);
+  }
+}
+
+async function handleJsonResponse(
+  response: Response,
+  messagesRef: MutableRefObject<MessageType[]>,
+  setMessages: (messages: MessageType[]) => void,
+  accessor: AccessorType,
+) {
+  const responseBody = await response.json();
+  const content = accessor(responseBody);
+  const messages = messagesRef.current.concat({
+    id: uuid(),
+    role: 'assistant',
+    content: content,
+    created: Date.now(),
+  });
+  setMessages(messages);
+}
+
 async function stableAppend(
   message: MessageType,
   messagesRef: MutableRefObject<MessageType[]>,
@@ -23,7 +97,22 @@ async function stableAppend(
   headers: Record<string, string>,
   body: BodyType,
   accessor: AccessorType,
+  loadingRef: MutableRefObject<boolean>,
+  setLoading: (loading: boolean) => void,
+  setError: (error: Error | null) => void,
+  onError: (error: Error) => void,
 ) {
+  // Ensure we guard against accidental duplicate calls
+  if (loadingRef.current) {
+    return;
+  }
+
+  // Ensure we are now in a loading state
+  setLoading(true);
+
+  // Clear any previous error state
+  setError(null);
+
   const history = messagesRef.current;
   const requestBody =
     typeof body === 'function'
@@ -32,71 +121,25 @@ async function stableAppend(
 
   setMessages(messagesRef.current.concat(message));
 
-  const response = await POST(url, {
-    headers: { ...headers, 'content-type': 'application/json; charset=utf-8' },
-    body: JSON.stringify(requestBody),
-  });
+  let response: Response;
 
-  const contentType = response.headers.get('content-type') || '';
-  const isStreaming = contentType.toLowerCase() === 'application/x-ndjson; charset=utf-8';
-
-  if (isStreaming) {
-    const responseBody = response.body;
-
-    if (!responseBody) {
-      throw new Error('Http response does not appear to be a stream');
-    }
-
-    let id: string | null = null;
-
-    for await (const chunk of StreamToIterable(NdJsonStream.decode(responseBody))) {
-      let messages = messagesRef.current;
-
-      if (chunk.type !== 'chunk') {
-        if (!id) {
-          id = uuid();
-          messages = messages.concat({
-            id: id,
-            role: 'assistant',
-            data: [chunk.value],
-            content: '',
-            created: Date.now(),
-          });
-        } else {
-          messages = messages.map((msg) => {
-            return msg.id !== id ? msg : { ...msg, data: (msg.data || []).concat(chunk.value) };
-          });
-        }
-      } else {
-        const chunkContent = accessor(chunk.value);
-
-        if (!id) {
-          id = uuid();
-          messages = messages.concat({
-            id: id,
-            role: 'assistant',
-            content: chunkContent,
-            created: Date.now(),
-          });
-        } else {
-          messages = messages.map((msg) => {
-            return msg.id !== id ? msg : { ...msg, content: msg.content + chunkContent };
-          });
-        }
-      }
-
-      setMessages(messages);
-    }
-  } else {
-    const responseBody = await response.json();
-    const content = accessor(responseBody);
-    const messages = messagesRef.current.concat({
-      id: uuid(),
-      role: 'assistant',
-      content: content,
-      created: Date.now(),
+  try {
+    response = await POST(url, {
+      headers: { ...headers, 'content-type': 'application/json; charset=utf-8' },
+      body: JSON.stringify(requestBody),
     });
-    setMessages(messages);
+
+    const contentType = response.headers.get('content-type') || '';
+    const isStreaming = contentType.toLowerCase() === 'application/x-ndjson; charset=utf-8';
+    const handler = isStreaming ? handleStreamingResponse : handleJsonResponse;
+
+    // Must `await` here in order to `catch` potential errors
+    await handler(response, messagesRef, setMessages, accessor);
+  } catch (error) {
+    setError(error as Error);
+    onError(error as Error);
+  } finally {
+    setLoading(false);
   }
 }
 
@@ -106,6 +149,9 @@ const DEFAULT_BODY = (message: MessageType, history: MessageType[]) => ({
   messages: [...history, message],
 });
 const DEFAULT_HEADERS = {};
+const DEFAULT_ON_ERROR = (error: Error) => {
+  console.error(error);
+};
 
 /**
  * The options supplied to the useChat hook.
@@ -158,6 +204,13 @@ export type UseChatOptionsType = {
    * Initial message history. Defaults to an empty list.
    */
   initialMessages?: MessageType[];
+
+  /**
+   * Callback to handle errors should they arise.
+   *
+   * Defaults to `console.error`.
+   */
+  onError?: (error: Error) => void;
 };
 
 /**
@@ -183,6 +236,23 @@ export type UseChatResultType = {
    * Manually set the messages.
    */
   setMessages: (messages: MessageType[]) => void;
+
+  /**
+   * If a request is in progress, this will be `true`.
+   *
+   * For streaming requests, `loading` will be `true` from the time the request is
+   * first sent until the stream has closed. For non-streaming requests, it is `true`
+   * until a response is received.
+   */
+  loading: boolean;
+
+  /**
+   * If a request fails, this will be populated with the `Error`. This will be reset
+   * to `null` upon the next request.
+   *
+   * See also the `onError` callback option.
+   */
+  error: Error | null;
 
   /**
    * A handler to change the user's message input.
@@ -221,7 +291,10 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
 
   const [input, setInput] = useState<string>(options.initialInput ?? '');
   const [messages, _setMessages] = useState<MessageType[]>(options.initialMessages ?? []);
+  const [loading, _setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<Error | null>(null);
 
+  const loadingRef = useRef(false);
   const messagesRef = useRef<MessageType[]>([]);
 
   const setMessages = useCallback(
@@ -232,13 +305,34 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
     [messagesRef, _setMessages],
   );
 
+  const setLoading = useCallback(
+    (loading: boolean) => {
+      _setLoading(loading);
+      loadingRef.current = loading;
+    },
+    [loadingRef, _setLoading],
+  );
+
   const url = options.url ?? DEFAULT_URL;
   const accessor = options.accessor ?? DEFAULT_ACCESSOR;
   const body = options.body ?? DEFAULT_BODY;
   const headers = options.headers ?? DEFAULT_HEADERS;
+  const onError = options.onError ?? DEFAULT_ON_ERROR;
 
   function append(message: MessageType) {
-    stableAppend(message, messagesRef, setMessages, url, headers, body, accessor);
+    stableAppend(
+      message,
+      messagesRef,
+      setMessages,
+      url,
+      headers,
+      body,
+      accessor,
+      loadingRef,
+      setLoading,
+      setError,
+      onError,
+    );
   }
 
   function onChange(
@@ -266,5 +360,5 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
     setInput('');
   }
 
-  return { input, setInput, messages, setMessages, onChange, onSubmit };
+  return { input, setInput, messages, setMessages, loading, error, onChange, onSubmit };
 }
