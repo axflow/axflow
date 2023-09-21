@@ -289,13 +289,21 @@ export type UseChatResultType = {
 export function useChat(options?: UseChatOptionsType): UseChatResultType {
   options ??= {};
 
-  const [input, setInput] = useState<string>(options.initialInput ?? '');
-  const [messages, _setMessages] = useState<MessageType[]>(options.initialMessages ?? []);
-  const [loading, _setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<Error | null>(null);
+  // Input state
+  const initialInput = options.initialInput ?? '';
+  const [input, setInput] = useState<string>(initialInput);
 
+  // Message state
+  const initialMessages = options.initialMessages ?? [];
+  const [messages, _setMessages] = useState<MessageType[]>(initialMessages);
+  const messagesRef = useRef<MessageType[]>(initialMessages);
+
+  // Loading state
+  const [loading, _setLoading] = useState<boolean>(false);
   const loadingRef = useRef(false);
-  const messagesRef = useRef<MessageType[]>([]);
+
+  // Error state
+  const [error, setError] = useState<Error | null>(null);
 
   const setMessages = useCallback(
     (messages: MessageType[]) => {
