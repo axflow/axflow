@@ -46,6 +46,7 @@ export default defineConfig({
                   { text: 'OpenAIChat', link: '/documentation/models/openai-chat' },
                   { text: 'OpenAICompletion', link: '/documentation/models/openai-completion' },
                   { text: 'OpenAIEmbedding', link: '/documentation/models/openai-embedding' },
+                  { text: 'AzureOpenAIChat', link: '/documentation/models/azure-openai-chat' },
                   {
                     text: 'AnthropicCompletion',
                     link: '/documentation/models/anthropic-completion',

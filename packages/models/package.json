@@ -13,6 +13,7 @@
     "streaming",
     "streams",
     "openai",
+    "azure",
     "anthropic",
     "cohere",
     "ollama",
@@ -82,6 +83,9 @@
       "openai/embedding": [
         "./dist/openai/embedding.d.ts"
       ],
+      "azure-openai/chat": [
+        "./dist/azure-openai/chat.d.ts"
+      ],
       "anthropic/completion": [
         "./dist/anthropic/completion.d.ts"
       ],
@@ -130,6 +134,12 @@
       "import": "./dist/openai/embedding.mjs",
       "module": "./dist/openai/embedding.mjs",
       "require": "./dist/openai/embedding.js"
+    },
+    "./azure-openai/chat": {
+      "types": "./dist/azure-openai/chat.d.ts",
+      "import": "./dist/azure-openai/chat.mjs",
+      "module": "./dist/azure-openai/chat.mjs",
+      "require": "./dist/azure-openai/chat.js"
     },
     "./anthropic/completion": {
       "types": "./dist/anthropic/completion.d.ts",

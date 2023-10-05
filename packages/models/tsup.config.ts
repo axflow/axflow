@@ -23,6 +23,13 @@ export default defineConfig([
     dts: true,
   },
   {
+    entry: ['src/azure-openai/chat.ts'],
+    format: ['cjs', 'esm'],
+    outDir: 'dist/azure-openai',
+    external: [/^@axflow\/models\//],
+    dts: true,
+  },
+  {
     entry: ['src/anthropic/completion.ts'],
     format: ['cjs', 'esm'],
     outDir: 'dist/anthropic',
