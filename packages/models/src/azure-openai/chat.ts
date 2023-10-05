@@ -22,8 +22,7 @@ const API_VERSION = '2023-08-01-preview';
  * Create the base URL for the chat/completions endpoint in azure
  * Docs: https://learn.microsoft.com/en-us/azure/ai-services/openai/reference
  *
- * We currently use the 2023-05-15 api version, the latest stable one
- * The apiVersion is in the format YYYY-MM-DD, as described in the docs:
+ * We currently use the preview branch, and not the stable one, to benefit from openAI functions.
  */
 const createUrl = (apiUrl: string | { resourceName: string; deploymentId: string }) => {
   if (typeof apiUrl === 'string') {
