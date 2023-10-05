@@ -42,7 +42,7 @@ View the [Guides](/guides) or the reference:
 - [@axflow/models/ollama/embedding](/documentation/models/ollama-embedding)
 - [@axflow/models/react](/documentation/models/react)
 - [@axflow/models/node](/documentation/models/node)
-- # [@axflow/models/shared](/documentation/models/shared)
+- [@axflow/models/shared](/documentation/models/shared)
 
 ## Example Usage
 
