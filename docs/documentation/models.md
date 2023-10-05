@@ -22,8 +22,8 @@ npm i @axflow/models
 - ✅ Anthropic and Anthropic-compatible Completion models
 - ✅ HuggingFace text generation inference API and Inference Endpoints
 - ✅ Ollama.ai models running generation or embedding generation
+- ✅ Azure OpenAI
 - Google PaLM models (coming soon)
-- Azure OpenAI (coming soon)
 - Replicate (coming soon)
 
 ## Documentation
