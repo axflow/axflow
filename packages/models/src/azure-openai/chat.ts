@@ -188,7 +188,6 @@ async function streamBytes(
   options: AzureOpenAIChatTypes.RequestOptions,
 ): Promise<ReadableStream<Uint8Array>> {
   const url = createUrl(options.apiUrl);
-  console.log(url);
 
   const response = await POST(url, {
     headers: headers(options.apiKey, options.headers),
