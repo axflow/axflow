@@ -61,7 +61,6 @@ export namespace AzureOpenAIChatTypes {
     n?: number | null;
     temperature?: number | null;
     top_p?: number | null;
-    stream?: boolean;
     stop?: string | string[] | null;
     max_tokens?: number;
     presence_penalty?: number;

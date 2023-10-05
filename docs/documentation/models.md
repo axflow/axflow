@@ -33,6 +33,7 @@ View the [Guides](/guides) or the reference:
 - [@axflow/models/openai/chat](/documentation/models/openai-chat)
 - [@axflow/models/openai/completion](/documentation/models/openai-completion)
 - [@axflow/models/openai/embedding](/documentation/models/openai-embedding)
+- [@axflow/models/azure-openai/chat](/documentation/models/azure-openai-chat.html)
 - [@axflow/models/anthropic/completion](/documentation/models/anthropic-completion)
 - [@axflow/models/cohere/generation](/documentation/models/cohere-generation)
 - [@axflow/models/cohere/embedding](/documentation/models/cohere-embedding)
