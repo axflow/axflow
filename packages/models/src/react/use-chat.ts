@@ -152,6 +152,9 @@ const DEFAULT_HEADERS = {};
 const DEFAULT_ON_ERROR = (error: Error) => {
   console.error(error);
 };
+const DEFAULT_ON_MESSAGES_CHANGE = (_messages: MessageType[]) => {
+  // no-op
+};
 
 /**
  * The options supplied to the useChat hook.
@@ -211,6 +214,18 @@ export type UseChatOptionsType = {
    * Defaults to `console.error`.
    */
   onError?: (error: Error) => void;
+
+  /**
+   * Callback that is invoked when the list of messages change.
+   *
+   * Specifically, it is invoked when:
+   *
+   *     1. `onSubmit` is invoked and a new user message is added.
+   *     2. A new message is received from the server. If streaming, this will
+   *        be called each time the message is updated from a streaming event.
+   *     3. Any time a client of the hook calls `setMessages`
+   */
+  onMessagesChange?: (updatedMessages: MessageType[]) => void;
 };
 
 /**
@@ -305,12 +320,21 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
   // Error state
   const [error, setError] = useState<Error | null>(null);
 
+  const url = options.url ?? DEFAULT_URL;
+  const accessor = options.accessor ?? DEFAULT_ACCESSOR;
+  const body = options.body ?? DEFAULT_BODY;
+  const headers = options.headers ?? DEFAULT_HEADERS;
+  const onError = options.onError ?? DEFAULT_ON_ERROR;
+  const onMessagesChange = options.onMessagesChange ?? DEFAULT_ON_MESSAGES_CHANGE;
+
+  // Given this calls `onMessagesChange`, be mindful of how this is used internally.
   const setMessages = useCallback(
     (messages: MessageType[]) => {
       _setMessages(messages);
       messagesRef.current = messages;
+      onMessagesChange(messages);
     },
-    [messagesRef, _setMessages],
+    [messagesRef, _setMessages, onMessagesChange],
   );
 
   const setLoading = useCallback(
@@ -320,12 +344,6 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
     },
     [loadingRef, _setLoading],
   );
-
-  const url = options.url ?? DEFAULT_URL;
-  const accessor = options.accessor ?? DEFAULT_ACCESSOR;
-  const body = options.body ?? DEFAULT_BODY;
-  const headers = options.headers ?? DEFAULT_HEADERS;
-  const onError = options.onError ?? DEFAULT_ON_ERROR;
 
   function append(message: MessageType) {
     stableAppend(
