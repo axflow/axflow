@@ -194,9 +194,9 @@ const {/* ... */} = useChat({
 
 The `onError` callback defaults to `console.error`.
 
-## State update callbacks
+### State update callbacks
 
-You can get notified every time the list of messages changes by passing a `onMessagesChange` callback to `useChat`.
+You can get notified every time the list of messages changes by passing an `onMessagesChange` callback to `useChat`.
 
 For example, you may want to store the chat message history in localStorage (or a database).
 
