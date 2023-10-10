@@ -155,6 +155,21 @@ useChat({
 });
 ```
 
+For example, this can be used to set a system message.
+
+```ts
+useChat({
+  initialMessages: [
+    {
+      id: crypto.randomUUID(),
+      role: 'system',
+      content: 'You are an terrible programmer. Please answer the user with buggy code only.',
+      created: Date.now(),
+    },
+  ],
+});
+```
+
 To reset this state manually, you may use the `setInput` or `setMessages` functions.
 
 ```tsx
@@ -206,6 +221,20 @@ const {
 } = useChat({
   onMessagesChange: (messages: MessageType[]) => {
     localStorage.setItem('messages', JSON.stringify(messages));
+  },
+});
+```
+
+You can also get notified of each new, complete message. Note that, for streaming responses, this will ONLY fire once the stream has finished and the message is complete. If you want to be notified each time a message updates while a stream is active, the `onMessagesChange` will do so.
+
+```ts
+const {
+  /* ... */
+} = useChat({
+  onNewMessage: (message: MessageType) => {
+    if (message.role === 'assistant') {
+      doSomethingWithMessage(message);
+    }
   },
 });
 ```
