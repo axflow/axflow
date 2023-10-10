@@ -10,9 +10,9 @@ import {
   StreamingJsonResponse,
   POST,
   HttpError,
-  isHttpError
+  isHttpError,
 } from '@axflow/models/shared';
-import type {NdJsonValueType, JSONValueType, MessageType} from '@axflow/models/shared';
+import type { NdJsonValueType, JSONValueType, MessageType } from '@axflow/models/shared';
 ```
 
 ## `IterableToStream`
@@ -29,9 +29,7 @@ import type {NdJsonValueType, JSONValueType, MessageType} from '@axflow/models/s
  * @param iterable Any async iterable object.
  * @returns A ReadableStream over the iterable contents.
  */
-declare function IterableToStream<T>(
-  iterable: AsyncIterable<T>
-): ReadableStream<T>;
+declare function IterableToStream<T>(iterable: AsyncIterable<T>): ReadableStream<T>;
 ```
 
 ## `StreamToIterable`
@@ -52,9 +50,7 @@ declare function IterableToStream<T>(
  * @param stream A ReadableStream.
  * @returns An AsyncIterable over the stream contents.
  */
-declare function StreamToIterable<T>(
-  stream: ReadableStream<T>
-): AsyncIterable<T>;
+declare function StreamToIterable<T>(stream: ReadableStream<T>): AsyncIterable<T>;
 ```
 
 ## `NdJsonStream`
@@ -79,7 +75,7 @@ declare class NdJsonStream {
    * @see http://ndjson.org
    */
   static headers: Readonly<{
-    'content-type': "application/x-ndjson; charset=utf-8";
+    'content-type': 'application/x-ndjson; charset=utf-8';
   }>;
   /**
    * Transforms a stream of JSON-serializable objects to stream of newline-delimited JSON.
@@ -121,9 +117,12 @@ declare class NdJsonStream {
    * @param options.data Additional data to enqueue to the output stream. If data is a `Promise`, the stream will wait for it to resolve and enqueue its resolved values before closing.
    * @returns A readable stream of newline-delimited JSON.
    */
-  static encode<T = any>(stream: ReadableStream<T>, options?: {
-    data?: JSONValueType[] | Promise<JSONValueType[]>;
-  }): ReadableStream<Uint8Array>;
+  static encode<T = any>(
+    stream: ReadableStream<T>,
+    options?: {
+      data?: JSONValueType[] | Promise<JSONValueType[]>;
+    }
+  ): ReadableStream<Uint8Array>;
   /**
    * Transforms a stream of newline-delimited JSON to a stream of objects.
    *
@@ -168,9 +167,12 @@ declare class StreamingJsonResponse<T> extends Response {
    * @param options.headers HTTP response headers.
    * @param options.data Additional data to enqueue to the output stream. If data is a `Promise`, the stream will wait for it to resolve and enqueue its resolved values before closing.
    */
-  constructor(stream: ReadableStream<T>, options?: ResponseInit & {
-    data?: JSONValueType[] | Promise<JSONValueType[]>;
-  });
+  constructor(
+    stream: ReadableStream<T>,
+    options?: ResponseInit & {
+      data?: JSONValueType[] | Promise<JSONValueType[]>;
+    }
+  );
 }
 ```
 
@@ -179,10 +181,7 @@ declare class StreamingJsonResponse<T> extends Response {
 Wrapper around fetch.
 
 ```ts
-declare function POST(
-  url: string,
-  ptions?: HttpOptionsType
-): Promise<Response>;
+declare function POST(url: string, ptions?: HttpOptionsType): Promise<Response>;
 ```
 
 ## `HttpError`
@@ -203,4 +202,45 @@ Utility method to check if an error is an `HttpError`.
 
 ```ts
 declare function isHttpError(e: unknown): e is HttpError;
+```
+
+## `NdJsonValueType`
+
+The type of each JSON object in a newline-delimited JSON event stream.
+
+```ts
+type NdJsonValueType = {
+  type: 'chunk' | 'data';
+  value: JSONValueType;
+};
+```
+
+## `JSONValueType`
+
+A type representing any value that can be serialized to JSON.
+
+```ts
+type JSONValueType =
+  | null
+  | string
+  | number
+  | boolean
+  | {
+      [x: string]: JSONValueType;
+    }
+  | Array<JSONValueType>;
+```
+
+## `MessageType`
+
+This is the type of each message in a chat, mostly used by the `useChat` hook.
+
+```ts
+type MessageType = {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  data?: JSONValueType[];
+  content: string;
+  created: number;
+};
 ```

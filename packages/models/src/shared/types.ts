@@ -8,7 +8,7 @@ export type JSONValueType =
 
 export type MessageType = {
   id: string;
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system';
   data?: JSONValueType[];
   content: string;
   created: number;
