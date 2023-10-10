@@ -19,6 +19,7 @@ async function handleStreamingResponse(
   messagesRef: MutableRefObject<MessageType[]>,
   setMessages: (messages: MessageType[]) => void,
   accessor: AccessorType,
+  onNewMessage: (message: MessageType) => void,
 ) {
   const responseBody = response.body;
 
@@ -70,6 +71,9 @@ async function handleStreamingResponse(
 
     setMessages(messages);
   }
+
+  const newMessage = messagesRef.current.find((msg) => msg.id === id)!;
+  onNewMessage(newMessage);
 }
 
 async function handleJsonResponse(
@@ -77,16 +81,19 @@ async function handleJsonResponse(
   messagesRef: MutableRefObject<MessageType[]>,
   setMessages: (messages: MessageType[]) => void,
   accessor: AccessorType,
+  onNewMessage: (message: MessageType) => void,
 ) {
   const responseBody = await response.json();
   const content = accessor(responseBody);
-  const messages = messagesRef.current.concat({
+  const newMessage: MessageType = {
     id: uuid(),
     role: 'assistant',
     content: content,
     created: Date.now(),
-  });
+  };
+  const messages = messagesRef.current.concat(newMessage);
   setMessages(messages);
+  onNewMessage(newMessage);
 }
 
 async function stableAppend(
@@ -101,6 +108,7 @@ async function stableAppend(
   setLoading: (loading: boolean) => void,
   setError: (error: Error | null) => void,
   onError: (error: Error) => void,
+  onNewMessage: (message: MessageType) => void,
 ) {
   // Ensure we guard against accidental duplicate calls
   if (loadingRef.current) {
@@ -119,7 +127,8 @@ async function stableAppend(
       ? body(message, history)
       : { ...body, messages: history.concat(message) };
 
-  setMessages(messagesRef.current.concat(message));
+  setMessages(history.concat(message));
+  onNewMessage(message);
 
   let response: Response;
 
@@ -134,7 +143,7 @@ async function stableAppend(
     const handler = isStreaming ? handleStreamingResponse : handleJsonResponse;
 
     // Must `await` here in order to `catch` potential errors
-    await handler(response, messagesRef, setMessages, accessor);
+    await handler(response, messagesRef, setMessages, accessor, onNewMessage);
   } catch (error) {
     setError(error as Error);
     onError(error as Error);
@@ -153,6 +162,9 @@ const DEFAULT_ON_ERROR = (error: Error) => {
   console.error(error);
 };
 const DEFAULT_ON_MESSAGES_CHANGE = (_messages: MessageType[]) => {
+  // no-op
+};
+const DEFAULT_ON_NEW_MESSAGE = (_message: MessageType) => {
   // no-op
 };
 
@@ -226,6 +238,17 @@ export type UseChatOptionsType = {
    *     3. Any time a client of the hook calls `setMessages`
    */
   onMessagesChange?: (updatedMessages: MessageType[]) => void;
+
+  /**
+   * Callback that is invoked when a new message is appended to the list of messages.
+   *
+   * NOTE: For messages received from the server, this will only be invoked ONE time, when
+   * the message is complete. That means, for streaming responses, this will not be invoked
+   * until the stream has finished and the message is complete. If you want to get notified
+   * for each update, the `onMessagesChange` callback fires every time the list of messages
+   * changes, which includes message updates from streaming responses.
+   */
+  onNewMessage?: (message: MessageType) => void;
 };
 
 /**
@@ -326,6 +349,7 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
   const headers = options.headers ?? DEFAULT_HEADERS;
   const onError = options.onError ?? DEFAULT_ON_ERROR;
   const onMessagesChange = options.onMessagesChange ?? DEFAULT_ON_MESSAGES_CHANGE;
+  const onNewMessage = options.onNewMessage ?? DEFAULT_ON_NEW_MESSAGE;
 
   // Given this calls `onMessagesChange`, be mindful of how this is used internally.
   const setMessages = useCallback(
@@ -358,6 +382,7 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
       setLoading,
       setError,
       onError,
+      onNewMessage,
     );
   }
 

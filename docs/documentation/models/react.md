@@ -98,6 +98,16 @@ type UseChatOptionsType = {
    *     3. Any time a client of the hook calls `setMessages`
    */
   onMessagesChange?: (updatedMessages: MessageType[]) => void;
+  /**
+   * Callback that is invoked when a new message is appended to the list of messages.
+   *
+   * NOTE: For messages received from the server, this will only be invoked ONE time, when
+   * the message is complete. That means, for streaming responses, this will not be invoked
+   * until the stream has finished and the message is complete. If you want to get notified
+   * for each update, the `onMessagesChange` callback fires every time the list of messages
+   * changes, which includes message updates from streaming responses.
+   */
+  onNewMessage?: (message: MessageType) => void;
 };
 ```
 
