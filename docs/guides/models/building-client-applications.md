@@ -163,7 +163,7 @@ useChat({
     {
       id: crypto.randomUUID(),
       role: 'system',
-      content: 'You are an terrible programmer. Please answer the user with buggy code only.',
+      content: 'You are a terrible programmer. Please answer the user with buggy code only.',
       created: Date.now(),
     },
   ],
@@ -225,7 +225,7 @@ const {
 });
 ```
 
-You can also get notified of each new, complete message. Note that, for streaming responses, this will ONLY fire once the stream has finished and the message is complete. If you want to be notified each time a message updates while a stream is active, the `onMessagesChange` will do so.
+You can also get notified of each new message. Note that, for streaming responses, this will ONLY fire once the stream has finished and the message is complete. If you want to be notified each time a message updates while a stream is active, the `onMessagesChange` will do so.
 
 ```ts
 const {
