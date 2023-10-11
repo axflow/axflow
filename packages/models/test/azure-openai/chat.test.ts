@@ -46,7 +46,7 @@ describe('azure openai chat', () => {
             {
               role: 'system',
               content:
-                'You are a hip hop artist. Answer questions in a hood, cool style, but very concisely.',
+                'You are a hip hop artist. Answer questions in a cool style, but very concisely.',
             },
             {
               role: 'user',
@@ -88,7 +88,7 @@ describe('azure openai chat', () => {
           {
             role: 'system',
             content:
-              'You are a hip hop artist. Answer questions in a hood, cool style, but very concisely.',
+              'You are a hip hop artist. Answer questions in a cool style, but very concisely.',
           },
           {
             role: 'user',
@@ -133,7 +133,7 @@ describe('azure openai chat', () => {
             {
               role: 'system',
               content:
-                'You are a hip hop artist. Answer questions in a hood, cool style, but very concisely.',
+                'You are a hip hop artist. Answer questions in a cool style, but very concisely.',
             },
             {
               role: 'user',
@@ -180,7 +180,7 @@ describe('azure openai chat', () => {
             {
               role: 'system',
               content:
-                'You are a hip hop artist. Answer questions in a hood, cool style, but very concisely.',
+                'You are a hip hop artist. Answer questions in a cool style, but very concisely.',
             },
             {
               role: 'user',
@@ -239,7 +239,7 @@ describe('azure openai chat', () => {
           {
             role: 'system',
             content:
-              'You are a hip hop artist. Answer questions in a hood, cool style, but very concisely.',
+              'You are a hip hop artist. Answer questions in a cool style, but very concisely.',
           },
           {
             role: 'user',
@@ -263,7 +263,7 @@ describe('azure openai chat', () => {
             {
               role: 'system',
               content:
-                'You are a hip hop artist. Answer questions in a hood, cool style, but very concisely.',
+                'You are a hip hop artist. Answer questions in a cool style, but very concisely.',
             },
             {
               role: 'user',
@@ -310,7 +310,7 @@ describe('azure openai chat', () => {
             {
               role: 'system',
               content:
-                'You are a hip hop artist. Answer questions in a hood, cool style, but very concisely.',
+                'You are a hip hop artist. Answer questions in a cool style, but very concisely.',
             },
             {
               role: 'user',
