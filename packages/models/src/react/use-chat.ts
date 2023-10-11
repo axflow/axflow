@@ -96,13 +96,12 @@ async function handleJsonResponse(
   onNewMessage(newMessage);
 }
 
-async function stableAppend(
-  message: MessageType,
+async function request(
+  prepare: () => JSONValueType,
   messagesRef: MutableRefObject<MessageType[]>,
   setMessages: (messages: MessageType[]) => void,
   url: string,
   headers: Record<string, string>,
-  body: BodyType,
   accessor: AccessorType,
   loadingRef: MutableRefObject<boolean>,
   setLoading: (loading: boolean) => void,
@@ -121,14 +120,7 @@ async function stableAppend(
   // Clear any previous error state
   setError(null);
 
-  const history = messagesRef.current;
-  const requestBody =
-    typeof body === 'function'
-      ? body(message, history)
-      : { ...body, messages: history.concat(message) };
-
-  setMessages(history.concat(message));
-  onNewMessage(message);
+  const requestBody = prepare();
 
   let response: Response;
 
@@ -150,6 +142,133 @@ async function stableAppend(
   } finally {
     setLoading(false);
   }
+}
+
+async function stableAppend(
+  message: MessageType,
+  messagesRef: MutableRefObject<MessageType[]>,
+  setMessages: (messages: MessageType[]) => void,
+  url: string,
+  headers: Record<string, string>,
+  body: BodyType,
+  accessor: AccessorType,
+  loadingRef: MutableRefObject<boolean>,
+  setLoading: (loading: boolean) => void,
+  setError: (error: Error | null) => void,
+  onError: (error: Error) => void,
+  onNewMessage: (message: MessageType) => void,
+) {
+  // When appending a new message, prepare will do three things:
+  //
+  //     1. Construct the request body for the subsequent request to the server.
+  //     2. Update the message state with the new message that is being appended.
+  //     3. Invoked the `onNewMessage` callback with the new message being appended.
+  //
+  function prepare() {
+    const history = messagesRef.current;
+
+    // Construct the request body, which is dependent
+    // on the options provided to the hook.
+    const requestBody =
+      typeof body === 'function'
+        ? body(message, history)
+        : { ...body, messages: history.concat(message) };
+
+    // We're appending a new user message here. It hasn't
+    // been added to the state yet, so we add it now.
+    setMessages(history.concat(message));
+
+    // Now that we are appending a new message and just added it
+    // to the state, we want to invoke the new message callback.
+    onNewMessage(message);
+
+    return requestBody;
+  }
+
+  // Now perform the request to the server.
+  return request(
+    prepare,
+    messagesRef,
+    setMessages,
+    url,
+    headers,
+    accessor,
+    loadingRef,
+    setLoading,
+    setError,
+    onError,
+    onNewMessage,
+  );
+}
+
+async function stableReload(
+  messagesRef: MutableRefObject<MessageType[]>,
+  setMessages: (messages: MessageType[]) => void,
+  url: string,
+  headers: Record<string, string>,
+  body: BodyType,
+  accessor: AccessorType,
+  loadingRef: MutableRefObject<boolean>,
+  setLoading: (loading: boolean) => void,
+  setError: (error: Error | null) => void,
+  onError: (error: Error) => void,
+  onNewMessage: (message: MessageType) => void,
+) {
+  // When reloading existing messages, prepare will do four things:
+  //
+  //     1. Find the last message from the user in the list of messages. This message and any previous history will be sent as the request to the server.
+  //     2. Remove any assistant messages that are more recent than the last user message.
+  //     3. Update the messages state if any messages were removed from the existing state (i.e., assistant message).
+  //     4. Construct the request body for the subsequent request to the server.
+  //
+  function prepare() {
+    const messages = messagesRef.current;
+    const history: MessageType[] = [];
+
+    let lastUserMessage: MessageType | null = null;
+
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (lastUserMessage === null && messages[i].role === 'user') {
+        lastUserMessage = messages[i];
+      } else if (lastUserMessage !== null) {
+        history.unshift(messages[i]);
+      }
+    }
+
+    if (lastUserMessage === null) {
+      throw new Error('Cannot reload empty conversation');
+    }
+
+    // Construct the request body, which is dependent
+    // on the options provided to the hook.
+    const requestBody =
+      typeof body === 'function'
+        ? body(lastUserMessage, history)
+        : { ...body, messages: history.concat(lastUserMessage) };
+
+    // If we removed messages from the existing messages state above,
+    // then let's update the internal messages state to reflect the changes.
+    if (messages[messages.length - 1].id !== lastUserMessage.id) {
+      setMessages(history.concat(lastUserMessage));
+    }
+
+    return requestBody;
+  }
+
+  // Now perform the request to the server.
+  return request(
+    prepare,
+    messagesRef,
+    setMessages,
+    url,
+    headers,
+    accessor,
+    loadingRef,
+    setLoading,
+    setError,
+    onError,
+    onNewMessage,
+  );
 }
 
 const DEFAULT_URL = '/api/chat';
@@ -307,6 +426,17 @@ export type UseChatResultType = {
    * @param e Optional `React.FormEvent<HTMLFormElement>` if this value is used with a Form.
    */
   onSubmit: (e?: React.FormEvent<HTMLFormElement>) => void;
+
+  /**
+   * Sends a request to the server with the current list of messages for a new assistant response.
+   *
+   * Note:
+   *
+   *     * If there are no user messages in the list, this function will throw an error.
+   *     * If there are assistant messages more recent than the last user message, they will
+   *       be removed from the list of messages before sending a request to the server.
+   */
+  reload: () => void;
 };
 
 /**
@@ -369,23 +499,6 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
     [loadingRef, _setLoading],
   );
 
-  function append(message: MessageType) {
-    stableAppend(
-      message,
-      messagesRef,
-      setMessages,
-      url,
-      headers,
-      body,
-      accessor,
-      loadingRef,
-      setLoading,
-      setError,
-      onError,
-      onNewMessage,
-    );
-  }
-
   function onChange(
     e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement> | string,
   ) {
@@ -401,15 +514,46 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
       e.preventDefault();
     }
 
-    append({
+    const newMessage: MessageType = {
       id: uuid(),
       role: 'user',
       content: input,
       created: Date.now(),
-    });
+    };
+
+    stableAppend(
+      newMessage,
+      messagesRef,
+      setMessages,
+      url,
+      headers,
+      body,
+      accessor,
+      loadingRef,
+      setLoading,
+      setError,
+      onError,
+      onNewMessage,
+    );
 
     setInput('');
   }
 
-  return { input, setInput, messages, setMessages, loading, error, onChange, onSubmit };
+  function reload() {
+    stableReload(
+      messagesRef,
+      setMessages,
+      url,
+      headers,
+      body,
+      accessor,
+      loadingRef,
+      setLoading,
+      setError,
+      onError,
+      onNewMessage,
+    );
+  }
+
+  return { input, setInput, messages, setMessages, loading, error, onChange, onSubmit, reload };
 }
