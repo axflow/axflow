@@ -239,6 +239,21 @@ const {
 });
 ```
 
+### Reloading messages
+
+You can reload the conversation starting from the last user message using the `reload` function returned from the hook. This is useful for regenerating assistant responses for a given user message.
+
+Note:
+
+1. This will throw an error if no user message exists in the `messages` state.
+2. This will remove any messages from the assistant that are more recent than the most recent user message.
+
+```ts
+const { reload } = useChat();
+```
+
+This can be used together with `setMessages` to reset to a specific point in the message history.
+
 ## Streaming vs non-streaming
 
 The hook supports both streaming and non-streaming. If you wish to use streaming, your API MUST:

@@ -163,5 +163,15 @@ type UseChatResultType = {
    * @param e Optional `React.FormEvent<HTMLFormElement>` if this value is used with a Form.
    */
   onSubmit: (e?: React.FormEvent<HTMLFormElement>) => void;
+  /**
+   * Sends a request to the server with the current list of messages for a new assistant response.
+   *
+   * Note:
+   *
+   *     * If there are no user messages in the list, this function will throw an error.
+   *     * If there are assistant messages more recent than the last user message, they will
+   *       be removed from the list of messages before sending a request to the server.
+   */
+  reload: () => void;
 };
 ```
