@@ -1,9 +1,13 @@
 import { useRef, useCallback, useState, type MutableRefObject } from 'react';
 import { POST, HttpError, StreamToIterable, NdJsonStream } from '@axflow/models/shared';
-import type { MessageType, JSONValueType } from '@axflow/models/shared';
+import type { FunctionType, MessageType, JSONValueType } from '@axflow/models/shared';
 
 interface AccessorType<T = any> {
-  (value: T): string;
+  (value: T): string | null | undefined;
+}
+
+interface FunctionCallAccessorType<T = any> {
+  (value: T): { name?: string; arguments?: string } | null | undefined;
 }
 
 type BodyType =
@@ -19,6 +23,7 @@ async function handleStreamingResponse(
   messagesRef: MutableRefObject<MessageType[]>,
   setMessages: (messages: MessageType[]) => void,
   accessor: AccessorType,
+  functionCallAccessor: FunctionCallAccessorType,
   onNewMessage: (message: MessageType) => void,
 ) {
   const responseBody = response.body;
@@ -53,18 +58,42 @@ async function handleStreamingResponse(
       }
     } else {
       const chunkContent = accessor(chunk.value);
+      const chunkFunctionCall = functionCallAccessor(chunk.value);
 
       if (!id) {
         id = uuid();
-        messages = messages.concat({
+
+        const message: MessageType = {
           id: id,
           role: 'assistant',
-          content: chunkContent,
+          content: chunkContent ?? '',
           created: Date.now(),
-        });
+        };
+
+        if (chunkFunctionCall) {
+          message.functionCall = {
+            name: chunkFunctionCall.name ?? '',
+            arguments: chunkFunctionCall.arguments ?? '',
+          };
+        }
+
+        messages = messages.concat(message);
       } else {
         messages = messages.map((msg) => {
-          return msg.id !== id ? msg : { ...msg, content: msg.content + chunkContent };
+          if (msg.id !== id) {
+            return msg;
+          }
+
+          const content = msg.content + (chunkContent ?? '');
+
+          if (!chunkFunctionCall) {
+            return { ...msg, content };
+          }
+
+          const name = msg.functionCall!.name + (chunkFunctionCall.name ?? '');
+          const args = msg.functionCall!.arguments + (chunkFunctionCall.arguments ?? '');
+
+          return { ...msg, content: content, functionCall: { name, arguments: args } };
         });
       }
     }
@@ -81,16 +110,24 @@ async function handleJsonResponse(
   messagesRef: MutableRefObject<MessageType[]>,
   setMessages: (messages: MessageType[]) => void,
   accessor: AccessorType,
+  functionCallAccessor: FunctionCallAccessorType,
   onNewMessage: (message: MessageType) => void,
 ) {
   const responseBody = await response.json();
   const content = accessor(responseBody);
+  const functionCall = functionCallAccessor(responseBody);
   const newMessage: MessageType = {
     id: uuid(),
     role: 'assistant',
-    content: content,
+    content: content ?? '',
     created: Date.now(),
   };
+  if (functionCall) {
+    newMessage.functionCall = {
+      name: functionCall.name ?? '',
+      arguments: functionCall.arguments ?? '',
+    };
+  }
   const messages = messagesRef.current.concat(newMessage);
   setMessages(messages);
   onNewMessage(newMessage);
@@ -103,11 +140,13 @@ async function request(
   url: string,
   headers: Record<string, string>,
   accessor: AccessorType,
+  functionCallAccessor: FunctionCallAccessorType,
   loadingRef: MutableRefObject<boolean>,
   setLoading: (loading: boolean) => void,
   setError: (error: Error | null) => void,
   onError: (error: Error) => void,
   onNewMessage: (message: MessageType) => void,
+  onSuccess: () => void,
 ) {
   // Ensure we guard against accidental duplicate calls
   if (loadingRef.current) {
@@ -135,7 +174,9 @@ async function request(
     const handler = isStreaming ? handleStreamingResponse : handleJsonResponse;
 
     // Must `await` here in order to `catch` potential errors
-    await handler(response, messagesRef, setMessages, accessor, onNewMessage);
+    await handler(response, messagesRef, setMessages, accessor, functionCallAccessor, onNewMessage);
+
+    onSuccess();
   } catch (error) {
     setError(error as Error);
     onError(error as Error);
@@ -152,11 +193,13 @@ async function stableAppend(
   headers: Record<string, string>,
   body: BodyType,
   accessor: AccessorType,
+  functionCallAccessor: FunctionCallAccessorType,
   loadingRef: MutableRefObject<boolean>,
   setLoading: (loading: boolean) => void,
   setError: (error: Error | null) => void,
   onError: (error: Error) => void,
   onNewMessage: (message: MessageType) => void,
+  setFunctions: (functions: FunctionType[]) => void,
 ) {
   // When appending a new message, prepare will do three things:
   //
@@ -193,11 +236,13 @@ async function stableAppend(
     url,
     headers,
     accessor,
+    functionCallAccessor,
     loadingRef,
     setLoading,
     setError,
     onError,
     onNewMessage,
+    () => setFunctions([]), // Clear functions after each request (similar to clearing user input)
   );
 }
 
@@ -208,6 +253,7 @@ async function stableReload(
   headers: Record<string, string>,
   body: BodyType,
   accessor: AccessorType,
+  functionCallAccessor: FunctionCallAccessorType,
   loadingRef: MutableRefObject<boolean>,
   setLoading: (loading: boolean) => void,
   setError: (error: Error | null) => void,
@@ -263,16 +309,23 @@ async function stableReload(
     url,
     headers,
     accessor,
+    functionCallAccessor,
     loadingRef,
     setLoading,
     setError,
     onError,
     onNewMessage,
+    () => {},
   );
 }
 
 const DEFAULT_URL = '/api/chat';
-const DEFAULT_ACCESSOR = (value: string) => value;
+const DEFAULT_ACCESSOR = (value: string) => {
+  return typeof value === 'string' ? value : undefined;
+};
+const DEFAULT_FUNCTION_CALL_ACCESSOR = (_value: any) => {
+  return undefined;
+};
 const DEFAULT_BODY = (message: MessageType, history: MessageType[]) => ({
   messages: [...history, message],
 });
@@ -325,9 +378,50 @@ export type UseChatOptionsType = {
    * is given the value from the API as its input and should return the message text
    * as its output.
    *
+   * For example, if this hook is used to stream an OpenAI-compatible API response,
+   * the following option can be defined to interpret the response content:
+   *
+   *     import { useChat } from '@axflow/models/react';
+   *     import type { OpenAIChatTypes } from '@axflow/models/openai/chat';
+   *
+   *     const { ... } = useChat({
+   *       accessor: (value: OpenAIChatTypes.Chunk) => {
+   *         return value.choices[0].delta.content;
+   *       }
+   *     });
+   *
    * By default, it assumes the value from the API is the message text itself.
    */
-  accessor?: (value: any) => string;
+  accessor?: AccessorType;
+
+  /**
+   * An accessor used to pluck out a function call for LLMs that support it. This
+   * feature was built to support OpenAI functions, but it can be used for any model
+   * that supports a concept of functions.
+   *
+   * This is used to return the function call object which will then be populated
+   * on the assistant message's `functionCall` property. A function call object
+   * consists of a `name` property (the function name) and an `arguments` property
+   * (the function arguments), both of which are strings. The `arguments` property
+   * is encoded as JSON.
+   *
+   * For example, if this hook is used to stream an OpenAI-compatible API response
+   * using functions, the following options can be defined to interpret the response:
+   *
+   *     import { useChat } from '@axflow/models/react';
+   *     import type { OpenAIChatTypes } from '@axflow/models/openai/chat';
+   *
+   *     const { ... } = useChat({
+   *       accessor: (value: OpenAIChatTypes.Chunk) => {
+   *         return value.choices[0].delta.content;
+   *       },
+   *
+   *       functionCallAccessor: (value: OpenAIChatTypes.Chunk) => {
+   *         return value.choices[0].delta.function_call;
+   *       }
+   *     });
+   */
+  functionCallAccessor?: FunctionCallAccessorType;
 
   /**
    * Initial message input. Defaults to empty string.
@@ -338,6 +432,15 @@ export type UseChatOptionsType = {
    * Initial message history. Defaults to an empty list.
    */
   initialMessages?: MessageType[];
+
+  /**
+   * Initial set of available functions for the user's next message.
+   *
+   * This is primarily intended for OpenAI's functions feature.
+   *
+   * @see https://platform.openai.com/docs/api-reference/chat/create
+   */
+  initialFunctions?: FunctionType[];
 
   /**
    * Callback to handle errors should they arise.
@@ -393,6 +496,24 @@ export type UseChatResultType = {
    * Manually set the messages.
    */
   setMessages: (messages: MessageType[]) => void;
+
+  /**
+   * List of available functions to send along with the next user message.
+   *
+   * This is primarily intended for OpenAI's functions feature.
+   *
+   * @see https://platform.openai.com/docs/api-reference/chat/create
+   */
+  functions: FunctionType[];
+
+  /**
+   * Update list of functions for the next user message.
+   *
+   * This is primarily intended for OpenAI's functions feature.
+   *
+   * @see https://platform.openai.com/docs/api-reference/chat/create
+   */
+  setFunctions: (functions: FunctionType[]) => void;
 
   /**
    * If a request is in progress, this will be `true`.
@@ -466,6 +587,10 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
   const [messages, _setMessages] = useState<MessageType[]>(initialMessages);
   const messagesRef = useRef<MessageType[]>(initialMessages);
 
+  // Functions state
+  const initialFunctions = options.initialFunctions ?? [];
+  const [functions, setFunctions] = useState<FunctionType[]>(initialFunctions);
+
   // Loading state
   const [loading, _setLoading] = useState<boolean>(false);
   const loadingRef = useRef(false);
@@ -475,6 +600,7 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
 
   const url = options.url ?? DEFAULT_URL;
   const accessor = options.accessor ?? DEFAULT_ACCESSOR;
+  const functionCallAccessor = options.functionCallAccessor ?? DEFAULT_FUNCTION_CALL_ACCESSOR;
   const body = options.body ?? DEFAULT_BODY;
   const headers = options.headers ?? DEFAULT_HEADERS;
   const onError = options.onError ?? DEFAULT_ON_ERROR;
@@ -521,6 +647,10 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
       created: Date.now(),
     };
 
+    if (functions.length > 0) {
+      newMessage.functions = functions;
+    }
+
     stableAppend(
       newMessage,
       messagesRef,
@@ -529,11 +659,13 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
       headers,
       body,
       accessor,
+      functionCallAccessor,
       loadingRef,
       setLoading,
       setError,
       onError,
       onNewMessage,
+      setFunctions,
     );
 
     setInput('');
@@ -547,6 +679,7 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
       headers,
       body,
       accessor,
+      functionCallAccessor,
       loadingRef,
       setLoading,
       setError,
@@ -555,5 +688,17 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
     );
   }
 
-  return { input, setInput, messages, setMessages, loading, error, onChange, onSubmit, reload };
+  return {
+    input,
+    setInput,
+    messages,
+    setMessages,
+    functions,
+    setFunctions,
+    loading,
+    error,
+    onChange,
+    onSubmit,
+    reload,
+  };
 }
