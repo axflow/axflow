@@ -35,6 +35,24 @@ For a more detailed example, see the guide [Building client applications](/guide
 ### Options
 
 ```ts
+interface AccessorType<T = any> {
+  (value: T): string | null | undefined;
+}
+
+interface FunctionCallAccessorType<T = any> {
+  (value: T):
+    | {
+        name?: string;
+        arguments?: string;
+      }
+    | null
+    | undefined;
+}
+
+type BodyType =
+  | Record<string, JSONValueType>
+  | ((message: MessageType, history: MessageType[]) => JSONValueType);
+
 /**
  * The options supplied to the useChat hook.
  */
@@ -70,9 +88,49 @@ type UseChatOptionsType = {
    * is given the value from the API as its input and should return the message text
    * as its output.
    *
+   * For example, if this hook is used to stream an OpenAI-compatible API response,
+   * the following option can be defined to interpret the response content:
+   *
+   *     import { useChat } from '@axflow/models/react';
+   *     import type { OpenAIChatTypes } from '@axflow/models/openai/chat';
+   *
+   *     const { ... } = useChat({
+   *       accessor: (value: OpenAIChatTypes.Chunk) => {
+   *         return value.choices[0].delta.content;
+   *       }
+   *     });
+   *
    * By default, it assumes the value from the API is the message text itself.
    */
-  accessor?: (value: any) => string;
+  accessor?: AccessorType;
+  /**
+   * An accessor used to pluck out a function call for LLMs that support it. This
+   * feature was built to support OpenAI functions, but it can be used for any model
+   * that supports a concept of functions.
+   *
+   * This is used to return the function call object which will then be populated
+   * on the assistant message's `functionCall` property. A function call object
+   * consists of a `name` property (the function name) and an `arguments` property
+   * (the function arguments), both of which are strings. The `arguments` property
+   * is encoded as JSON.
+   *
+   * For example, if this hook is used to stream an OpenAI-compatible API response
+   * using functions, the following options can be defined to interpret the response:
+   *
+   *     import { useChat } from '@axflow/models/react';
+   *     import type { OpenAIChatTypes } from '@axflow/models/openai/chat';
+   *
+   *     const { ... } = useChat({
+   *       accessor: (value: OpenAIChatTypes.Chunk) => {
+   *         return value.choices[0].delta.content;
+   *       },
+   *
+   *       functionCallAccessor: (value: OpenAIChatTypes.Chunk) => {
+   *         return value.choices[0].delta.function_call;
+   *       }
+   *     });
+   */
+  functionCallAccessor?: FunctionCallAccessorType;
   /**
    * Initial message input. Defaults to empty string.
    */
@@ -81,6 +139,14 @@ type UseChatOptionsType = {
    * Initial message history. Defaults to an empty list.
    */
   initialMessages?: MessageType[];
+  /**
+   * Initial set of available functions for the user's next message.
+   *
+   * This is primarily intended for OpenAI's functions feature.
+   *
+   * @see https://platform.openai.com/docs/api-reference/chat/create
+   */
+  initialFunctions?: FunctionType[];
   /**
    * Callback to handle errors should they arise.
    *
@@ -134,6 +200,22 @@ type UseChatResultType = {
    * Manually set the messages.
    */
   setMessages: (messages: MessageType[]) => void;
+  /**
+   * List of available functions to send along with the next user message.
+   *
+   * This is primarily intended for OpenAI's functions feature.
+   *
+   * @see https://platform.openai.com/docs/api-reference/chat/create
+   */
+  functions: FunctionType[];
+  /**
+   * Update list of functions for the next user message.
+   *
+   * This is primarily intended for OpenAI's functions feature.
+   *
+   * @see https://platform.openai.com/docs/api-reference/chat/create
+   */
+  setFunctions: (functions: FunctionType[]) => void;
   /**
    * If a request is in progress, this will be `true`.
    *
