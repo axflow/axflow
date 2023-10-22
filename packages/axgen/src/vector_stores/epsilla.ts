@@ -72,7 +72,7 @@ export class Epsilla implements IVectorStore {
 
     // Let's check to see if the collection already exists,
     // and overwrite it if it does.
-    const response = await client.listTables() as EpsillaResponse;
+    const response = (await client.listTables()) as EpsillaResponse;
     const tables = response.result as string[];
 
     if (tables.includes(dbName)) {
@@ -126,7 +126,7 @@ export class Epsilla implements IVectorStore {
       ids.push(chunk.id);
     }
 
-    const response = await this.client.insert(this.collection, data) as EpsillaResponse;
+    const response = (await this.client.insert(this.collection, data)) as EpsillaResponse;
     if (response.statusCode !== 200) {
       throw new Error(response.message);
     }
@@ -145,16 +145,13 @@ export class Epsilla implements IVectorStore {
   }
 
   async query(embedding: number[], options: IVectorQueryOptions): Promise<IVectorQueryResult[]> {
-    const response = await this.client.query(
-      this.collection,
-      {
-        queryField: 'embedding',
-        queryVector: embedding,
-        limit: options.topK,
-        filter: options.filterTerm,
-        withDistance: true
-      }
-    ) as EpsillaResponse;
+    const response = (await this.client.query(this.collection, {
+      queryField: 'embedding',
+      queryVector: embedding,
+      limit: options.topK,
+      filter: options.filterTerm,
+      withDistance: true,
+    })) as EpsillaResponse;
 
     return (response.result as EpsillaQueryResult[]).map((res) => {
       const metadata = res.metadata as Record<string, any>;
@@ -167,7 +164,7 @@ export class Epsilla implements IVectorStore {
           text: res.text as string,
           metadata: metadata,
         },
-        similarity: res['@distance'] as number || null,
+        similarity: (res['@distance'] as number) || null,
       };
     });
   }
