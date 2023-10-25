@@ -241,12 +241,12 @@ const {
 
 ### Reloading messages
 
-You can reload the conversation starting from the last user message using the `reload` function returned from the hook. This is useful for regenerating assistant responses for a given user message.
+You can reload the conversation starting from the last `user` or `system` message using the `reload` function returned from the hook. This is useful for regenerating assistant responses for a given message.
 
 Note:
 
-1. This will throw an error if no user message exists in the `messages` state.
-2. This will remove any messages from the assistant that are more recent than the most recent user message.
+1. This will throw an error if no `user` or `system` message exists in the `messages` state.
+2. This will remove any messages from the assistant that are more recent than the most recent `user` or `system` message.
 
 ```ts
 const { reload } = useChat();

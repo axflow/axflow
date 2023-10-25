@@ -262,8 +262,8 @@ async function stableReload(
 ) {
   // When reloading existing messages, prepare will do four things:
   //
-  //     1. Find the last message from the user in the list of messages. This message and any previous history will be sent as the request to the server.
-  //     2. Remove any assistant messages that are more recent than the last user message.
+  //     1. Find the last message with role 'user' or 'system' in the list of messages. This message and any previous history will be sent as the request to the server.
+  //     2. Remove any assistant messages that are more recent than the last 'user' or 'system' message.
   //     3. Update the messages state if any messages were removed from the existing state (i.e., assistant message).
   //     4. Construct the request body for the subsequent request to the server.
   //
@@ -271,17 +271,22 @@ async function stableReload(
     const messages = messagesRef.current;
     const history: MessageType[] = [];
 
-    let lastUserMessage: MessageType | null = null;
+    let lastMessage: MessageType | null = null;
 
+    // We want to filter out any messages more recent than the last 'user' or 'system' message.
+    // Here we implement that by iterating over the list in reverse, taking everything starting
+    // at the most recent 'user' or 'system' message.
     for (let i = messages.length - 1; i >= 0; i--) {
-      if (lastUserMessage === null && messages[i].role === 'user') {
-        lastUserMessage = messages[i];
-      } else if (lastUserMessage !== null) {
-        history.unshift(messages[i]);
+      const msg = messages[i];
+      const role = msg.role;
+      if (lastMessage === null && (role === 'user' || role === 'system')) {
+        lastMessage = msg;
+      } else if (lastMessage !== null) {
+        history.unshift(msg);
       }
     }
 
-    if (lastUserMessage === null) {
+    if (lastMessage === null) {
       throw new Error('Cannot reload empty conversation');
     }
 
@@ -289,13 +294,13 @@ async function stableReload(
     // on the options provided to the hook.
     const requestBody =
       typeof body === 'function'
-        ? body(lastUserMessage, history)
-        : { ...body, messages: history.concat(lastUserMessage) };
+        ? body(lastMessage, history)
+        : { ...body, messages: history.concat(lastMessage) };
 
     // If we removed messages from the existing messages state above,
     // then let's update the internal messages state to reflect the changes.
-    if (messages[messages.length - 1].id !== lastUserMessage.id) {
-      setMessages(history.concat(lastUserMessage));
+    if (messages[messages.length - 1].id !== lastMessage.id) {
+      setMessages(history.concat(lastMessage));
     }
 
     return requestBody;
@@ -553,8 +558,8 @@ export type UseChatResultType = {
    *
    * Note:
    *
-   *     * If there are no user messages in the list, this function will throw an error.
-   *     * If there are assistant messages more recent than the last user message, they will
+   *     * If there are no `user` or `system` messages in the list, this function will throw an error.
+   *     * If there are assistant messages more recent than the last `user` or `system` message, they will
    *       be removed from the list of messages before sending a request to the server.
    */
   reload: () => void;
