@@ -250,8 +250,8 @@ type UseChatResultType = {
    *
    * Note:
    *
-   *     * If there are no user messages in the list, this function will throw an error.
-   *     * If there are assistant messages more recent than the last user message, they will
+   *     * If there are no `user` or `system` messages in the list, this function will throw an error.
+   *     * If there are assistant messages more recent than the last `user` or `system` message, they will
    *       be removed from the list of messages before sending a request to the server.
    */
   reload: () => void;
