@@ -70,6 +70,26 @@ and can be imported using the following:
 import type { MessageType } from '@axflow/models/shared';
 ```
 
+## Working with system messages
+
+OpenAI and other providers support a special role named `system` ([see docs](https://platform.openai.com/docs/guides/gpt/chat-completions-api)).
+
+You can use the `initialMessages` configuration parameter of the `useChat` hook to conveniently pass one in.
+
+The framework also provides a utility called `createMessage` which will fill in any fields from the `MessageType` that you don't want to add yourself, such as `id` or `created`.
+An example piece of code that would initialize with a system message would look like this:
+
+```
+import {createMessage} from '@axflow/models/shared'
+import {useChat} from '@axflow/models/react'
+
+...
+    useChat({
+    initialMessages: [createMessage({role: 'system', content: 'You are a pirate, only respond with pirate lingo.'})]
+    })
+...
+```
+
 ## Customizing `useChat`
 
 `useChat` can be configured with a variety of options to control behavior.
