@@ -1,6 +1,6 @@
 {
   "name": "axgen",
-  "version": "0.0.22",
+  "version": "0.0.23",
   "description": "A framework for connecting your data to large language models",
   "keywords": [
     "framework",
