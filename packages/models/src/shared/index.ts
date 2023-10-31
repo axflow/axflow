@@ -5,3 +5,5 @@ export { IterableToStream, StreamToIterable, NdJsonStream, StreamingJsonResponse
 export type { NdJsonValueType } from './stream';
 
 export * from './types';
+
+export { createMessage } from './message';
