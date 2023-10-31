@@ -79,7 +79,7 @@ You can use the `initialMessages` configuration parameter of the `useChat` hook 
 The framework also provides a utility called `createMessage` which will fill in any fields from the `MessageType` that you don't want to add yourself, such as `id` or `created`.
 An example piece of code that would initialize with a system message would look like this:
 
-```
+```ts
 import {createMessage} from '@axflow/models/shared'
 import {useChat} from '@axflow/models/react'
 
