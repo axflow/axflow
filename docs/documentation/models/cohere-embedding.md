@@ -3,14 +3,30 @@
 Interface with [Cohere's Embeddings API](https://docs.cohere.com/reference/embed) using this module.
 
 ```ts
-import {CohereEmbedding} from '@axflow/models/cohere/embedding'
-import type {CohereEmbeddingTypes} from '@axflow/models/cohere/embedding'
+import { CohereEmbedding } from '@axflow/models/cohere/embedding';
+import type { CohereEmbeddingTypes } from '@axflow/models/cohere/embedding';
 ```
 
 ```ts
 declare class CohereEmbedding {
   static run: typeof run;
 }
+```
+
+### Example
+
+```ts
+import { CohereEmbedding } from '@axflow/models/cohere/embedding';
+
+// Using new Cohere v3 embedding models
+const response = await CohereEmbedding.run(
+  {
+    texts: ['The capital of France is Paris'],
+    model: 'embed-english-v3.0',
+    input_type: 'search_query',
+  },
+  { apiKey: '<your api key>' }
+);
 ```
 
 ## `run`
