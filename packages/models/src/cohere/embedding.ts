@@ -9,6 +9,7 @@ export namespace CohereEmbeddingTypes {
     texts: string[];
     model?: string;
     truncate?: 'NONE' | 'START' | 'END';
+    input_type?: string;
   };
 
   export type RequestOptions = SharedRequestOptions;

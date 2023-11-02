@@ -14,7 +14,11 @@ describe('cohere embedding', () => {
       });
 
       const response = await CohereEmbedding.run(
-        { texts: ['How can I deploy to fly.io?'] },
+        {
+          texts: ['How can I deploy to fly.io?'],
+          model: 'embed-english-v3.0',
+          input_type: 'search_query',
+        },
         { apiKey: 'sk-not-real', fetch: fetchSpy as any },
       );
 
@@ -39,7 +43,11 @@ describe('cohere embedding', () => {
       const args = fetchSpy.mock.lastCall as any;
       const bodyArgument = JSON.parse(args[1].body);
 
-      expect(bodyArgument).toEqual({ texts: ['How can I deploy to fly.io?'] });
+      expect(bodyArgument).toEqual({
+        texts: ['How can I deploy to fly.io?'],
+        model: 'embed-english-v3.0',
+        input_type: 'search_query',
+      });
     });
 
     it('can supply additional options', async () => {
