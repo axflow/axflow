@@ -64,6 +64,12 @@ type UseChatOptionsType = {
    */
   url?: string;
   /**
+   * A function to create unique ids assigned to each message.
+   *
+   * Defaults to UUID v4 via `crypto.randomUUID`.
+   */
+  createMessageId?: () => string;
+  /**
    * Customize the request body sent to the API using this value. It accepts
    * either a function or object.
    *

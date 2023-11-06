@@ -274,6 +274,25 @@ const { reload } = useChat();
 
 This can be used together with `setMessages` to reset to a specific point in the message history.
 
+### Customize message ids
+
+By default, message ids are UUIDs generated using `crypto.randomUUID`. However, you can override this behavior using the `createMessageId` option, which accepts any function that returns a unique string.
+
+Below is an example of overriding the default id behavior to create random 16 byte, base58-encoded ids.
+
+```ts
+import { encode } from 'bs58';
+
+const {
+  /* ... */
+} = useChat({
+  createMessageId: () => {
+    const randomBytes = crypto.getRandomValues(new Uint8Array(16));
+    return encode(randomBytes);
+  },
+});
+```
+
 ## Streaming vs non-streaming
 
 The hook supports both streaming and non-streaming. If you wish to use streaming, your API MUST:
