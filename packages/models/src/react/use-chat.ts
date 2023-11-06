@@ -14,7 +14,7 @@ type BodyType =
   | Record<string, JSONValueType>
   | ((message: MessageType, history: MessageType[]) => JSONValueType);
 
-function uuid() {
+function uuidv4() {
   return crypto.randomUUID();
 }
 
@@ -25,6 +25,7 @@ async function handleStreamingResponse(
   accessor: AccessorType,
   functionCallAccessor: FunctionCallAccessorType,
   onNewMessage: (message: MessageType) => void,
+  createMessageId: () => string,
 ) {
   const responseBody = response.body;
 
@@ -43,7 +44,7 @@ async function handleStreamingResponse(
 
     if (chunk.type !== 'chunk') {
       if (!id) {
-        id = uuid();
+        id = createMessageId();
         messages = messages.concat({
           id: id,
           role: 'assistant',
@@ -61,7 +62,7 @@ async function handleStreamingResponse(
       const chunkFunctionCall = functionCallAccessor(chunk.value);
 
       if (!id) {
-        id = uuid();
+        id = createMessageId();
 
         const message: MessageType = {
           id: id,
@@ -112,12 +113,13 @@ async function handleJsonResponse(
   accessor: AccessorType,
   functionCallAccessor: FunctionCallAccessorType,
   onNewMessage: (message: MessageType) => void,
+  createMessageId: () => string,
 ) {
   const responseBody = await response.json();
   const content = accessor(responseBody);
   const functionCall = functionCallAccessor(responseBody);
   const newMessage: MessageType = {
-    id: uuid(),
+    id: createMessageId(),
     role: 'assistant',
     content: content ?? '',
     created: Date.now(),
@@ -147,6 +149,7 @@ async function request(
   onError: (error: Error) => void,
   onNewMessage: (message: MessageType) => void,
   onSuccess: () => void,
+  createMessageId: () => string,
 ) {
   // Ensure we guard against accidental duplicate calls
   if (loadingRef.current) {
@@ -174,7 +177,15 @@ async function request(
     const handler = isStreaming ? handleStreamingResponse : handleJsonResponse;
 
     // Must `await` here in order to `catch` potential errors
-    await handler(response, messagesRef, setMessages, accessor, functionCallAccessor, onNewMessage);
+    await handler(
+      response,
+      messagesRef,
+      setMessages,
+      accessor,
+      functionCallAccessor,
+      onNewMessage,
+      createMessageId,
+    );
 
     onSuccess();
   } catch (error) {
@@ -200,6 +211,7 @@ async function stableAppend(
   onError: (error: Error) => void,
   onNewMessage: (message: MessageType) => void,
   setFunctions: (functions: FunctionType[]) => void,
+  createMessageId: () => string,
 ) {
   // When appending a new message, prepare will do three things:
   //
@@ -243,6 +255,7 @@ async function stableAppend(
     onError,
     onNewMessage,
     () => setFunctions([]), // Clear functions after each request (similar to clearing user input)
+    createMessageId,
   );
 }
 
@@ -259,6 +272,7 @@ async function stableReload(
   setError: (error: Error | null) => void,
   onError: (error: Error) => void,
   onNewMessage: (message: MessageType) => void,
+  createMessageId: () => string,
 ) {
   // When reloading existing messages, prepare will do four things:
   //
@@ -321,10 +335,12 @@ async function stableReload(
     onError,
     onNewMessage,
     () => {},
+    createMessageId,
   );
 }
 
 const DEFAULT_URL = '/api/chat';
+const DEFAULT_CREATE_MESSAGE_ID = uuidv4;
 const DEFAULT_ACCESSOR = (value: string) => {
   return typeof value === 'string' ? value : undefined;
 };
@@ -355,6 +371,13 @@ export type UseChatOptionsType = {
    * Defaults to `/api/chat`.
    */
   url?: string;
+
+  /**
+   * A function to create unique ids assigned to each message.
+   *
+   * Defaults to UUID v4 via `crypto.randomUUID`.
+   */
+  createMessageId?: () => string;
 
   /**
    * Customize the request body sent to the API using this value. It accepts
@@ -604,6 +627,7 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
   const [error, setError] = useState<Error | null>(null);
 
   const url = options.url ?? DEFAULT_URL;
+  const createMessageId = options.createMessageId ?? DEFAULT_CREATE_MESSAGE_ID;
   const accessor = options.accessor ?? DEFAULT_ACCESSOR;
   const functionCallAccessor = options.functionCallAccessor ?? DEFAULT_FUNCTION_CALL_ACCESSOR;
   const body = options.body ?? DEFAULT_BODY;
@@ -646,7 +670,7 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
     }
 
     const newMessage: MessageType = {
-      id: uuid(),
+      id: createMessageId(),
       role: 'user',
       content: input,
       created: Date.now(),
@@ -671,6 +695,7 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
       onError,
       onNewMessage,
       setFunctions,
+      createMessageId,
     );
 
     setInput('');
@@ -690,6 +715,7 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
       setError,
       onError,
       onNewMessage,
+      createMessageId,
     );
   }
 
