@@ -7,16 +7,24 @@ const OPENAI_CHAT_COMPLETIONS_API_URL = 'https://api.openai.com/v1/chat/completi
 export namespace OpenAIChatTypes {
   export type RequestOptions = SharedRequestOptions;
 
+  export type Function = {
+    name: string;
+    parameters: Record<string, unknown>;
+    description?: string;
+  };
   // https://platform.openai.com/docs/api-reference/chat/create
   export type Request = {
     model: string;
     messages: Message[];
-    functions?: Array<{
-      name: string;
-      parameters: Record<string, unknown>;
-      description?: string;
+    functions?: Array<Function>;
+    tools?: Array<{
+      type: 'function';
+      function: Function;
     }>;
+    tool_choice?: 'none' | 'auto' | { type: 'function'; name: string };
     function_call?: 'none' | 'auto' | { name: string };
+    response_format?: { type: 'text' | 'json_object' };
+    seed?: number | null;
     temperature?: number | null;
     top_p?: number | null;
     n?: number | null;
@@ -29,13 +37,14 @@ export namespace OpenAIChatTypes {
   };
 
   export type Message = {
-    role: 'system' | 'user' | 'assistant' | 'function';
+    role: 'system' | 'user' | 'assistant' | 'function' | 'tool';
     name?: string;
     content: string | null;
     function_call?: {
       name: string;
       arguments: string;
     };
+    tool_call_id?: string;
   };
 
   // https://platform.openai.com/docs/api-reference/chat/object
@@ -44,9 +53,10 @@ export namespace OpenAIChatTypes {
     object: string;
     created: number;
     model: string;
+    system_fingerprint: string;
     choices: Array<{
       index: number;
-      finish_reason: 'stop' | 'length' | 'function_call' | null;
+      finish_reason: 'stop' | 'length' | 'function_call' | 'content_filter' | 'tool_calls' | null;
       message: Message;
     }>;
     usage?: {

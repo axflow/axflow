@@ -214,7 +214,7 @@ describe('azure openai chat', () => {
       }
 
       expect(resultingText).toEqual(
-        `Yo, the sky be rockin' that cool blue hue, 'less it’s vibin' with a sunset then it's a mix of pink and orange, feel me? It changes its tone, playa, like a chameleon on a fresh graffiti wall.`,
+        `Yo, the sky be rockin' that cool blue hue, 'less it's vibin' with a sunset then it's a mix of pink and orange, feel me? It changes its tone, playa, like a chameleon on a fresh graffiti wall.`,
       );
 
       expect(fetchSpy).toHaveBeenCalledTimes(1);
@@ -332,7 +332,7 @@ describe('azure openai chat', () => {
       }
 
       expect(resultingText).toEqual(
-        `Yo, the sky be rockin' that cool blue hue, 'less it’s vibin' with a sunset then it's a mix of pink and orange, feel me? It changes its tone, playa, like a chameleon on a fresh graffiti wall.`,
+        `Yo, the sky be rockin' that cool blue hue, 'less it's vibin' with a sunset then it's a mix of pink and orange, feel me? It changes its tone, playa, like a chameleon on a fresh graffiti wall.`,
       );
     });
   });
