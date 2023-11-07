@@ -7,7 +7,7 @@ const OPENAI_CHAT_COMPLETIONS_API_URL = 'https://api.openai.com/v1/chat/completi
 export namespace OpenAIChatTypes {
   export type RequestOptions = SharedRequestOptions;
 
-  export type OpenAIFunction = {
+  export type Function = {
     name: string;
     parameters: Record<string, unknown>;
     description?: string;
@@ -16,10 +16,10 @@ export namespace OpenAIChatTypes {
   export type Request = {
     model: string;
     messages: Message[];
-    functions?: Array<OpenAIFunction>;
+    functions?: Array<Function>;
     tools?: Array<{
       type: 'function';
-      function: OpenAIFunction;
+      function: Function;
     }>;
     tool_choice?: 'none' | 'auto' | { type: 'function'; name: string };
     function_call?: 'none' | 'auto' | { name: string };
