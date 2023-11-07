@@ -37,13 +37,14 @@ export namespace OpenAIChatTypes {
   };
 
   export type Message = {
-    role: 'system' | 'user' | 'assistant' | 'function';
+    role: 'system' | 'user' | 'assistant' | 'function' | 'tool';
     name?: string;
     content: string | null;
     function_call?: {
       name: string;
       arguments: string;
     };
+    tool_call_id?: string;
   };
 
   // https://platform.openai.com/docs/api-reference/chat/object
@@ -55,7 +56,7 @@ export namespace OpenAIChatTypes {
     system_fingerprint: string;
     choices: Array<{
       index: number;
-      finish_reason: 'stop' | 'length' | 'function_call' | null;
+      finish_reason: 'stop' | 'length' | 'function_call' | 'content_filter' | 'tool_calls' | null;
       message: Message;
     }>;
     usage?: {
