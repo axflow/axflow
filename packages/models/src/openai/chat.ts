@@ -75,7 +75,7 @@ export namespace OpenAIChatTypes {
     choices: Array<{
       index: number;
       delta: Delta;
-      finish_reason: 'stop' | 'length' | 'function_call' | null;
+      finish_reason: 'stop' | 'length' | 'function_call' | 'tool_calls' | null;
     }>;
   };
 
@@ -86,6 +86,12 @@ export namespace OpenAIChatTypes {
       name?: string;
       arguments?: string;
     };
+    tool_calls?: Array<{
+      index: number;
+      id?: string;
+      type?: 'function';
+      function: { name?: string; arguments: string };
+    }>;
   };
 }
 
