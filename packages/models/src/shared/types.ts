@@ -77,17 +77,18 @@ export type MessageType = {
   functionCall?: { name: string; arguments: string };
 
   /**
-   * TODO
+   * If using openAI tools, the tools available to the assistant can be defined here.
+   *
+   * @see  https://platform.openai.com/docs/guides/function-calling
    */
   tools?: ToolType[];
 
   /**
-   * TODO
+   * If using OpenAI tools and the assistant responds with one or more tool calls,
+   * this field will be populated with the tool invocation information.
+   *
+   *
+   * @see https://platform.openai.com/docs/guides/function-calling
    */
-  toolCalls?: {
-    index: number;
-    id?: string;
-    type?: 'function';
-    function: { name?: string; arguments: string };
-  }[];
+  toolCalls?: ToolCallType[];
 };
