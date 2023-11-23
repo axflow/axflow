@@ -1,6 +1,12 @@
 import { useRef, useCallback, useState, type MutableRefObject } from 'react';
 import { POST, HttpError, StreamToIterable, NdJsonStream } from '@axflow/models/shared';
-import type { FunctionType, MessageType, JSONValueType } from '@axflow/models/shared';
+import type {
+  ToolCallType,
+  ToolType,
+  FunctionType,
+  MessageType,
+  JSONValueType,
+} from '@axflow/models/shared';
 
 interface AccessorType<T = any> {
   (value: T): string | null | undefined;
@@ -8,6 +14,10 @@ interface AccessorType<T = any> {
 
 interface FunctionCallAccessorType<T = any> {
   (value: T): { name?: string; arguments?: string } | null | undefined;
+}
+
+interface ToolCallsAccessorType<T = any> {
+  (value: T): Array<ToolCallType> | null | undefined;
 }
 
 type BodyType =
@@ -18,12 +28,50 @@ function uuidv4() {
   return crypto.randomUUID();
 }
 
+const mergeToolCallIntoMessage = (
+  chunkToolCall: ToolCallType,
+  msg: MessageType,
+  content: string,
+): MessageType => {
+  const msgContainsChunkTool = (msg.toolCalls || [])!.some(
+    (tool) => tool.index === chunkToolCall.index,
+  );
+  if (!msgContainsChunkTool) {
+    return {
+      ...msg,
+      content: content,
+      toolCalls: [...(msg.toolCalls || []), chunkToolCall],
+    };
+  } else {
+    return {
+      ...msg,
+      toolCalls: msg.toolCalls!.map((toolCall) => {
+        if (toolCall.index !== chunkToolCall.index) {
+          return toolCall;
+        } else {
+          return {
+            ...toolCall,
+            ...chunkToolCall,
+            function: {
+              ...toolCall.function,
+              ...chunkToolCall.function,
+              arguments:
+                (toolCall.function.arguments || '') + (chunkToolCall.function.arguments || ''),
+            },
+          };
+        }
+      }),
+    };
+  }
+};
+
 async function handleStreamingResponse(
   response: Response,
   messagesRef: MutableRefObject<MessageType[]>,
   setMessages: (messages: MessageType[]) => void,
   accessor: AccessorType,
   functionCallAccessor: FunctionCallAccessorType,
+  toolCallsAccessor: ToolCallsAccessorType,
   onNewMessage: (message: MessageType) => void,
   createMessageId: () => string,
 ) {
@@ -60,6 +108,7 @@ async function handleStreamingResponse(
     } else {
       const chunkContent = accessor(chunk.value);
       const chunkFunctionCall = functionCallAccessor(chunk.value);
+      const chunkToolCalls = toolCallsAccessor(chunk.value);
 
       if (!id) {
         id = createMessageId();
@@ -78,6 +127,10 @@ async function handleStreamingResponse(
           };
         }
 
+        if (chunkToolCalls) {
+          message.toolCalls = chunkToolCalls;
+        }
+
         messages = messages.concat(message);
       } else {
         messages = messages.map((msg) => {
@@ -87,14 +140,19 @@ async function handleStreamingResponse(
 
           const content = msg.content + (chunkContent ?? '');
 
-          if (!chunkFunctionCall) {
+          if (chunkFunctionCall) {
+            const name = msg.functionCall!.name + (chunkFunctionCall.name ?? '');
+            const args = msg.functionCall!.arguments + (chunkFunctionCall.arguments ?? '');
+
+            return { ...msg, content: content, functionCall: { name, arguments: args } };
+          } else if (chunkToolCalls) {
+            for (const chunkToolCall of chunkToolCalls) {
+              msg = mergeToolCallIntoMessage(chunkToolCall, msg, content);
+            }
+            return msg;
+          } else {
             return { ...msg, content };
           }
-
-          const name = msg.functionCall!.name + (chunkFunctionCall.name ?? '');
-          const args = msg.functionCall!.arguments + (chunkFunctionCall.arguments ?? '');
-
-          return { ...msg, content: content, functionCall: { name, arguments: args } };
         });
       }
     }
@@ -112,12 +170,14 @@ async function handleJsonResponse(
   setMessages: (messages: MessageType[]) => void,
   accessor: AccessorType,
   functionCallAccessor: FunctionCallAccessorType,
+  toolCallsAccessor: ToolCallsAccessorType,
   onNewMessage: (message: MessageType) => void,
   createMessageId: () => string,
 ) {
   const responseBody = await response.json();
   const content = accessor(responseBody);
   const functionCall = functionCallAccessor(responseBody);
+  const toolCalls = toolCallsAccessor(responseBody);
   const newMessage: MessageType = {
     id: createMessageId(),
     role: 'assistant',
@@ -130,6 +190,11 @@ async function handleJsonResponse(
       arguments: functionCall.arguments ?? '',
     };
   }
+
+  if (toolCalls) {
+    newMessage.toolCalls = toolCalls;
+  }
+
   const messages = messagesRef.current.concat(newMessage);
   setMessages(messages);
   onNewMessage(newMessage);
@@ -143,6 +208,7 @@ async function request(
   headers: Record<string, string>,
   accessor: AccessorType,
   functionCallAccessor: FunctionCallAccessorType,
+  toolCallsAccessor: ToolCallsAccessorType,
   loadingRef: MutableRefObject<boolean>,
   setLoading: (loading: boolean) => void,
   setError: (error: Error | null) => void,
@@ -183,6 +249,7 @@ async function request(
       setMessages,
       accessor,
       functionCallAccessor,
+      toolCallsAccessor,
       onNewMessage,
       createMessageId,
     );
@@ -205,12 +272,14 @@ async function stableAppend(
   body: BodyType,
   accessor: AccessorType,
   functionCallAccessor: FunctionCallAccessorType,
+  toolCallsAccessor: ToolCallsAccessorType,
   loadingRef: MutableRefObject<boolean>,
   setLoading: (loading: boolean) => void,
   setError: (error: Error | null) => void,
   onError: (error: Error) => void,
   onNewMessage: (message: MessageType) => void,
   setFunctions: (functions: FunctionType[]) => void,
+  setTools: (tools: ToolType[]) => void,
   createMessageId: () => string,
 ) {
   // When appending a new message, prepare will do three things:
@@ -249,12 +318,16 @@ async function stableAppend(
     headers,
     accessor,
     functionCallAccessor,
+    toolCallsAccessor,
     loadingRef,
     setLoading,
     setError,
     onError,
     onNewMessage,
-    () => setFunctions([]), // Clear functions after each request (similar to clearing user input)
+    () => {
+      setFunctions([]);
+      setTools([]);
+    }, // Clear functions after each request (similar to clearing user input)
     createMessageId,
   );
 }
@@ -267,6 +340,7 @@ async function stableReload(
   body: BodyType,
   accessor: AccessorType,
   functionCallAccessor: FunctionCallAccessorType,
+  toolCallsAccessor: ToolCallsAccessorType,
   loadingRef: MutableRefObject<boolean>,
   setLoading: (loading: boolean) => void,
   setError: (error: Error | null) => void,
@@ -329,6 +403,7 @@ async function stableReload(
     headers,
     accessor,
     functionCallAccessor,
+    toolCallsAccessor,
     loadingRef,
     setLoading,
     setError,
@@ -347,6 +422,11 @@ const DEFAULT_ACCESSOR = (value: string) => {
 const DEFAULT_FUNCTION_CALL_ACCESSOR = (_value: any) => {
   return undefined;
 };
+
+const DEFAULT_TOOL_CALLS_ACCESSOR = (_value: any) => {
+  return undefined;
+};
+
 const DEFAULT_BODY = (message: MessageType, history: MessageType[]) => ({
   messages: [...history, message],
 });
@@ -452,6 +532,34 @@ export type UseChatOptionsType = {
   functionCallAccessor?: FunctionCallAccessorType;
 
   /**
+   * An accessor used to pluck out multiple tool calls for LLMs that support it.
+   * This is the new nomenclature for openAI's functions, since they now can return
+   * multiple in one call.
+   *
+   * This is used to return the object which will then be populated
+   * on the assistant message's `tool_calls` property. A tool_call object
+   * consists of a index, id, type (always 'function') and function object
+   * with name and parameters, encoded as JSON like for the functionCall above.
+   *
+   * For example, if this hook is used to stream an OpenAI-compatible API response
+   * using openAI tools, the following options can be defined to interpret the response:
+   *
+   *     import { useChat } from '@axflow/models/react';
+   *     import type { OpenAIChatTypes } from '@axflow/models/openai/chat';
+   *
+   *     const { ... } = useChat({
+   *       accessor: (value: OpenAIChatTypes.Chunk) => {
+   *         return value.choices[0].delta.content;
+   *       },
+   *
+   *       toolCallsAccessor: (value: OpenAIChatTypes.Chunk) => {
+   *         return value.choices[0].delta.tool_calls;
+   *       }
+   *     });
+   */
+  toolCallsAccessor?: ToolCallsAccessorType;
+
+  /**
    * Initial message input. Defaults to empty string.
    */
   initialInput?: string;
@@ -469,6 +577,15 @@ export type UseChatOptionsType = {
    * @see https://platform.openai.com/docs/api-reference/chat/create
    */
   initialFunctions?: FunctionType[];
+
+  /**
+   * Initial seet of available tools, which replaced functions, for the user's
+   * next message.
+   *
+   * @see https://platform.openai.com/docs/api-reference/chat/create
+   *
+   */
+  initialTools?: ToolType[];
 
   /**
    * Callback to handle errors should they arise.
@@ -542,6 +659,15 @@ export type UseChatResultType = {
    * @see https://platform.openai.com/docs/api-reference/chat/create
    */
   setFunctions: (functions: FunctionType[]) => void;
+
+  /**
+   * Update list of tools for the next user message.
+   *
+   * This is primarily intended for OpenAI's tools feature.
+   *
+   * @see https://platform.openai.com/docs/api-reference/chat/create
+   */
+  setTools: (tools: ToolType[]) => void;
 
   /**
    * If a request is in progress, this will be `true`.
@@ -619,6 +745,10 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
   const initialFunctions = options.initialFunctions ?? [];
   const [functions, setFunctions] = useState<FunctionType[]>(initialFunctions);
 
+  // Tools state (functions are deprecated in favor of tools but both are currently supported)
+  const initialTools = options.initialTools ?? [];
+  const [tools, setTools] = useState<ToolType[]>(initialTools);
+
   // Loading state
   const [loading, _setLoading] = useState<boolean>(false);
   const loadingRef = useRef(false);
@@ -630,6 +760,7 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
   const createMessageId = options.createMessageId ?? DEFAULT_CREATE_MESSAGE_ID;
   const accessor = options.accessor ?? DEFAULT_ACCESSOR;
   const functionCallAccessor = options.functionCallAccessor ?? DEFAULT_FUNCTION_CALL_ACCESSOR;
+  const toolCallsAccessor = options.toolCallsAccessor ?? DEFAULT_TOOL_CALLS_ACCESSOR;
   const body = options.body ?? DEFAULT_BODY;
   const headers = options.headers ?? DEFAULT_HEADERS;
   const onError = options.onError ?? DEFAULT_ON_ERROR;
@@ -680,6 +811,10 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
       newMessage.functions = functions;
     }
 
+    if (tools.length > 0) {
+      newMessage.tools = tools;
+    }
+
     stableAppend(
       newMessage,
       messagesRef,
@@ -689,12 +824,14 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
       body,
       accessor,
       functionCallAccessor,
+      toolCallsAccessor,
       loadingRef,
       setLoading,
       setError,
       onError,
       onNewMessage,
       setFunctions,
+      setTools,
       createMessageId,
     );
 
@@ -710,6 +847,7 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
       body,
       accessor,
       functionCallAccessor,
+      toolCallsAccessor,
       loadingRef,
       setLoading,
       setError,
@@ -726,6 +864,7 @@ export function useChat(options?: UseChatOptionsType): UseChatResultType {
     setMessages,
     functions,
     setFunctions,
+    setTools,
     loading,
     error,
     onChange,

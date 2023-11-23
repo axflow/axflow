@@ -8,6 +8,18 @@ export type JSONValueType =
 
 export type FunctionType = { name: string; description?: string; parameters: JSONValueType };
 
+/*
+ * This is the openAI tool type
+ */
+export type ToolType = { type: 'function'; function: FunctionType };
+
+export type ToolCallType = {
+  index: number;
+  id?: string;
+  type?: 'function';
+  function: { name?: string; arguments: string };
+};
+
 export type MessageType = {
   /**
    * Can be any unique string.
@@ -55,4 +67,19 @@ export type MessageType = {
    * @see https://platform.openai.com/docs/api-reference/chat/object
    */
   functionCall?: { name: string; arguments: string };
+
+  /**
+   * TODO
+   */
+  tools?: ToolType[];
+
+  /**
+   * TODO
+   */
+  toolCalls?: {
+    index: number;
+    id?: string;
+    type?: 'function';
+    function: { name?: string; arguments: string };
+  }[];
 };
