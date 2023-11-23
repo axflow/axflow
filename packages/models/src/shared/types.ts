@@ -9,10 +9,18 @@ export type JSONValueType =
 export type FunctionType = { name: string; description?: string; parameters: JSONValueType };
 
 /*
- * This is the openAI tool type
+ * The spec of a tool that the client sends up to the LLM server.
+ *
+ * @see https://platform.openai.com/docs/guides/function-calling
  */
 export type ToolType = { type: 'function'; function: FunctionType };
 
+/*
+ * When the LLM decides to call a tool (previously named a function), this is
+ * the type that we send down to the client.
+ *
+ * @see https://platform.openai.com/docs/api-reference/chat/streaming
+ */
 export type ToolCallType = {
   index: number;
   id?: string;
