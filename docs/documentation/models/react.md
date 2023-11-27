@@ -49,6 +49,18 @@ interface FunctionCallAccessorType<T = any> {
     | undefined;
 }
 
+interface ToolCallsAccessorType<T = any> {
+  (value: T):
+    | {
+        index?: number;
+        id?: string;
+        type?: 'function';
+        function?: { name?: string; arguments: string };
+      }
+    | null
+    | undefined;
+}
+
 type BodyType =
   | Record<string, JSONValueType>
   | ((message: MessageType, history: MessageType[]) => JSONValueType);
@@ -137,6 +149,35 @@ type UseChatOptionsType = {
    *     });
    */
   functionCallAccessor?: FunctionCallAccessorType;
+
+  /**
+   * An accessor used to pluck out multiple tool calls for LLMs that support it.
+   * This is the new nomenclature for openAI's functions, since they now can return
+   * multiple in one call.
+   *
+   * This is used to return the object which will then be populated
+   * on the assistant message's `tool_calls` property. A tool_call object
+   * consists of a index, id, type (always 'function') and function object
+   * with name and parameters, encoded as JSON like for the functionCall above.
+   *
+   * For example, if this hook is used to stream an OpenAI-compatible API response
+   * using openAI tools, the following options can be defined to interpret the response:
+   *
+   *     import { useChat } from '@axflow/models/react';
+   *     import type { OpenAIChatTypes } from '@axflow/models/openai/chat';
+   *
+   *     const { ... } = useChat({
+   *       accessor: (value: OpenAIChatTypes.Chunk) => {
+   *         return value.choices[0].delta.content;
+   *       },
+   *
+   *       toolCallsAccessor: (value: OpenAIChatTypes.Chunk) => {
+   *         return value.choices[0].delta.tool_calls;
+   *       }
+   *     });
+   */
+  toolCallsAccessor?: ToolCallsAccessorType;
+
   /**
    * Initial message input. Defaults to empty string.
    */
@@ -158,6 +199,16 @@ type UseChatOptionsType = {
    *
    * Defaults to `console.error`.
    */
+
+  /**
+   * Initial seet of available tools, which replaced functions, for the user's
+   * next message.
+   *
+   * @see https://platform.openai.com/docs/api-reference/chat/create
+   *
+   */
+  initialTools?: ToolType[];
+
   onError?: (error: Error) => void;
   /**
    * Callback that is invoked when the list of messages change.
@@ -229,6 +280,16 @@ type UseChatResultType = {
    * first sent until the stream has closed. For non-streaming requests, it is `true`
    * until a response is received.
    */
+
+  /**
+   * Update list of tools for the next user message.
+   *
+   * This is primarily intended for OpenAI's tools feature.
+   *
+   * @see https://platform.openai.com/docs/api-reference/chat/create
+   */
+  setTools: (tools: ToolType[]) => void;
+
   loading: boolean;
   /**
    * If a request fails, this will be populated with the `Error`. This will be reset
