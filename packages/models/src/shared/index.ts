@@ -7,3 +7,5 @@ export type { NdJsonValueType } from './stream';
 export * from './types';
 
 export { createMessage } from './message';
+
+export * from './utils';

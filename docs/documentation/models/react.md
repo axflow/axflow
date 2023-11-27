@@ -52,10 +52,10 @@ interface FunctionCallAccessorType<T = any> {
 interface ToolCallsAccessorType<T = any> {
   (value: T):
     | {
-        index: number;
-        id: string;
-        type: 'function';
-        function: { name?: string; arguments: string };
+        index?: number;
+        id?: string;
+        type?: 'function';
+        function?: { name?: string; arguments: string };
       }
     | null
     | undefined;

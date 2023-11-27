@@ -1,5 +1,12 @@
 import { useRef, useCallback, useState, type MutableRefObject } from 'react';
-import { POST, HttpError, StreamToIterable, NdJsonStream } from '@axflow/models/shared';
+import type { RecursivePartial } from '@axflow/models/shared';
+import {
+  POST,
+  HttpError,
+  StreamToIterable,
+  NdJsonStream,
+  toolCallWithDefaults,
+} from '@axflow/models/shared';
 import type {
   ToolCallType,
   ToolType,
@@ -17,7 +24,15 @@ interface FunctionCallAccessorType<T = any> {
 }
 
 interface ToolCallsAccessorType<T = any> {
-  (value: T): Array<ToolCallType> | null | undefined;
+  (value: T):
+    | Array<{
+        index?: number;
+        id?: string;
+        type?: 'function';
+        function: { name?: string; arguments: string };
+      }>
+    | null
+    | undefined;
 }
 
 type BodyType =
@@ -29,34 +44,35 @@ function uuidv4() {
 }
 
 const mergeToolCallIntoMessage = (
-  chunkToolCall: ToolCallType,
+  partialChunkToolCall: RecursivePartial<ToolCallType>,
   msg: MessageType,
   content: string,
 ): MessageType => {
   const msgContainsChunkTool = (msg.toolCalls || [])!.some(
-    (tool) => tool.index === chunkToolCall.index,
+    (tool) => tool.index === partialChunkToolCall.index,
   );
   if (!msgContainsChunkTool) {
     return {
       ...msg,
       content: content,
-      toolCalls: [...(msg.toolCalls || []), chunkToolCall],
+      toolCalls: [...(msg.toolCalls || []), toolCallWithDefaults(partialChunkToolCall)],
     };
   } else {
     return {
       ...msg,
       toolCalls: msg.toolCalls!.map((toolCall) => {
-        if (toolCall.index !== chunkToolCall.index) {
+        if (toolCall.index !== partialChunkToolCall.index) {
           return toolCall;
         } else {
           return {
             ...toolCall,
-            ...chunkToolCall,
+            ...partialChunkToolCall,
             function: {
               ...toolCall.function,
-              ...chunkToolCall.function,
+              ...partialChunkToolCall.function,
               arguments:
-                (toolCall.function.arguments || '') + (chunkToolCall.function.arguments || ''),
+                (toolCall.function.arguments || '') +
+                (partialChunkToolCall.function?.arguments || ''),
             },
           };
         }
@@ -128,7 +144,7 @@ async function handleStreamingResponse(
         }
 
         if (chunkToolCalls) {
-          message.toolCalls = chunkToolCalls;
+          message.toolCalls = chunkToolCalls.map(toolCallWithDefaults);
         }
 
         messages = messages.concat(message);
@@ -192,7 +208,7 @@ async function handleJsonResponse(
   }
 
   if (toolCalls) {
-    newMessage.toolCalls = toolCalls;
+    newMessage.toolCalls = toolCalls.map(toolCallWithDefaults);
   }
 
   const messages = messagesRef.current.concat(newMessage);

@@ -1,3 +1,5 @@
+import type { RecursivePartial } from './utils';
+
 export type JSONValueType =
   | null
   | string
@@ -27,6 +29,16 @@ export type ToolCallType = {
   type: 'function';
   function: { name: string; arguments: string };
 };
+
+export const toolCallWithDefaults = (toolCall: RecursivePartial<ToolCallType>): ToolCallType => ({
+  index: toolCall.index ?? 0,
+  id: toolCall.id ?? '',
+  type: 'function',
+  function: {
+    name: toolCall.function?.name ?? '',
+    arguments: toolCall.function?.arguments ?? '',
+  },
+});
 
 export type MessageType = {
   /**
