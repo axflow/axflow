@@ -245,6 +245,32 @@ type FunctionType = {
 };
 ```
 
+## `ToolType`
+
+Tools have replaced functions in openAI's nomenclature. Functions are now a type of tools,
+and each LLM response can contain multiple tool calls.
+
+```ts
+type ToolType = {
+  type: 'function';
+  function: FunctionType;
+};
+```
+
+## `ToolCallType`
+
+When the LLM decides to call a tool (previously named a function), this is
+the type that we send down to the client.
+
+```ts
+type ToolCallType = {
+  index: number;
+  id?: string;
+  type?: 'function';
+  function: { name?: string; arguments: string };
+};
+```
+
 ## `MessageType`
 
 This is the type of each message in a chat, mostly used by the `useChat` hook.
@@ -294,6 +320,20 @@ type MessageType = {
     name: string;
     arguments: string;
   };
+  /**
+   * If using openAI tools, the tools available to the assistant can be defined here.
+   *
+   * @see  https://platform.openai.com/docs/guides/function-calling
+   */
+  tools?: ToolType[];
+  /**
+   * If using OpenAI tools and the assistant responds with one or more tool calls,
+   * this field will be populated with the tool invocation information.
+   *
+   *
+   * @see https://platform.openai.com/docs/guides/function-calling
+   */
+  toolCalls?: ToolCallType[];
 };
 ```
 
