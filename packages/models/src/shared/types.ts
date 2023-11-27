@@ -23,9 +23,9 @@ export type ToolType = { type: 'function'; function: FunctionType };
  */
 export type ToolCallType = {
   index: number;
-  id?: string;
-  type?: 'function';
-  function: { name?: string; arguments: string };
+  id: string;
+  type: 'function';
+  function: { name: string; arguments: string };
 };
 
 export type MessageType = {

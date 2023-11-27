@@ -53,8 +53,8 @@ interface ToolCallsAccessorType<T = any> {
   (value: T):
     | {
         index: number;
-        id?: string;
-        type?: 'function';
+        id: string;
+        type: 'function';
         function: { name?: string; arguments: string };
       }
     | null

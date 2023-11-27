@@ -265,9 +265,9 @@ the type that we send down to the client.
 ```ts
 type ToolCallType = {
   index: number;
-  id?: string;
-  type?: 'function';
-  function: { name?: string; arguments: string };
+  id: string;
+  type: 'function';
+  function: { name: string; arguments: string };
 };
 ```
 
