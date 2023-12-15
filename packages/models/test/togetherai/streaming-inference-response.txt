@@ -1,0 +1,62 @@
+data: {"choices":[{"text":" The"}],"id":"83620a7a3857ceaf-SJC","token":{"id":450,"text":" The","logprob":-0.00016653538,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":" E"}],"id":"83620a7a3857ceaf-SJC","token":{"id":382,"text":" E","logprob":0,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":"iff"}],"id":"83620a7a3857ceaf-SJC","token":{"id":2593,"text":"iff","logprob":0,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":"el"}],"id":"83620a7a3857ceaf-SJC","token":{"id":295,"text":"el","logprob":-0.0000011920929,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":" Tower"}],"id":"83620a7a3857ceaf-SJC","token":{"id":23615,"text":" Tower","logprob":-0.000079631805,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":" is"}],"id":"83620a7a3857ceaf-SJC","token":{"id":338,"text":" is","logprob":-0.0000026226044,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":" a"}],"id":"83620a7a3857ceaf-SJC","token":{"id":263,"text":" a","logprob":-0.46240234,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":" famous"}],"id":"83620a7a3857ceaf-SJC","token":{"id":13834,"text":" famous","logprob":-0.16662598,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":" iron"}],"id":"83620a7a3857ceaf-SJC","token":{"id":13977,"text":" iron","logprob":-0.0014076233,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":" lattice"}],"id":"83620a7a3857ceaf-SJC","token":{"id":24094,"text":" lattice","logprob":-0.003484726,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":" tower"}],"id":"83620a7a3857ceaf-SJC","token":{"id":19372,"text":" tower","logprob":-0.0000692606,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":" in"}],"id":"83620a7a3857ceaf-SJC","token":{"id":297,"text":" in","logprob":-0.000021576881,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":" Paris"}],"id":"83620a7a3857ceaf-SJC","token":{"id":3681,"text":" Paris","logprob":-1.1920929e-7,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":","}],"id":"83620a7a3857ceaf-SJC","token":{"id":29892,"text":",","logprob":-0.0000029802322,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":" France"}],"id":"83620a7a3857ceaf-SJC","token":{"id":3444,"text":" France","logprob":-0.0007548332,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":","}],"id":"83620a7a3857ceaf-SJC","token":{"id":29892,"text":",","logprob":-0.5292969,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":" built"}],"id":"83620a7a3857ceaf-SJC","token":{"id":4240,"text":" built","logprob":-0.013687134,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":" for"}],"id":"83620a7a3857ceaf-SJC","token":{"id":363,"text":" for","logprob":-0.000008940697,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":" the"}],"id":"83620a7a3857ceaf-SJC","token":{"id":278,"text":" the","logprob":-4.7683716e-7,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":" "}],"id":"83620a7a3857ceaf-SJC","token":{"id":29871,"text":" ","logprob":-0.004917145,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":"1"}],"id":"83620a7a3857ceaf-SJC","token":{"id":29896,"text":"1","logprob":0,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":"8"}],"id":"83620a7a3857ceaf-SJC","token":{"id":29947,"text":"8","logprob":-7.1525574e-7,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":"8"}],"id":"83620a7a3857ceaf-SJC","token":{"id":29947,"text":"8","logprob":-4.7683716e-7,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":"9"}],"id":"83620a7a3857ceaf-SJC","token":{"id":29929,"text":"9","logprob":0,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":" World"}],"id":"83620a7a3857ceaf-SJC","token":{"id":2787,"text":" World","logprob":-0.0000038146973,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":"'"}],"id":"83620a7a3857ceaf-SJC","token":{"id":29915,"text":"'","logprob":-0.0000076293945,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":"s"}],"id":"83620a7a3857ceaf-SJC","token":{"id":29879,"text":"s","logprob":-1.1920929e-7,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":" Fair"}],"id":"83620a7a3857ceaf-SJC","token":{"id":13822,"text":" Fair","logprob":-5.9604645e-7,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":"."}],"id":"83620a7a3857ceaf-SJC","token":{"id":29889,"text":".","logprob":0,"special":false},"generated_text":null,"details":null,"stats":null,"usage":null}
+
+data: {"choices":[{"text":"</s>"}],"id":"83620a7a3857ceaf-SJC","token":{"id":2,"text":"</s>","logprob":-0.0000017881393,"special":true},"generated_text":"The Eiffel Tower is a famous iron lattice tower in Paris, France, built for the 1889 World's Fair.","details":null,"stats":{"total_time":{"secs":0,"nanos":592067479},"validation_time":{"secs":0,"nanos":488056},"queue_time":{"secs":0,"nanos":13699356},"inference_time":{"secs":0,"nanos":577880370},"time_per_token":{"secs":0,"nanos":19262679}},"usage":{"prompt_tokens":26,"completion_tokens":30,"total_tokens":56}}
+
+data: [DONE]
+

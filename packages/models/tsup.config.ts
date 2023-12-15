@@ -72,6 +72,13 @@ export default defineConfig([
     dts: true,
   },
   {
+    entry: ['src/togetherai/inference.ts'],
+    format: ['cjs', 'esm'],
+    outDir: 'dist/togetherai',
+    external: [/^@axflow\/models\//],
+    dts: true,
+  },
+  {
     entry: ['src/react/index.ts'],
     format: ['cjs', 'esm'],
     outDir: 'dist/react',
