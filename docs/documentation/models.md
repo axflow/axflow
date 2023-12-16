@@ -8,6 +8,7 @@ npm i @axflow/models
 
 ## Features
 
+- Support for all leading model providers, plus popular open source models like Llama2 or Mistral through Together.ai inference
 - First-class streaming support for both low-level byte streams and higher-level JavaScript object streams
 - First-class support for streaming arbitrary data in addition to the LLM response
 - Comes with a set of utilities and React hooks for easily creating robust client applications
@@ -23,6 +24,7 @@ npm i @axflow/models
 - ✅ HuggingFace text generation inference API and Inference Endpoints
 - ✅ Ollama.ai models running generation or embedding generation
 - ✅ Azure OpenAI
+- ✅ TogetherAI (Llama2, Mistral, etc.)
 - Google PaLM models (coming soon)
 - Replicate (coming soon)
 
@@ -40,6 +42,7 @@ View the [Guides](/guides) or the reference:
 - [@axflow/models/huggingface/text-generation](/documentation/models/huggingface-text-generation)
 - [@axflow/models/ollama/generation](/documentation/models/ollama-generation)
 - [@axflow/models/ollama/embedding](/documentation/models/ollama-embedding)
+- [@axflow/models/togetherai/inference](/documentation/models/togetherai-inference)
 - [@axflow/models/react](/documentation/models/react)
 - [@axflow/models/node](/documentation/models/node)
 - [@axflow/models/shared](/documentation/models/shared)

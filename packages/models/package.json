@@ -110,6 +110,9 @@
       "huggingface": [
         "./dist/huggingface/index.d.ts"
       ],
+      "togetherai": [
+        "./dist/togetherai/inference.d.ts"
+      ],
       "shared": [
         "./dist/shared/index.d.ts"
       ]
@@ -176,6 +179,12 @@
       "import": "./dist/huggingface/text-generation.mjs",
       "module": "./dist/huggingface/text-generation.mjs",
       "require": "./dist/huggingface/text-generation.js"
+    },
+    "./togetherai/inference": {
+      "types": "./dist/togetherai/inference.d.ts",
+      "import": "./dist/togetherai/inference.mjs",
+      "module": "./dist/togetherai/inference.mjs",
+      "require": "./dist/togetherai/inference.js"
     },
     "./react": {
       "types": "./dist/react/index.d.ts",
