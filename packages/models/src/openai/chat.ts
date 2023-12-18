@@ -34,23 +34,57 @@ export namespace OpenAIChatTypes {
     frequency_penalty?: number | null;
     logit_bias?: Record<string, number> | null;
     user?: string;
+    logprobs?: boolean | null;
+    top_logprobs?: number | null;
   };
 
-  export type Message = {
-    role: 'system' | 'user' | 'assistant' | 'function' | 'tool';
+  export type SystemMessage = {
+    role: 'system';
     name?: string;
     content: string | null;
-    function_call?: {
-      name: string;
-      arguments: string;
-    };
-    tool_call_id?: string;
+  };
+
+  export type UserMessage = {
+    role: 'user';
+    name?: string;
+    content: string | null;
+  };
+
+  export type AssistantMessage = {
+    role: 'assistant';
+    name?: string;
+    content?: string | null;
     tool_calls?: Array<{
       id: string;
       type: 'function';
       function: { name: string; arguments: string };
     }>;
+    function_call?: {
+      name: string;
+      arguments: string;
+    };
   };
+
+  export type ToolMessage = {
+    role: 'tool';
+    name?: string;
+    content: string | null;
+    tool_call_id: string;
+  };
+
+  // Deprecated
+  export type FunctionMessage = {
+    role: 'function';
+    name: string;
+    content: string | null;
+  };
+
+  export type Message =
+    | SystemMessage
+    | UserMessage
+    | AssistantMessage
+    | ToolMessage
+    | FunctionMessage;
 
   // https://platform.openai.com/docs/api-reference/chat/object
   export type Response = {
@@ -63,6 +97,7 @@ export namespace OpenAIChatTypes {
       index: number;
       finish_reason: 'stop' | 'length' | 'function_call' | 'content_filter' | 'tool_calls' | null;
       message: Message;
+      logprobs: { content: any[] | null } | null;
     }>;
     usage?: {
       completion_tokens: number;
@@ -77,10 +112,12 @@ export namespace OpenAIChatTypes {
     object: string;
     created: number;
     model: string;
+    system_fingerprint: string;
     choices: Array<{
       index: number;
       delta: Delta;
-      finish_reason: 'stop' | 'length' | 'function_call' | 'tool_calls' | null;
+      finish_reason: 'stop' | 'length' | 'function_call' | 'content_filter' | 'tool_calls' | null;
+      logprobs: { content: any[] | null } | null;
     }>;
   };
 
@@ -92,8 +129,8 @@ export namespace OpenAIChatTypes {
       arguments?: string;
     };
     tool_calls?: Array<{
-      index: number;
       id?: string;
+      index: number;
       type?: 'function';
       function: { name?: string; arguments: string };
     }>;
