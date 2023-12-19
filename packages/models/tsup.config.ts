@@ -30,6 +30,13 @@ export default defineConfig([
     dts: true,
   },
   {
+    entry: ['src/google/generate-content.ts'],
+    format: ['cjs', 'esm'],
+    outDir: 'dist/google',
+    external: [/^@axflow\/models\//],
+    dts: true,
+  },
+  {
     entry: ['src/anthropic/completion.ts'],
     format: ['cjs', 'esm'],
     outDir: 'dist/anthropic',
