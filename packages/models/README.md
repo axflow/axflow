@@ -24,9 +24,8 @@ npm i @axflow/models
 - ✅ HuggingFace text generation inference API and Inference Endpoints
 - ✅ Ollama.ai models running locally
 - ✅ Azure OpenAI
+- ✅ Google Gemini
 - ✅ TogetherAI (Llama2, Mistral, etc.)
-- Google PaLM models (coming soon)
-- Replicate (coming soon)
 
 ## Documentation
 
@@ -35,6 +34,7 @@ View the [Guides](https://docs.axflow.dev/guides) or the reference:
 - [@axflow/models/openai/chat](https://docs.axflow.dev/documentation/models/openai-chat.html)
 - [@axflow/models/openai/completion](https://docs.axflow.dev/documentation/models/openai-completion.html)
 - [@axflow/models/openai/embedding](https://docs.axflow.dev/documentation/models/openai-embedding.html)
+- [@axflow/models/google/generate-content](https://docs.axflow.dev/documentation/models/google-generate-content.html)
 - [@axflow/models/azure-openai/chat](https://docs.axflow.dev/documentation/models/azure-openai-chat.html)
 - [@axflow/models/anthropic/completion](https://docs.axflow.dev/documentation/models/anthropic-completion.html)
 - [@axflow/models/cohere/generation](https://docs.axflow.dev/documentation/models/cohere-generation.html)
