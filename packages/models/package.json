@@ -86,6 +86,9 @@
       "azure-openai/chat": [
         "./dist/azure-openai/chat.d.ts"
       ],
+      "google/generate-content": [
+        "./dist/google/generate-content.d.ts"
+      ],
       "anthropic/completion": [
         "./dist/anthropic/completion.d.ts"
       ],
@@ -143,6 +146,12 @@
       "import": "./dist/azure-openai/chat.mjs",
       "module": "./dist/azure-openai/chat.mjs",
       "require": "./dist/azure-openai/chat.js"
+    },
+    "./google/generate-content": {
+      "types": "./dist/google/generate-content.d.ts",
+      "import": "./dist/google/generate-content.mjs",
+      "module": "./dist/google/generate-content.mjs",
+      "require": "./dist/google/generate-content.js"
     },
     "./anthropic/completion": {
       "types": "./dist/anthropic/completion.d.ts",
